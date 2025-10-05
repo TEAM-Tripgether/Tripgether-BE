@@ -1,0 +1,172 @@
+# ===================================================================
+# Spring Boot 설정 파일 자동 업로드 워크플로우
+# ===================================================================
+
+name: PROJECT-SPRING-AUTO-FILE-UPLOAD
+
+# ===================================================================
+# 📋 필수 GitHub Secrets 설정 가이드
+# ===================================================================
+#
+# ⚠️ 사용하기 전에 반드시 다음 GitHub Secrets를 설정하세요!
+# (저장소 Settings > Secrets and variables > Actions에서 설정)
+#
+# 🔧 필수 Secrets:
+# ┌─────────────────────────────┬────────────────────────────────────┐
+# │ Secret 이름                 │ 설명                               │
+# ├─────────────────────────────┼────────────────────────────────────┤
+# │ APPLICATION_PROD_YML        │ Spring Boot 운영 설정 파일 내용   │
+# │ SERVER_HOST                 │ 배포 대상 서버 IP/도메인           │
+# │ SERVER_USER                 │ 서버 SSH 접속 사용자명             │
+# │ SERVER_PASSWORD             │ 서버 SSH 접속 비밀번호             │
+# └─────────────────────────────┴────────────────────────────────────┘
+#
+# 🚀 워크플로우 기능:
+# - application-prod.yml 파일을 서버에 자동 업로드
+# - 최신 파일 + 타임스탬프 백업본 동시 저장
+# - 메타데이터 JSON 파일 자동 생성
+#
+# 📝 사용 방법:
+# 1. 위의 GitHub Secrets 설정
+# 2. 아래 PROJECT_NAME을 실제 프로젝트명으로 변경
+# 3. 워크플로우 활성화: 'on' 섹션의 주석 해제
+#
+# ===================================================================
+
+# ===================================================================
+# 트리거 설정
+# ===================================================================
+on:
+  # push:
+  #   branches:
+  #     - main    # main 브랜치 Push 시 업로드
+  workflow_dispatch:  # 수동 실행 허용
+
+# ===================================================================
+# 환경 변수 설정
+# ===================================================================
+env:
+  # 🔧 프로젝트 설정 - 실제 프로젝트명으로 변경하세요
+  PROJECT_NAME: "tripgether"  # 기본값: tripgether (프로젝트명에 맞게 수정 필요)
+
+jobs:
+  # ===================================================================
+  # 파일 업로드 작업
+  # ===================================================================
+  upload-files:
+    name: 설정 파일 서버 업로드
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. 소스코드 체크아웃
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      # 2. 타임스탬프 폴더명 생성
+      - name: 타임스탬프 폴더명 생성
+        run: |
+          # Asia/Seoul 로컬타임 사용
+          export TZ='Asia/Seoul'
+          # YYYY-MM-DD_HH-MM-SS 형식
+          TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date '+%Y-%m-%d %H:%M')" >> $GITHUB_ENV
+          echo "생성된 타임스탬프: $TIMESTAMP"
+
+      # 3. 짧은 커밋 해시 계산
+      - name: 짧은 커밋 해시 계산
+        run: |
+          echo "SHORT_COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+          echo "짧은 커밋 해시: $(echo ${{ github.sha }} | cut -c1-7)"
+
+      # 4. 서버에 파일 업로드
+      - name: 서버에 파일 업로드
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 2022
+          envs: TIMESTAMP,SHORT_COMMIT_HASH,BUILD_DATE
+          script: |
+            set -e
+            
+            echo "🔧 환경변수 설정.."
+            export PW=${{ secrets.SERVER_PASSWORD }}
+            export PROJECT_NAME="${{ env.PROJECT_NAME }}"
+            
+            # 최신 파일 저장 디렉토리 생성
+            echo "📁 메인 디렉토리 생성 중..."
+            echo $PW | sudo -S mkdir -p /volume1/projects/${PROJECT_NAME}/github_secret/backend
+            
+            # 타임스탬프 백업 디렉토리 생성
+            echo "📁 타임스탬프 백업 디렉토리 생성 중... ($TIMESTAMP)"
+            echo $PW | sudo -S mkdir -p /volume1/projects/${PROJECT_NAME}/github_secret/backend/$TIMESTAMP
+            
+            # application-prod.yml 파일 업로드 (최신 + 백업)
+            echo "📤 application-prod.yml 파일 업로드 중..."
+            cat << 'EOF' | sudo tee /volume1/projects/${PROJECT_NAME}/github_secret/backend/application-prod.yml > /dev/null
+            ${{ secrets.APPLICATION_PROD_YML }}
+            EOF
+            cat << 'EOF' | sudo tee /volume1/projects/${PROJECT_NAME}/github_secret/backend/$TIMESTAMP/application-prod.yml > /dev/null
+            ${{ secrets.APPLICATION_PROD_YML }}
+            EOF
+            echo "✅ application-prod.yml 업로드 완료"
+            
+            # 메타데이터 JSON 파일 생성 및 업로드
+            echo "📝 메타데이터 JSON 파일 생성 중..."
+            cat << EOF | sudo tee /volume1/projects/${PROJECT_NAME}/github_secret/backend/$TIMESTAMP/cicd-gitignore-file.json > /dev/null
+            {
+              "build_info": {
+                "timestamp": "$TIMESTAMP",
+                "workflow": "설정 파일 관리",
+                "run_id": "${{ github.run_id }}",
+                "run_number": "${{ github.run_number }}",
+                "job": "upload-files",
+                "event": "${{ github.event_name }}",
+                "repository": "${{ github.repository }}",
+                "owner": "${{ github.repository_owner }}",
+                "branch": "${{ github.ref_name }}",
+                "commit_hash": "${{ github.sha }}",
+                "short_hash": "$SHORT_COMMIT_HASH",
+                "commit_url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}",
+                "actor": "${{ github.actor }}",
+                "build_date": "$BUILD_DATE",
+                "runner_os": "${{ runner.os }}"
+              },
+              "files": [
+                {
+                  "file_name": "application-prod.yml",
+                  "file_path": "/",
+                  "last_updated": "$BUILD_DATE"
+                }
+              ]
+            }
+            EOF
+            echo "✅ 메타데이터 JSON 파일 업로드 완료"
+            
+            echo ""
+            echo "✅ 모든 파일 업로드 완료!"
+            echo ""
+            echo "📋 업로드 결과 요약:"
+            echo "  🎯 프로젝트: ${PROJECT_NAME}"
+            echo "  🌿 브랜치: ${{ github.ref_name }}"
+            echo "  📁 저장 경로: /volume1/projects/${PROJECT_NAME}/github_secret/backend/"
+            echo "  💾 백업 경로: /volume1/projects/${PROJECT_NAME}/github_secret/backend/$TIMESTAMP/"
+            echo "  ⏰ 업로드 시간: $BUILD_DATE"
+
+# ===================================================================
+# 사용 예시
+# ===================================================================
+#
+# main 브랜치 Push 시 자동 업로드:
+#
+# on:
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
+#
+# 필요한 Secrets: APPLICATION_PROD_YML, SERVER_*
+#
+# ===================================================================

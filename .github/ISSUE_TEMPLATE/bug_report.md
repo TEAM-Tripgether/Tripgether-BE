@@ -2,7 +2,7 @@
 name: ❗ 버그 이슈
 about: 버그 이슈 보고 작성
 labels: [작업 전]
-assignees: [Cassiiopeia]
+assignees: [TEAM-Tripgether]
 ---
 
 <!--📚 GitHub 이슈 작성 템플릿 -->

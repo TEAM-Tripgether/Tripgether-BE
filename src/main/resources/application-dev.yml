@@ -1,0 +1,56 @@
+spring:
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: ${DATASOURCE_URL}
+        username: ${DATASOURCE_USERNAME}
+        password: ${DATASOURCE_PASSWORD}
+    jpa:
+        hibernate:
+            ddl-auto: create
+        show-sql: false  # P6Spy가 대신 처리하므로 false로 변경
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                format_sql: true
+        open-in-view: true
+
+# Swagger/OpenAPI 설정
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+        enabled: true
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true
+        tags-sorter: alpha
+        operations-sorter: alpha
+        try-it-out-enabled: true
+        filter: true
+    packages-to-scan: com.tripgether.be
+    paths-to-match: /api/**
+
+server:
+    port: ${SERVER_PORT:8080}
+
+# 로깅 설정
+logging:
+    level:
+        com.tripgether.be: INFO
+        p6spy: INFO
+        org.springframework.aop: WARN
+        org.aspectj: WARN
+        org.springframework: WARN
+        org.hibernate: WARN
+        com.zaxxer.hikari: WARN
+    pattern:
+        console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr([%thread]){magenta} %clr(%-5level){highlight} %clr(%logger{20}){cyan} %clr(-){faint} %msg%n"
+    ansi:
+        enabled: always  # 색상 활성화
+
+# P6Spy 설정
+decorator:
+    datasource:
+        p6spy:
+            enable-logging: true
+            multiline: true
+            logging: slf4j

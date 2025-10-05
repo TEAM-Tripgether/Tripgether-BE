@@ -74,11 +74,11 @@ name: PROJECT-SPRING-CICD
 # ===================================================================
 # 기본적으로 비활성화 상태입니다. 사용하려면 아래 주석을 해제하세요.
 on:
-  # push:
-  #   branches:
-  #     - main    # 프로덕션 배포 (필수)
-  #     - test    # 테스트 환경 배포 (선택사항 - 작은 프로젝트는 생략 가능)
-  workflow_dispatch:  # 수동 실행 허용
+   push:
+     branches:
+       - deploy  # 프로덕션 배포 (필수)
+       - test    # 테스트 환경 배포 (선택사항 - 작은 프로젝트는 생략 가능)
+   workflow_dispatch:  # 수동 실행 허용
 
 # ===================================================================
 # 환경 변수 설정
@@ -220,10 +220,9 @@ jobs:
             CONTAINER_NAME="${PROJECT_NAME}-back"
 
             # 브랜치에 따른 환경별 설정
-            if [ "$BRANCH" == "main" ]; then
+            if [ "$BRANCH" == "deploy" ]; then
               # 🏭 프로덕션 환경 (main 브랜치)
               # GitHub Secrets의 PROJECT_MAIN_PORT 환경변수 사용
-              # 설정되어 있지 않으면 기본값 8085 사용
               PORT=${{ secrets.PROJECT_MAIN_PORT}}
               CONTAINER_NAME="${PROJECT_NAME}-back"
               echo "🏭 프로덕션 환경으로 배포합니다"
@@ -231,7 +230,6 @@ jobs:
             elif [ "$BRANCH" == "test" ]; then
               # 🧪 테스트 환경 (test 브랜치)
               # GitHub Secrets의 PROJECT_TEST_PORT 환경변수 사용
-              # 설정되어 있지 않으면 기본값 8086 사용
               PORT=${{ secrets.PROJECT_TEST_PORT}}
               CONTAINER_NAME="${PROJECT_NAME}-back-test"
               echo "🧪 테스트 환경으로 배포합니다"

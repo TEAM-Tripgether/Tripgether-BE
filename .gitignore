@@ -1,2 +1,27 @@
 /.idea
 /.claude/settings.local.json
+
+# Logs
+logs
+*.log
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Gradle
+.gradle/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local

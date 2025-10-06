@@ -1,11 +1,55 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-05T14:16:16Z",
-    "currentVersion": "0.0.2",
+    "lastUpdated": "2025-10-06T09:12:31Z",
+    "currentVersion": "0.0.3",
     "projectType": "spring",
-    "totalReleases": 1
+    "totalReleases": 2
   },
   "releases": [
+    {
+      "version": "0.0.3",
+      "project_type": "spring",
+      "date": "2025-10-06",
+      "pr_number": 7,
+      "raw_summary": "Summary by CodeRabbit\n\nNew Features\n\nSpring Boot 앱 초기화, 예제 API(생성/조회) 추가\n글로벌 예외 처리 및 표준 성공/에러 응답 도입\n실행 시간/계층 로깅과 SQL 로그 포매터 적용\nSwagger UI 기반 API 문서 제공\n\n\nBuild/CI\n\nJava 21로 업그레이드(빌드·런타임), Gradle 래퍼/설정 추가\nDocker 이미지 개선(포트 8080 공개, 메모리 옵션, TZ 설정)\n워크플로우 트리거 및 메타데이터 로깅 개선\n\n\nDocumentation\n\nREADME 대폭 확장, 버전 표기 업데이트, 가이드 문서 제거\n\n\nTests\n\n기본 컨텍스트 로드 테스트 추가\n\n\nChores\n\n.gitignore 확장, 애플리케이션/P6Spy 설정 추가, 버전 갱신",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "Spring Boot 앱 초기화, 예제 API(생성/조회) 추가",
+            "글로벌 예외 처리 및 표준 성공/에러 응답 도입",
+            "실행 시간/계층 로깅과 SQL 로그 포매터 적용",
+            "Swagger UI 기반 API 문서 제공"
+          ]
+        },
+        "build_ci": {
+          "title": "Build/CI",
+          "items": [
+            "Java 21로 업그레이드(빌드·런타임), Gradle 래퍼/설정 추가",
+            "Docker 이미지 개선(포트 8080 공개, 메모리 옵션, TZ 설정)",
+            "워크플로우 트리거 및 메타데이터 로깅 개선"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "README 대폭 확장, 버전 표기 업데이트, 가이드 문서 제거"
+          ]
+        },
+        "tests": {
+          "title": "Tests",
+          "items": [
+            "기본 컨텍스트 로드 테스트 추가"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            ".gitignore 확장, 애플리케이션/P6Spy 설정 추가, 버전 갱신"
+          ]
+        }
+      }
+    },
     {
       "version": "0.0.2",
       "project_type": "spring",

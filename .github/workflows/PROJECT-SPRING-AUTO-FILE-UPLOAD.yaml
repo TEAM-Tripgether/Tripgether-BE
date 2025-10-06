@@ -37,9 +37,10 @@ name: PROJECT-SPRING-AUTO-FILE-UPLOAD
 # 트리거 설정
 # ===================================================================
 on:
-  # push:
-  #   branches:
-  #     - main    # main 브랜치 Push 시 업로드
+  pull_request_target:
+    types: [closed]  # PR이 닫혔을 때 (merge 포함)
+    branches:
+      - deploy    # deploy 브랜치로의 PR
   workflow_dispatch:  # 수동 실행 허용
 
 # ===================================================================
@@ -56,30 +57,58 @@ jobs:
   upload-files:
     name: 설정 파일 서버 업로드
     runs-on: ubuntu-latest
-    
+    # PR이 실제로 merge된 경우에만 실행 (닫히기만 한 경우 제외)
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+
     steps:
       # 1. 소스코드 체크아웃
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
-      # 2. 타임스탬프 폴더명 생성
+      # 2. PR 작성자 또는 실행자 확인
+      - name: PR 작성자 또는 실행자 확인
+        id: get_actor
+        run: |
+          # 이벤트 타입에 따라 actor 결정
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
+            # PR merge 이벤트 - PR 작성자 사용
+            ACTOR="${{ github.event.pull_request.user.login }}"
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            echo "🔍 PR 작성자: $ACTOR (PR #$PR_NUMBER)"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # 수동 실행 - 워크플로우 실행자 사용
+            ACTOR="${{ github.actor }}"
+            PR_NUMBER="manual"
+            echo "👤 수동 실행자: $ACTOR"
+          else
+            # push 이벤트 (fallback, 하위 호환성)
+            ACTOR="${{ github.actor }}"
+            PR_NUMBER="push"
+            echo "📤 Push 실행자: $ACTOR"
+          fi
+
+          echo "ACTOR=$ACTOR" >> $GITHUB_OUTPUT
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+      # 3. 타임스탬프 폴더명 생성
       - name: 타임스탬프 폴더명 생성
         run: |
           # Asia/Seoul 로컬타임 사용
           export TZ='Asia/Seoul'
-          # YYYY-MM-DD_HH-MM-SS 형식
-          TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
+          ACTOR="${{ steps.get_actor.outputs.ACTOR }}"
+          # YYYY-MM-DD_HH-MM-SS_username 형식
+          TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')_$ACTOR
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date '+%Y-%m-%d %H:%M')" >> $GITHUB_ENV
           echo "생성된 타임스탬프: $TIMESTAMP"
 
-      # 3. 짧은 커밋 해시 계산
+      # 4. 짧은 커밋 해시 계산
       - name: 짧은 커밋 해시 계산
         run: |
           echo "SHORT_COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
           echo "짧은 커밋 해시: $(echo ${{ github.sha }} | cut -c1-7)"
 
-      # 4. 서버에 파일 업로드
+      # 5. 서버에 파일 업로드
       - name: 서버에 파일 업로드
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -130,7 +159,11 @@ jobs:
                 "commit_hash": "${{ github.sha }}",
                 "short_hash": "$SHORT_COMMIT_HASH",
                 "commit_url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}",
-                "actor": "${{ github.actor }}",
+                "actor": "${{ steps.get_actor.outputs.ACTOR }}",
+                "pr_number": "${{ steps.get_actor.outputs.PR_NUMBER }}",
+                "pr_author": "${{ github.event.pull_request.user.login || 'N/A' }}",
+                "merged_by": "${{ github.event.pull_request.merged_by.login || 'N/A' }}",
+                "triggering_actor": "${{ github.triggering_actor }}",
                 "build_date": "$BUILD_DATE",
                 "runner_os": "${{ runner.os }}"
               },
@@ -138,7 +171,34 @@ jobs:
                 {
                   "file_name": "application-prod.yml",
                   "file_path": "/",
-                  "last_updated": "$BUILD_DATE"
+                  "last_updated": "$BUILD_DATE",
+                  "source_secret": "APPLICATION_PROD_YML"
+                }
+              ],
+              "github_secrets_used": [
+                {
+                  "name": "PROJECT_MAIN_PORT",
+                  "type": "configuration",
+                  "usage": "포트 설정용",
+                  "value": "${{ secrets.PROJECT_MAIN_PORT }}"
+                },
+                {
+                  "name": "PROJECT_TEST_PORT",
+                  "type": "configuration",
+                  "usage": "테스트 포트 설정용",
+                  "value": "${{ secrets.PROJECT_TEST_PORT }}"
+                },
+                {
+                  "name": "SERVER_HOST",
+                  "type": "credential",
+                  "usage": "SSH 접속용",
+                  "value": "${{ secrets.SERVER_HOST }}"
+                },
+                {
+                  "name": "SERVER_USER",
+                  "type": "credential",
+                  "usage": "SSH 접속용",
+                  "value": "${{ secrets.SERVER_USER }}"
                 }
               ]
             }
@@ -150,10 +210,13 @@ jobs:
             echo ""
             echo "📋 업로드 결과 요약:"
             echo "  🎯 프로젝트: ${PROJECT_NAME}"
+            echo "  👤 PR 작성자: ${{ steps.get_actor.outputs.ACTOR }}"
+            echo "  🔢 PR 번호: #${{ steps.get_actor.outputs.PR_NUMBER }}"
             echo "  🌿 브랜치: ${{ github.ref_name }}"
             echo "  📁 저장 경로: /volume1/projects/${PROJECT_NAME}/github_secret/backend/"
             echo "  💾 백업 경로: /volume1/projects/${PROJECT_NAME}/github_secret/backend/$TIMESTAMP/"
             echo "  ⏰ 업로드 시간: $BUILD_DATE"
+            echo "  📊 사용된 Secrets: 6개 (Repository), 1개 (Organization)"
 
 # ===================================================================
 # 사용 예시

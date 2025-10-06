@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Hidden
-@RestControllerAdvice(basePackages = "com.tripgether.be")
+@RestControllerAdvice(basePackages = "com.tripgether")
 public class GlobalExceptionHandler {
 
     /**

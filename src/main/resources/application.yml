@@ -10,12 +10,6 @@ server:
     servlet:
         context-path: /
 
-# 로깅 설정
-logging:
-    level:
-        com.tripgether.be: INFO
-        org.springframework.web: DEBUG
-
 # P6Spy 설정
 decorator:
     datasource:

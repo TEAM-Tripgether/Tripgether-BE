@@ -1,20 +1,18 @@
 package com.tripgether.global.logging.p6spy;
 
-import com.p6spy.engine.logging.Category;
 import com.p6spy.engine.spy.appender.MessageFormattingStrategy;
+import com.tripgether.global.common.utils.TimeUtils;
 import org.hibernate.engine.jdbc.internal.FormatStyle;
-import org.springframework.util.StringUtils;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomP6SpyFormatter implements MessageFormattingStrategy {
 
-    // 로깅 중복 방지를 위한 최근 쿼리 캐시
-    private static final Set<String> recentQueryCache = Collections.synchronizedSet(new HashSet<>());
+    private static final Map<String, Long> recentQueryCache = new ConcurrentHashMap<>();
     private static final int CACHE_SIZE_LIMIT = 100;
+    private static final int EVICTION_SIZE = 20;
 
     @Override
     public String formatMessage(int connectionId, String now, long elapsed, String category,
@@ -26,26 +24,28 @@ public class CustomP6SpyFormatter implements MessageFormattingStrategy {
         // 중복 방지를 위한 키 생성
         String cacheKey = sql.trim() + connectionId;
 
-        // 캐시 크기 제한
+        // 캐시 크기 제한 (LRU 방식으로 오래된 항목 제거)
         if (recentQueryCache.size() > CACHE_SIZE_LIMIT) {
-            recentQueryCache.clear();
+            recentQueryCache.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .limit(EVICTION_SIZE)
+                .map(Map.Entry::getKey)
+                .forEach(recentQueryCache::remove);
         }
 
-        // 중복 검사
-        if (!recentQueryCache.add(cacheKey)) {
+        // 중복 검사 (타임스탬프 저장)
+        Long lastSeen = recentQueryCache.putIfAbsent(cacheKey, System.currentTimeMillis());
+        if (lastSeen != null) {
             // 이미 최근에 로깅된 쿼리는 무시
             return "";
         }
-
-        // 기존 로직 유지
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         // SQL 포맷팅
         String formattedSql = formatSql(category, sql);
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n------------------------------------------------------------------------------------------");
-        sb.append("\n[SQL] ").append(format.format(new Date()));
+        sb.append("\n[SQL] ").append(TimeUtils.getCurrentStandardDateTime());
         sb.append(" | ").append(elapsed).append("ms");
         sb.append(" | ").append(category);
         sb.append(" | connection ").append(connectionId);

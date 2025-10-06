@@ -1,0 +1,35 @@
+spring:
+    application:
+        name: tripgether-be
+    profiles:
+        active: prod
+
+# 서버 설정
+server:
+    port: 8080
+    servlet:
+        context-path: /
+
+# P6Spy 설정
+decorator:
+    datasource:
+        p6spy:
+            enable-logging: true
+            multiline: true
+            logging: slf4j
+
+# Swagger/OpenAPI 설정
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+        enabled: true
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true
+        tags-sorter: alpha
+        operations-sorter: alpha
+        try-it-out-enabled: true
+        filter: true
+    packages-to-scan: com.tripgether
+    paths-to-match: /api/**
+

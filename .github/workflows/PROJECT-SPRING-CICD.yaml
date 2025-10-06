@@ -92,7 +92,7 @@ env:
 
   # ☁️ Spring Boot 설정
   SPRING_PROFILE: "prod"
-  JAVA_VERSION: "17"
+  JAVA_VERSION: "21"
   GRADLE_OPTS: "-Dspring.profiles.active=prod"
 
 jobs:

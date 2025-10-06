@@ -1,2 +1,2 @@
-org.springframework.boot.env.EnvironmentPostProcessor=com.tripgether.be.global.config.DotenvEnvironmentPostProcessor
+org.springframework.boot.env.EnvironmentPostProcessor=com.tripgether.global.config.DotenvEnvironmentPostProcessor
 

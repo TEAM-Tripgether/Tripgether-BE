@@ -26,7 +26,7 @@ springdoc:
         operations-sorter: alpha
         try-it-out-enabled: true
         filter: true
-    packages-to-scan: com.tripgether.be
+    packages-to-scan: com.tripgether
     paths-to-match: /api/**
 
 server:

@@ -16,12 +16,24 @@ logs
 *.iws
 *.iml
 *.ipr
+out/
 
 # Gradle
 .gradle/
 build/
+!gradle/wrapper/gradle-wrapper.jar
 
 # Environment variables
 .env
 .env.local
 .env.*.local
+
+# Spring Boot
+*.jar
+*.war
+!gradle/wrapper/gradle-wrapper.jar
+!build/libs/app.jar
+
+# Application configuration (contains credentials)
+src/main/resources/application-dev.yml
+src/main/resources/application-prod.yml

@@ -1,7 +1,28 @@
 # Changelog
 
-**현재 버전:** 0.0.3  
-**마지막 업데이트:** 2025-10-06T09:12:31Z  
+**현재 버전:** 0.0.8  
+**마지막 업데이트:** 2025-10-13T09:44:32Z  
+
+---
+
+## [0.0.8] - 2025-10-13
+
+**PR:** #10  
+
+**New Features**
+- 기본 브랜치 자동 감지로 워크플로우가 저장소 설정에 맞춰 동작.
+- 버전 코드 관리 추가 및 Flutter 형식(x.y.z+build) 자동 반영.
+- Windows 경로/인코딩 이슈 대응 유틸리티 제공(폴더 복사/삭제, 파일 정보, 안전한 파일명 등).
+
+**Documentation**
+- Analyze/Build/Design/Document/Figma/Implement/Refactor/Review/Test/Troubleshoot 가이드 추가.
+- 동적 브랜치 관리 시스템(v1.2.7) 문서와 빠른 시작 가이드 추가.
+- README 간소화 및 버전 정보 업데이트.
+
+**Chores**
+- 기본 브랜치 참조를 동적으로 사용하는 워크플로우 정비.
+- 프로젝트 버전 0.0.8 및 메타데이터(version_code 등) 갱신.
+- Dockerfile 주석 정리.
 
 ---
 

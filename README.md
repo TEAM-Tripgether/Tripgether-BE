@@ -1,11 +1,9 @@
 # Tripgether-BE
 
 <!-- 수정하지마세요 자동으로 동기화 됩니다 -->
-## 최신 버전 : v0.0.2 (2025-10-05)
+## 최신 버전 : v0.0.3 (2025-10-06)
 [전체 버전 기록 보기](CHANGELOG.md)
 </br>
-
-<!-- 템플릿 초기화 완료: 2025-10-05 21:59:32 KST -->
 
 ## 📋 목차
 - [프로젝트 개요](#-프로젝트-개요)
@@ -20,7 +18,8 @@
 
 ## 🚀 프로젝트 개요
 
-Tripgether는 여행 동행을 위한 백엔드 API 서버입니다. Clean Architecture와 DDD(Domain-Driven Design) 기반으로 설계되어 확장 가능하고 유지보수가 용이한 구조를 가지고 있습니다.
+Tripgether는 여행 동행을 위한 백엔드 API 서버입니다
+Clean Architecture와 DDD(Domain-Driven Design) 기반으로 설계되어 확장 가능하고 유지보수가 용이한 구조를 가지고 있습니다.
 
 ## 🛠 기술 스택
 
@@ -32,7 +31,6 @@ Tripgether는 여행 동행을 위한 백엔드 API 서버입니다. Clean Archi
 
 ### Database
 - **PostgreSQL** - 운영 데이터베이스
-- **H2** - 개발/테스트용 인메모리 데이터베이스
 
 ### Documentation & Monitoring
 - **Swagger/OpenAPI 3** - API 문서화
@@ -126,33 +124,6 @@ src/main/java/com/tripgether/be/
 - Java 21 이상
 - PostgreSQL 13 이상 (운영용)
 - IDE (IntelliJ IDEA 권장)
-
-### 2. 환경 변수 설정
-
-프로젝트 루트에 `.env` 파일을 생성하고 다음 내용을 입력하세요:
-
-```env
-# Database Configuration
-DATASOURCE_URL=jdbc:postgresql://localhost:5432/tripgether
-DATASOURCE_USERNAME=your_username
-DATASOURCE_PASSWORD=your_password
-
-# Server Configuration
-SERVER_PORT=8080
-
-# Profile Configuration
-SPRING_PROFILES_ACTIVE=dev
-```
-
-> 📝 **참고**: `.env.example` 파일을 복사해서 실제 값으로 수정하세요.
-
-## 📚 API 문서
-
-애플리케이션 실행 후 다음 URL에서 API 문서를 확인할 수 있습니다:
-
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **API Docs JSON**: http://localhost:8080/v3/api-docs
-
 
 ## 👨‍💻 개발 가이드
 
@@ -424,12 +395,6 @@ if (!repository.existsById(id)) {
 }
 ```
 
-## 🔐 보안 고려사항
-
-- `.env` 파일은 `.gitignore`에 포함되어 Git에 커밋되지 않습니다
-- 민감한 정보는 환경 변수로 관리합니다
-- 소프트 삭제로 데이터 복구 가능성을 보장합니다
-
 ## 🤝 기여 가이드
 
 1. 새로운 기능 개발 시 `domain` 패키지 구조를 따라주세요
@@ -441,7 +406,3 @@ if (!repository.existsById(id)) {
 ## 📞 문의
 
 프로젝트 관련 문의사항이 있으시면 팀 리드에게 연락주세요.
-
----
-
-> 🎯 **팁**: 개발 시작 전에 Swagger UI에서 Example API들을 테스트해보며 프로젝트 구조를 파악해보세요!

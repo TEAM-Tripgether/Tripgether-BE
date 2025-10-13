@@ -6,6 +6,8 @@
 # - Spring Boot 애플리케이션을 위한 멀티 스테이지 Dockerfile
 # - 빌드 결과물(app.jar)을 경량화된 런타임 이미지로 실행
 #
+#
+#
 # 🔧 빌드 구조:
 # - Gradle 빌드 시 build/libs/app.jar 생성 가정
 # - Java 21 기반 런타임 환경

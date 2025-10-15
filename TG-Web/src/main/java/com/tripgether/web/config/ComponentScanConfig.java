@@ -1,0 +1,18 @@
+package com.tripgether.web.config;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 컴포넌트 스캔 설정
+ * 모든 모듈의 패키지를 스캔하여 Bean으로 등록
+ */
+@Configuration
+@ComponentScan(basePackages = {
+    "com.tripgether.global",      // TG-Common의 global 패키지
+    "com.tripgether.example",     // TG-Example 도메인
+    "com.tripgether.web"          // TG-Web 레이어
+})
+public class ComponentScanConfig {
+}
+

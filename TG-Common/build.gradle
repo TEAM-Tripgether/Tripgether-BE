@@ -1,0 +1,28 @@
+plugins {
+    id 'java-library'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+dependencies {
+    // Spring Boot Starters - API로 제공
+    api 'org.springframework.boot:spring-boot-starter'
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api 'org.springframework.boot:spring-boot-starter-aop'
+    
+    // Swagger/OpenAPI - API로 제공
+    api "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    
+    // P6Spy - API로 제공
+    api "com.github.gavlyukovskiy:p6spy-spring-boot-starter:${p6spyVersion}"
+}
+

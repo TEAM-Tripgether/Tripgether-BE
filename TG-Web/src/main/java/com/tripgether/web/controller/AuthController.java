@@ -79,9 +79,15 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestHeader(value = "Authorization", required = false) String authorization,
             @RequestBody AuthRequest request) {
         log.debug("로그아웃 요청: {}", customUserDetails.getUsername());
         request.setMember(customUserDetails.getMember());
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            request.setAccessToken(authorization.substring(7).trim());
+        }
+
         authService.logout(request);
         return ResponseEntity.ok().build();
     }

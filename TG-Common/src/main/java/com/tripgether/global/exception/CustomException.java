@@ -11,7 +11,7 @@ public class CustomException extends RuntimeException {
 
     // 필요하면 나중에 ErrorCode enum도 변경
     //  private ErrorCode errorCode; // 예외와 관련된 에러 코드
-    private ErrorCodeContainer errorCodeContainer;
+    private ErrorCodeBuilder errorCodeBuilder;
     private String code;
     private String message;
     private int status;
@@ -27,15 +27,15 @@ public class CustomException extends RuntimeException {
 //    }
 
     /**
-     * ErrorCodeContainer를 인자로 받는 생성자
-     * @param errorCodeContainer 동적으로 생성된 에러 코드 컨테이너
+     * ErrorCodeBuilder를 인자로 받는 생성자
+     * @param errorCodeBuilder 동적으로 생성된 에러 코드 빌더
      */
-    public CustomException(ErrorCodeContainer errorCodeContainer) {
-        super(errorCodeContainer.getMessage());
-        this.errorCodeContainer = errorCodeContainer;
-        this.code = errorCodeContainer.getCode();
-        this.message = errorCodeContainer.getMessage();
-        this.status = errorCodeContainer.getStatus().value();
+    public CustomException(ErrorCodeBuilder errorCodeBuilder) {
+        super(errorCodeBuilder.getMessage());
+        this.errorCodeBuilder = errorCodeBuilder;
+        this.code = errorCodeBuilder.getCode();
+        this.message = errorCodeBuilder.getMessage();
+        this.status = errorCodeBuilder.getStatus().value();
     }
 
     /**

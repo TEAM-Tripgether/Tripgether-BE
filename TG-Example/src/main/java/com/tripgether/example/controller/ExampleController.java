@@ -2,8 +2,7 @@ package com.tripgether.domain.example.controller;
 
 import com.tripgether.domain.example.dto.ExampleDto;
 import com.tripgether.domain.example.service.ExampleService;
-import com.tripgether.global.exception.ErrorCodeContainer;
-import com.tripgether.global.exception.ErrorCodeFactory;
+import com.tripgether.global.exception.ErrorCodeBuilder;
 import com.tripgether.global.exception.CustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,10 +40,9 @@ public class ExampleController {
         List<ExampleDto> dtos = exampleService.getAllExamples();
 
         // 에러 코드 생성 및 예외 처리 예시
-        // ErrorCodeFactory를 사용하여 에러 코드 생성 후 ErrorCodeContainer로 변환
-        // CustomException를 통해 예외 발생
+        // ErrorCodeBuilder를 사용하여 에러 코드 생성 후 CustomException를 통해 예외 발생
         if (dtos.isEmpty()) {
-            ErrorCodeContainer errorCode = ErrorCodeFactory
+            ErrorCodeBuilder errorCode = ErrorCodeBuilder
                     .fail(Subject.EXAMPLE, Action.FIND, HttpStatus.NOT_FOUND);
             throw new CustomException(errorCode);
         }

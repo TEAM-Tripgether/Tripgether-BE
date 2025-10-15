@@ -1,9 +1,11 @@
 package com.tripgether.global.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@AllArgsConstructor
 public enum ErrorCode {
 
     // Global
@@ -35,18 +37,5 @@ public enum ErrorCode {
     private final HttpStatus status;
     private final String code;
     private final String message;
-
-    /**
-     * ErrorCode Enum 생성자
-     * @param status HTTP 상태 코드
-     * @param code 에러 코드
-     * @param message 에러 메시지
-     */
-
-    ErrorCode(HttpStatus status, String code, String message) {
-        this.status = status;
-        this.code = code;
-        this.message = message;
-    }
 }
 

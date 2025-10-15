@@ -7,16 +7,16 @@ import com.tripgether.global.util.MessageUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 /**
  * API 에러 응답을 표현하는 클래스
  * 에러 코드와 메시지를 포함
  */
 @Getter
-@Setter
-@AllArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ErrorResponse {
 
     private String code; // 에러 코드
@@ -60,12 +60,12 @@ public class ErrorResponse {
     }
 
     /**
-     * ErrorCodeContainer로부터 에러 응답 객체를 생성하는 정적 팩토리 메소드
+     * ErrorCodeBuilder로부터 에러 응답 객체를 생성하는 정적 팩토리 메소드
      */
-    public static ErrorResponse getResponse(ErrorCodeContainer errorCodeContainer) {
+    public static ErrorResponse getResponse(ErrorCodeBuilder errorCodeBuilder) {
         return ErrorResponse.builder()
-                .code(errorCodeContainer.getCode())
-                .message(errorCodeContainer.getMessage())
+                .code(errorCodeBuilder.getCode())
+                .message(errorCodeBuilder.getMessage())
                 .build();
     }
 }

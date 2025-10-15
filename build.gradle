@@ -14,6 +14,10 @@ allprojects {
 
 	repositories {
 		mavenCentral()
+		// Suh-Nexus
+		maven {
+			url "https://nexus.suhsaechan.kr/repository/maven-releases/"
+		}
 	}
 }
 

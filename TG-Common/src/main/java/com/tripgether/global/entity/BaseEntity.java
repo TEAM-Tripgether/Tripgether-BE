@@ -1,4 +1,4 @@
-package com.tripgether.global.common.entity;
+package com.tripgether.global.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

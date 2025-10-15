@@ -1,4 +1,4 @@
-package com.tripgether.global.common.constant;
+package com.tripgether.global.constant;
 
 /**
  * 메시지 구성 요소들을 정의하는 클래스

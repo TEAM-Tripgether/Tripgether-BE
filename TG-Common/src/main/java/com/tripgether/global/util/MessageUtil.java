@@ -1,13 +1,13 @@
-package com.tripgether.global.common.utils;
+package com.tripgether.global.util;
 
-import com.tripgether.global.common.constant.MessageComponent.Subject;
-import com.tripgether.global.common.constant.MessageComponent.Action;
-import com.tripgether.global.common.constant.MessageComponent.Status;
+import com.tripgether.global.constant.MessageComponent.Subject;
+import com.tripgether.global.constant.MessageComponent.Action;
+import com.tripgether.global.constant.MessageComponent.Status;
 
 /**
  * 메시지 생성 유틸리티 클래스
  */
-public class MessageUtils {
+public class MessageUtil {
 
     /**
      * 성공 메시지 생성

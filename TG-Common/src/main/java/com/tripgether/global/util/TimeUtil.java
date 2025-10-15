@@ -1,11 +1,11 @@
-package com.tripgether.global.common.utils;
+package com.tripgether.global.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public final class TimeUtils {
+public final class TimeUtil {
 
-    private TimeUtils() {
+    private TimeUtil() {
         throw new AssertionError();
     }
 

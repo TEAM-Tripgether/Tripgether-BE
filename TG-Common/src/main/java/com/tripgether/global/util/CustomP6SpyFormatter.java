@@ -1,7 +1,6 @@
-package com.tripgether.global.logging.p6spy;
+package com.tripgether.global.util;
 
 import com.p6spy.engine.spy.appender.MessageFormattingStrategy;
-import com.tripgether.global.common.utils.TimeUtils;
 import org.hibernate.engine.jdbc.internal.FormatStyle;
 
 import java.util.Locale;
@@ -45,7 +44,7 @@ public class CustomP6SpyFormatter implements MessageFormattingStrategy {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n------------------------------------------------------------------------------------------");
-        sb.append("\n[SQL] ").append(TimeUtils.getCurrentStandardDateTime());
+        sb.append("\n[SQL] ").append(TimeUtil.getCurrentStandardDateTime());
         sb.append(" | ").append(elapsed).append("ms");
         sb.append(" | ").append(category);
         sb.append(" | connection ").append(connectionId);

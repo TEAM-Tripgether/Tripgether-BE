@@ -1,6 +1,7 @@
-package com.tripgether.global.logging.p6spy;
+package com.tripgether.web.config;
 
 import com.p6spy.engine.spy.P6SpyOptions;
+import com.tripgether.global.util.CustomP6SpyFormatter;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;

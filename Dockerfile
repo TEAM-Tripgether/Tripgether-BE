@@ -23,8 +23,8 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # 빌드된 JAR 파일 복사
-# Gradle 빌드 시 build/libs/app.jar 파일 생성
-COPY build/libs/app.jar app.jar
+# 멀티 모듈 Gradle 빌드: TG-Web 모듈에서 app.jar 생성
+COPY TG-Web/build/libs/app.jar app.jar
 
 # 타임존 설정 (Asia/Seoul)
 RUN apk add --no-cache tzdata && \

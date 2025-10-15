@@ -3,7 +3,7 @@ package com.tripgether.domain.example.service;
 import com.tripgether.domain.example.dto.ExampleDto;
 import com.tripgether.domain.example.entity.ExampleEntity;
 import com.tripgether.domain.example.repository.ExampleRepository;
-import com.tripgether.global.common.exception.BusinessException;
+import com.tripgether.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

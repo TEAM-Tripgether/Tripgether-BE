@@ -1,12 +1,12 @@
-package com.tripgether.global.common.constant;
+package com.tripgether.global.constant;
 
-import com.tripgether.global.common.utils.MessageUtils;
+import com.tripgether.global.util.MessageUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.tripgether.global.common.constant.MessageComponent.Subject;
-import com.tripgether.global.common.constant.MessageComponent.Action;
-import com.tripgether.global.common.constant.MessageComponent.Status;
+import com.tripgether.global.constant.MessageComponent.Subject;
+import com.tripgether.global.constant.MessageComponent.Action;
+import com.tripgether.global.constant.MessageComponent.Status;
 
 /**
  * 동적 에러 코드 생성기
@@ -24,7 +24,7 @@ public class ErrorCodeFactory {
      */
     public static ErrorCodeContainer fail(Subject subject, Action action, HttpStatus httpStatus) {
         String code = generateErrorCode(subject, action, httpStatus);
-        String message = MessageUtils.failMessage(subject, action);
+        String message = MessageUtil.failMessage(subject, action);
         return new ErrorCodeContainer(httpStatus, code, message);
     }
 
@@ -33,7 +33,7 @@ public class ErrorCodeFactory {
      */
     public static ErrorCodeContainer status(Subject subject, Status status, HttpStatus httpstatus) {
         String code = generateErrorCode(subject, status, httpstatus);
-        String message = MessageUtils.statusMessage(subject, status);
+        String message = MessageUtil.statusMessage(subject, status);
         return new ErrorCodeContainer(httpstatus, code, message);
     }
 

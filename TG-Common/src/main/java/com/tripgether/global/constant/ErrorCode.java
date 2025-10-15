@@ -1,4 +1,4 @@
-package com.tripgether.global.common.constant;
+package com.tripgether.global.constant;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

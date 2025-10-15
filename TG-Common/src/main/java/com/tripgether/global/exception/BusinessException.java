@@ -1,6 +1,6 @@
-package com.tripgether.global.common.exception;
+package com.tripgether.global.exception;
 
-import com.tripgether.global.common.constant.ErrorCode;
+import com.tripgether.global.constant.ErrorCode;
 import lombok.Getter;
 
 /**

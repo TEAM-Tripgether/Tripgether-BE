@@ -1,6 +1,5 @@
-package com.tripgether.global.aop.aspect;
+package com.tripgether.global.logging;
 
-import com.tripgether.global.aop.annotation.LogExecutionTime;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

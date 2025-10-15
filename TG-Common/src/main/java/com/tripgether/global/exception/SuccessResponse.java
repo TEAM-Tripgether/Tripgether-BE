@@ -1,7 +1,7 @@
-package com.tripgether.global.common.response;
+package com.tripgether.global.exception;
 
-import com.tripgether.global.common.constant.SuccessCode;
-import com.tripgether.global.common.constant.SuccessCodeContainer;
+import com.tripgether.global.constant.SuccessCode;
+import com.tripgether.global.constant.SuccessCodeContainer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

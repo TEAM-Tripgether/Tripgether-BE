@@ -1,6 +1,6 @@
 package com.tripgether.domain.example.entity;
 
-import com.tripgether.global.common.entity.BaseEntity;
+import com.tripgether.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,10 +1,10 @@
-package com.tripgether.global.common.response;
+package com.tripgether.global.exception;
 
-import com.tripgether.global.common.constant.ErrorCode;
-import com.tripgether.global.common.constant.ErrorCodeContainer;
-import com.tripgether.global.common.constant.MessageComponent.Action;
-import com.tripgether.global.common.constant.MessageComponent.Subject;
-import com.tripgether.global.common.utils.MessageUtils;
+import com.tripgether.global.constant.ErrorCode;
+import com.tripgether.global.constant.ErrorCodeContainer;
+import com.tripgether.global.constant.MessageComponent.Action;
+import com.tripgether.global.constant.MessageComponent.Subject;
+import com.tripgether.global.util.MessageUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +57,7 @@ public class ErrorResponse {
     public static ErrorResponse getFailResponse(String code, Subject subject, Action action) {
         return ErrorResponse.builder()
                 .code(code)
-                .message(MessageUtils.failMessage(subject, action))
+                .message(MessageUtil.failMessage(subject, action))
                 .build();
     }
 

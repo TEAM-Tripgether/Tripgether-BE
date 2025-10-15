@@ -1,4 +1,4 @@
-package com.tripgether.global.aop.annotation;
+package com.tripgether.global.logging;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

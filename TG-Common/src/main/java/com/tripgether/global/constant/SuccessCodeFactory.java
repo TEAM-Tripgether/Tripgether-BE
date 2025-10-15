@@ -1,11 +1,11 @@
-package com.tripgether.global.common.constant;
+package com.tripgether.global.constant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.tripgether.global.common.utils.MessageUtils;
-import com.tripgether.global.common.constant.MessageComponent.Subject;
-import com.tripgether.global.common.constant.MessageComponent.Action;
+import com.tripgether.global.util.MessageUtil;
+import com.tripgether.global.constant.MessageComponent.Subject;
+import com.tripgether.global.constant.MessageComponent.Action;
 
 
 @Component
@@ -21,7 +21,7 @@ public class SuccessCodeFactory {
      */
     public static SuccessCodeContainer success(Subject subject, Action action, HttpStatus httpStatus) {
         String code = generateSuccessCode(subject, action, httpStatus);
-        String message = MessageUtils.successMessage(subject, action);
+        String message = MessageUtil.successMessage(subject, action);
         return new SuccessCodeContainer(httpStatus, code, message);
     }
 
@@ -30,7 +30,7 @@ public class SuccessCodeFactory {
      */
     public static SuccessCodeContainer created(Subject subject) {
         String code = generateSuccessCode(subject, Action.CREATE, HttpStatus.CREATED);
-        String message = MessageUtils.successMessage(subject, Action.CREATE);
+        String message = MessageUtil.successMessage(subject, Action.CREATE);
         return new SuccessCodeContainer(HttpStatus.CREATED, code, message);
     }
 
@@ -39,7 +39,7 @@ public class SuccessCodeFactory {
      */
     public static SuccessCodeContainer updated(Subject subject) {
         String code = generateSuccessCode(subject, Action.UPDATE, HttpStatus.OK);
-        String message = MessageUtils.successMessage(subject, Action.UPDATE);
+        String message = MessageUtil.successMessage(subject, Action.UPDATE);
         return new SuccessCodeContainer(HttpStatus.OK, code, message);
     }
 
@@ -48,7 +48,7 @@ public class SuccessCodeFactory {
      */
     public static SuccessCodeContainer deleted(Subject subject) {
         String code = generateSuccessCode(subject, Action.DELETE, HttpStatus.OK);
-        String message = MessageUtils.successMessage(subject, Action.DELETE);
+        String message = MessageUtil.successMessage(subject, Action.DELETE);
         return new SuccessCodeContainer(HttpStatus.OK, code, message);
     }
 
@@ -57,7 +57,7 @@ public class SuccessCodeFactory {
      */
     public static SuccessCodeContainer retrieved(Subject subject) {
         String code = generateSuccessCode(subject, Action.FIND, HttpStatus.OK);
-        String message = MessageUtils.successMessage(subject, Action.FIND);
+        String message = MessageUtil.successMessage(subject, Action.FIND);
         return new SuccessCodeContainer(HttpStatus.OK, code, message);
     }
 

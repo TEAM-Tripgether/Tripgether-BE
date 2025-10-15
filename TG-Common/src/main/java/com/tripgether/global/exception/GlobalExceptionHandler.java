@@ -1,4 +1,4 @@
-package com.tripgether.global.common.handler;
+package com.tripgether.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import com.tripgether.global.common.constant.ErrorCode;
-import com.tripgether.global.common.exception.CustomException;
-import com.tripgether.global.common.exception.BusinessException;
-import com.tripgether.global.common.response.ErrorResponse;
+import com.tripgether.global.constant.ErrorCode;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;

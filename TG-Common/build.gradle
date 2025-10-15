@@ -17,12 +17,12 @@ dependencies {
     api 'org.springframework.boot:spring-boot-starter-web'
     api 'org.springframework.boot:spring-boot-starter-validation'
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
-    api 'org.springframework.boot:spring-boot-starter-aop'
+    api 'org.springframework.boot:spring-boot-starter-logging'
     
     // Swagger/OpenAPI - API로 제공
-    api "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
     
     // P6Spy - API로 제공
-    api "com.github.gavlyukovskiy:p6spy-spring-boot-starter:${p6spyVersion}"
+    api 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 }
 

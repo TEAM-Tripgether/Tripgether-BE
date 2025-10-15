@@ -17,10 +17,12 @@ public class MethodLoggingAspect {
 
     /**
      * Controller, Service, Repository 메소드 통합 로깅
+     * 와일드카드 패턴으로 모든 모듈 자동 적용
      */
-    @Around("execution(* com.tripgether.domain.*.controller.*.*(..)) || " +
-            "execution(* com.tripgether.domain.*.service.*.*(..)) || " +
-            "execution(* com.tripgether.domain.*.repository.*.*(..))")
+    @Around("within(com.tripgether..*) && " +
+            "(execution(* *Controller.*(..)) || " +
+            " execution(* *Service.*(..)) || " +
+            " execution(* *Repository.*(..)))")
     public Object logMethods(ProceedingJoinPoint joinPoint) throws Throwable {
 
         String className = joinPoint.getTarget().getClass().getSimpleName();

@@ -18,40 +18,31 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorCodeBuilder {
     private HttpStatus status;
-    private String code;
     private String message;
 
     /**
      * 실패 기반 에러 코드 생성
      */
     public static ErrorCodeBuilder fail(Subject subject, Action action, HttpStatus httpStatus) {
-        String code = generateErrorCode(subject, action, httpStatus);
         String message = failMessage(subject, action);
-        return new ErrorCodeBuilder(httpStatus, code, message);
+        return new ErrorCodeBuilder(httpStatus, message);
     }
 
     /**
      * 상태 기반 에러 코드 생성
      */
     public static ErrorCodeBuilder status(Subject subject, Status status, HttpStatus httpStatus) {
-        String code = generateErrorCode(subject, status, httpStatus);
         String message = statusMessage(subject, status);
-        return new ErrorCodeBuilder(httpStatus, code, message);
+        return new ErrorCodeBuilder(httpStatus, message);
     }
 
     /**
      * 커스텀 에러 코드 생성
      */
-    public static ErrorCodeBuilder custom(HttpStatus httpStatus, String code, String message) {
-        return new ErrorCodeBuilder(httpStatus, code, message);
+    public static ErrorCodeBuilder custom(HttpStatus httpStatus, String message) {
+        return new ErrorCodeBuilder(httpStatus, message);
     }
 
-    /**
-     * 에러 코드 문자열 생성 메서드
-     */
-    private static String generateErrorCode(Subject subject, Object action, HttpStatus httpStatus) {
-        return subject.name() + "_" + (action != null ? action.toString() : "") + "_" + httpStatus.value();
-    }
 
     /**
      * ErrorCode 열거형과 호환성을 위한 메서드

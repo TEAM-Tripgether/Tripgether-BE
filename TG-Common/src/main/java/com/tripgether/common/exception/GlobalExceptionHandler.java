@@ -1,6 +1,5 @@
 package com.tripgether.common.exception;
 
-import com.tripgether.common.exception.constant.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -33,11 +32,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e, HttpServletRequest request) {
 
-        log.error("[예외 처리] CustomException 발생: code={}, message={}, path={}, method={}",
-                e.getCode(), e.getMessage(), request.getRequestURI(), request.getMethod());
+        log.error("[예외 처리] CustomException 발생: message={}, path={}, method={}",
+                e.getMessage(), request.getRequestURI(), request.getMethod());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(e.getCode())
                 .message(e.getMessage())
                 .build();
 
@@ -58,7 +56,6 @@ public class GlobalExceptionHandler {
         log.error("IllegalArgumentException 발생: {}", e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(ErrorCode.INVALID_INPUT_VALUE.getCode())
                 .message(e.getMessage())
                 .build();
 
@@ -79,7 +76,6 @@ public class GlobalExceptionHandler {
         log.error("HttpMessageNotReadableException 발생: {}", e.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(ErrorCode.INVALID_INPUT_VALUE.getCode())
                 .message("요청 본문을 읽을 수 없습니다: " + e.getMessage())
                 .build();
 
@@ -101,7 +97,6 @@ public class GlobalExceptionHandler {
         log.error("MissingServletRequestParameterException 발생: {}", e.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(ErrorCode.INVALID_INPUT_VALUE.getCode())
                 .message("필수 파라미터가 누락되었습니다: " + e.getParameterName())
                 .build();
 
@@ -122,7 +117,6 @@ public class GlobalExceptionHandler {
         log.error("MethodArgumentTypeMismatchException 발생: {}", e.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(ErrorCode.INVALID_INPUT_VALUE.getCode())
                 .message(String.format("파라미터 '%s'의 값 '%s'가 올바른 형식이 아닙니다", e.getName(), e.getValue()))
                 .build();
 
@@ -144,7 +138,6 @@ public class GlobalExceptionHandler {
         log.error("NoHandlerFoundException 발생: {}", e.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(ErrorCode.RESOURCE_NOT_FOUND.getCode())
                 .message(String.format("요청하신 리소스를 찾을 수 없습니다: %s %s", e.getHttpMethod(), e.getRequestURL()))
                 .build();
 
@@ -165,7 +158,6 @@ public class GlobalExceptionHandler {
         log.error("처리되지 않은 예외 발생: {}", e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(ErrorCode.INTERNAL_SERVER_ERROR.getCode())
                 .message("서버 내부 오류가 발생했습니다")
                 .build();
 

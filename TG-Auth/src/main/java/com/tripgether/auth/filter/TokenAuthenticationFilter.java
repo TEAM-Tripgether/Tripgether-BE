@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripgether.auth.dto.SecurityUrls;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.auth.service.CustomUserDetailsService;
+import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.ErrorResponse;
 import com.tripgether.common.exception.constant.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -87,6 +88,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             // 토큰 만료 예외 처리
             if (isApiRequest) {
                 sendErrorResponse(response, ErrorCode.EXPIRED_ACCESS_TOKEN);
+            }
+            return;
+        } catch (CustomException e) {
+            log.error("토큰 검증 실패: {}", e.getMessage());
+            if (isApiRequest) {
+                // 블랙리스트 등 커스텀 에러 상황을 명확히 전달
+                sendErrorResponse(response, ErrorCode.TOKEN_BLACKLISTED);
             }
             return;
         }

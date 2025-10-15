@@ -1,6 +1,5 @@
 package com.tripgether.auth.dto;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,7 +10,7 @@ public class SecurityUrls {
     /**
      * 인증을 생략할 URL 패턴 목록
      */
-    public static final List<String> AUTH_WHITELIST = Arrays.asList(
+    public static final List<String> AUTH_WHITELIST = List.of(
             // Auth
             "/api/auth/sign-in",    // 소셜 로그인
             "/api/auth/reissue",    // 토큰 재발급

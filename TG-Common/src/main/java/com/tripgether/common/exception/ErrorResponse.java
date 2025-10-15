@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorResponse {
 
-    private String code; // 에러 코드
     private String message; // 에러 메시지
 
     /**
@@ -30,7 +29,6 @@ public class ErrorResponse {
      */
     public static ErrorResponse getResponse(ErrorCode errorCode) {
         return ErrorResponse.builder()
-                .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
     }
@@ -44,7 +42,6 @@ public class ErrorResponse {
      */
     public static ErrorResponse getResponse(ErrorCode errorCode, String additionalMessage) {
         return ErrorResponse.builder()
-                .code(errorCode.getCode())
                 .message(errorCode.getMessage() + " - " + additionalMessage)
                 .build();
     }
@@ -52,9 +49,8 @@ public class ErrorResponse {
     /**
      * Subject와 Action을 이용해 동적으로 실패 메시지를 생성하는 정적 팩토리 메소드
      */
-    public static ErrorResponse getFailResponse(String code, Subject subject, Action action) {
+    public static ErrorResponse getFailResponse(Subject subject, Action action) {
         return ErrorResponse.builder()
-                .code(code)
                 .message(ErrorCodeBuilder.failMessage(subject, action))
                 .build();
     }
@@ -64,7 +60,6 @@ public class ErrorResponse {
      */
     public static ErrorResponse getResponse(ErrorCodeBuilder errorCodeBuilder) {
         return ErrorResponse.builder()
-                .code(errorCodeBuilder.getCode())
                 .message(errorCodeBuilder.getMessage())
                 .build();
     }

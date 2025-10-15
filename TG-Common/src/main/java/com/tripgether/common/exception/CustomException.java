@@ -11,7 +11,6 @@ import lombok.Getter;
 public class CustomException extends RuntimeException {
 
     private ErrorCodeBuilder errorCodeBuilder;
-    private String code;
     private String message;
     private int status;
 
@@ -22,7 +21,6 @@ public class CustomException extends RuntimeException {
      */
     public CustomException(ErrorCode errorCode) {
         super(errorCode.getMessage());
-        this.code = errorCode.getCode();
         this.message = errorCode.getMessage();
         this.status = errorCode.getStatus().value();
     }
@@ -34,18 +32,10 @@ public class CustomException extends RuntimeException {
     public CustomException(ErrorCodeBuilder errorCodeBuilder) {
         super(errorCodeBuilder.getMessage());
         this.errorCodeBuilder = errorCodeBuilder;
-        this.code = errorCodeBuilder.getCode();
         this.message = errorCodeBuilder.getMessage();
         this.status = errorCodeBuilder.getStatus().value();
     }
 
-    /**
-     * 에러 코드 getter - 호환성 유지
-     * @return 에러 코드
-     */
-    public String getErrorCodeString() {
-        return this.code;
-    }
 
     /**
      * HTTP 상태 코드 getter

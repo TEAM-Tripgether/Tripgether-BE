@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -62,11 +63,11 @@ public class MemberService {
 
     /**
      * 회원 ID로 조회
-     * @param id 회원 ID
+     * @param memberId 회원 ID
      * @return 회원 데이터
      */
-    public MemberDto getMemberById(Long id) {
-        Member entity = memberRepository.findById(id)
+    public MemberDto getMemberById(UUID memberId) {
+        Member entity = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     ErrorCodeBuilder errorCode = ErrorCodeBuilder
                             .status(Subject.MEMBER, Status.NOT_FOUND, HttpStatus.NOT_FOUND);

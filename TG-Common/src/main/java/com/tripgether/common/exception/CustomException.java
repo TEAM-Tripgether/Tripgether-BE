@@ -1,5 +1,6 @@
 package com.tripgether.common.exception;
 
+import com.tripgether.common.exception.constant.ErrorCode;
 import lombok.Getter;
 
 /**
@@ -9,8 +10,6 @@ import lombok.Getter;
 @Getter
 public class CustomException extends RuntimeException {
 
-    // 필요하면 나중에 ErrorCode enum도 변경
-    //  private ErrorCode errorCode; // 예외와 관련된 에러 코드
     private ErrorCodeBuilder errorCodeBuilder;
     private String code;
     private String message;
@@ -21,10 +20,12 @@ public class CustomException extends RuntimeException {
      * 에러 코드의 메시지를 상위 클래스의 메시지로 사용
      * @param errorCode 예외와 관련된 에러 코드
      */
-//    public CustomException(ErrorCode errorCode) {
-//        super(errorCode.getMessage());
-//        this.errorCode = errorCode;
-//    }
+    public CustomException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
+        this.status = errorCode.getStatus().value();
+    }
 
     /**
      * ErrorCodeBuilder를 인자로 받는 생성자

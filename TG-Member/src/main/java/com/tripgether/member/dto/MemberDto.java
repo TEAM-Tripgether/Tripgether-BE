@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,8 +19,8 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "회원 정보 DTO")
 public class MemberDto {
 
-    @Schema(description = "회원 ID", example = "1")
-    private Long id;
+    @Schema(description = "회원 ID", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID memberId;
 
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
@@ -38,7 +40,7 @@ public class MemberDto {
 
     public static MemberDto entityToDto(Member entity) {
         return MemberDto.builder()
-                .id(entity.getId())
+                .memberId(entity.getMemberId())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
                 .profileImageUrl(entity.getProfileImageUrl())

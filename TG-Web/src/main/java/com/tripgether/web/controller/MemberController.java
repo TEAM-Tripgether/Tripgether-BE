@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -40,9 +41,9 @@ public class MemberController {
 
     @Operation(summary = "회원 단건 조회 (ID)",
             description = "회원 ID로 특정 회원을 조회합니다.")
-    @GetMapping("/{id}")
-    public ResponseEntity<MemberDto> getMemberById(@PathVariable Long id) {
-        MemberDto dto = memberService.getMemberById(id);
+    @GetMapping("/{memberId}")
+    public ResponseEntity<MemberDto> getMemberById(@PathVariable UUID memberId) {
+        MemberDto dto = memberService.getMemberById(memberId);
         return ResponseEntity.ok(dto);
     }
 

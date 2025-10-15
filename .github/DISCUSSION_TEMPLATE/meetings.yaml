@@ -1,0 +1,132 @@
+title: "📋 [회의록] YYYY-MM-DD - {회의 주제를 작성해주세요}"
+labels:
+  - "회의록"
+body:
+  # 안내 문구
+  - type: markdown
+    attributes:
+      value: |
+        <!-- 
+        📋 회의록 작성 템플릿
+        
+        💡 회의의 목적: 문제 해결, 의사결정, 정보 공유 중 하나
+        
+        아래 항목을 순서대로 작성해주세요.
+        -->
+
+  # 회의 날짜 (필수)
+  - type: input
+    id: meeting_date
+    attributes:
+      label: "📅 회의 날짜"
+      description: "YYYY-MM-DD 형식으로 입력해주세요."
+      placeholder: "2025-10-15"
+    validations:
+      required: true
+
+  # 회의 시간 (필수)
+  - type: input
+    id: meeting_time
+    attributes:
+      label: "🕐 회의 시간"
+      description: "시작시간 - 종료시간 형식으로 입력해주세요."
+      placeholder: "14:00 - 15:00"
+    validations:
+      required: true
+
+  # 참석자 (체크박스)
+  - type: checkboxes
+    id: participants
+    attributes:
+      label: "👥 참석자"
+      description: "참석한 인원을 선택해주세요."
+      options:
+        - label: 박희운
+        - label: 서새찬
+        - label: 나의찬
+        - label: 강지윤
+        - label: 김찬영
+    validations:
+      required: true
+
+  # 회의 목적 (필수)
+  - type: textarea
+    id: meeting_purpose
+    attributes:
+      label: "🎯 회의 목적"
+      description: "이번 회의의 목적을 간단히 작성해주세요."
+      placeholder: |
+        예: 신규 기능 개발 방향 결정
+        예: 배포 일정 조율
+        예: 장애 원인 분석 및 대응 방안 논의
+    validations:
+      required: true
+
+  # 논의 안건 (필수)
+  - type: textarea
+    id: agenda_discussion
+    attributes:
+      label: "📝 논의 안건"
+      description: "회의에서 다룬 안건과 논의 내용을 작성해주세요."
+      placeholder: |
+        ## 안건 1: 제목
+        - 논의 내용 요약
+        
+        ## 안건 2: 제목
+        - 논의 내용 요약
+    validations:
+      required: true
+
+  # 회의 메모 (필수)
+  - type: textarea
+    id: meeting_notes
+    attributes:
+      label: "💬 회의 메모"
+      description: "회의 중 나온 주요 의견, 아이디어, 참고사항 등을 자유롭게 메모해주세요."
+      placeholder: |
+        - 회의 중 나온 의견이나 아이디어
+        - 추가 논의가 필요한 사항
+        - 참고할 만한 내용
+    validations:
+      required: true
+
+  # 액션 아이템 (필수)
+  - type: textarea
+    id: action_items
+    attributes:
+      label: "🎬 액션 아이템"
+      description: "회의에서 나온 실행 과제를 작성해주세요. (담당자 - 업무 - 마감일)"
+      placeholder: |
+        - [ ] 박희운 - API 설계서 작성 - 01/20
+        - [ ] 서새찬 - UI 목업 제작 - 01/22
+        - [ ] 나의찬 - DB 스키마 리뷰 - 01/19
+      value: |
+        - [ ] 담당자 - 업무 내용 - 마감일
+    validations:
+      required: true
+
+  # 회의 정리 (필수)
+  - type: textarea
+    id: meeting_summary
+    attributes:
+      label: "📌 회의 정리"
+      description: "회의 내용을 종합하여 핵심 내용을 정리해주세요."
+      placeholder: |
+        - 이번 회의에서 결정된 핵심 내용
+        - 다음 단계로 진행할 사항
+        - 주의해야 할 점
+    validations:
+      required: true
+
+  # 다음 회의 (선택)
+  - type: textarea
+    id: next_meeting
+    attributes:
+      label: "📆 다음 회의"
+      description: "다음 회의 일정과 안건을 작성해주세요."
+      placeholder: |
+        - 일시: 2025-01-22 14:00
+        - 안건: 개발 진행 상황 점검
+    validations:
+      required: false
+

@@ -1,4 +1,4 @@
-package com.tripgether.global.constant;
+package com.tripgether.global.exception.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Getter;
 /**
  * 메시지 구성 요소들을 정의하는 클래스
  */
-public class MessageComponent {
+public class ErrorMessageTemplate {
 
     /**
      * 메시지의 주체(명사) 정의

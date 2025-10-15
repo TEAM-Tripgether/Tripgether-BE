@@ -1,5 +1,6 @@
 package com.tripgether.global.exception;
 
+import com.tripgether.global.exception.constant.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

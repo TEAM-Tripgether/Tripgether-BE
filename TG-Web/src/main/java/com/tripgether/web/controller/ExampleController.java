@@ -1,4 +1,4 @@
-package com.tripgether.domain.example.controller;
+package com.tripgether.web.controller;
 
 import com.tripgether.domain.example.dto.ExampleDto;
 import com.tripgether.domain.example.service.ExampleService;
@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.tripgether.global.constant.MessageComponent.Subject;
-import com.tripgether.global.constant.MessageComponent.Action;
+import com.tripgether.global.exception.constant.ErrorMessageTemplate.Subject;
+import com.tripgether.global.exception.constant.ErrorMessageTemplate.Action;
 
 import java.util.List;
 

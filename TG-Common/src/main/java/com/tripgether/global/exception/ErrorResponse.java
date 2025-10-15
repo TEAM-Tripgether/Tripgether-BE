@@ -1,8 +1,8 @@
 package com.tripgether.global.exception;
 
-import com.tripgether.global.constant.MessageComponent.Action;
-import com.tripgether.global.constant.MessageComponent.Subject;
-import com.tripgether.global.util.MessageUtil;
+import com.tripgether.global.exception.constant.ErrorCode;
+import com.tripgether.global.exception.constant.ErrorMessageTemplate.Action;
+import com.tripgether.global.exception.constant.ErrorMessageTemplate.Subject;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,7 +55,7 @@ public class ErrorResponse {
     public static ErrorResponse getFailResponse(String code, Subject subject, Action action) {
         return ErrorResponse.builder()
                 .code(code)
-                .message(MessageUtil.failMessage(subject, action))
+                .message(ErrorCodeBuilder.failMessage(subject, action))
                 .build();
     }
 

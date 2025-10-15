@@ -1,4 +1,4 @@
-package com.tripgether.global.exception;
+package com.tripgether.global.exception.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

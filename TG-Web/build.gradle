@@ -8,6 +8,7 @@ dependencies {
     // 모든 모듈 의존
     implementation project(':TG-Common')
     implementation project(':TG-Example')
+    implementation project(':TG-Application')
 }
 
 tasks.named('bootJar') {

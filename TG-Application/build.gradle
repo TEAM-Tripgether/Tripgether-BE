@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+dependencies {
+    // 모든 도메인 모듈 의존
+    api project(':TG-Common')
+    api project(':TG-Example')
+    // 향후 추가될 도메인들
+    // api project(':TG-Member')
+    // api project(':TG-Post')
+    // api project(':TG-Place')
+}

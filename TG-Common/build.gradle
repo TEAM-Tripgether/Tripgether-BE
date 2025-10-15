@@ -1,5 +1,7 @@
 plugins {
     id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
 bootJar {
@@ -12,17 +14,23 @@ jar {
 }
 
 dependencies {
-    // Spring Boot Starters - API로 제공
+    // Spring Boot Starters
     api 'org.springframework.boot:spring-boot-starter'
     api 'org.springframework.boot:spring-boot-starter-web'
     api 'org.springframework.boot:spring-boot-starter-validation'
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
     api 'org.springframework.boot:spring-boot-starter-logging'
     
-    // Swagger/OpenAPI - API로 제공
+    // Swagger/OpenAPI
     api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
     
-    // P6Spy - API로 제공
+    // P6Spy
     api 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+    
+    // Database
+    api 'org.postgresql:postgresql:42.7.2'
+    
+    // Development tools
+    api 'org.springframework.boot:spring-boot-devtools'
 }
 

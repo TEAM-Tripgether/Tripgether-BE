@@ -8,12 +8,6 @@ dependencies {
     // 모든 모듈 의존
     implementation project(':TG-Common')
     implementation project(':TG-Example')
-    
-    // Database
-    runtimeOnly 'org.postgresql:postgresql:42.7.2'
-    
-    // Development tools
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('bootJar') {

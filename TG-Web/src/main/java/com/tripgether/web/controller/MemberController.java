@@ -22,36 +22,32 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "회원 생성",
-            description = "새로운 회원을 생성합니다.")
+    @Operation(summary = "회원 생성", description = "새로운 회원을 생성합니다.")
     @PostMapping
     public ResponseEntity<MemberDto> createMember(@Valid @RequestBody MemberDto memberDto) {
         MemberDto dto = memberService.createMember(memberDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(dto);
     }
 
-    @Operation(summary = "전체 회원 목록 조회",
-            description = "모든 회원 데이터를 조회합니다.")
+    @Operation(summary = "전체 회원 목록 조회", description = "모든 회원 데이터를 조회합니다.")
     @GetMapping
     public ResponseEntity<List<MemberDto>> getAllMembers() {
         List<MemberDto> dtos = memberService.getAllMembers();
         return ResponseEntity.ok(dtos);
     }
 
-    @Operation(summary = "회원 단건 조회 (ID)",
-            description = "회원 ID로 특정 회원을 조회합니다.")
+    @Operation(summary = "회원 단건 조회 (ID)", description = "회원 ID로 특정 회원을 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<MemberDto> getMemberById(@PathVariable Long id) {
         MemberDto dto = memberService.getMemberById(id);
         return ResponseEntity.ok(dto);
     }
 
-    @Operation(summary = "회원 단건 조회 (Email)",
-            description = "이메일로 특정 회원을 조회합니다.")
+    @Operation(summary = "회원 단건 조회 (Email)", description = "이메일로 특정 회원을 조회합니다.")
     @GetMapping("/email/{email}")
     public ResponseEntity<MemberDto> getMemberByEmail(@PathVariable String email) {
         MemberDto dto = memberService.getMemberByEmail(email);
         return ResponseEntity.ok(dto);
     }
 }
-

@@ -5,7 +5,7 @@ import com.tripgether.common.exception.ErrorCodeBuilder;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Subject;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Status;
 import com.tripgether.member.dto.MemberDto;
-import com.tripgether.member.entity.MemberEntity;
+import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +39,13 @@ public class MemberService {
         }
 
         // Entity 변환 및 저장
-        MemberEntity entity = MemberEntity.builder()
+        Member entity = Member.builder()
                 .email(memberDto.getEmail())
                 .nickname(memberDto.getNickname())
                 .profileImageUrl(memberDto.getProfileImageUrl())
                 .build();
 
-        MemberEntity savedEntity = memberRepository.save(entity);
+        Member savedEntity = memberRepository.save(entity);
         return MemberDto.entityToDto(savedEntity);
     }
 
@@ -54,7 +54,7 @@ public class MemberService {
      * @return 회원 목록
      */
     public List<MemberDto> getAllMembers() {
-        List<MemberEntity> entities = memberRepository.findAll();
+        List<Member> entities = memberRepository.findAll();
         return entities.stream()
                 .map(MemberDto::entityToDto)
                 .collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class MemberService {
      * @return 회원 데이터
      */
     public MemberDto getMemberById(Long id) {
-        MemberEntity entity = memberRepository.findById(id)
+        Member entity = memberRepository.findById(id)
                 .orElseThrow(() -> {
                     ErrorCodeBuilder errorCode = ErrorCodeBuilder
                             .status(Subject.MEMBER, Status.NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -82,7 +82,7 @@ public class MemberService {
      * @return 회원 데이터
      */
     public MemberDto getMemberByEmail(String email) {
-        MemberEntity entity = memberRepository.findByEmail(email)
+        Member entity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     ErrorCodeBuilder errorCode = ErrorCodeBuilder
                             .status(Subject.MEMBER, Status.NOT_FOUND, HttpStatus.NOT_FOUND);

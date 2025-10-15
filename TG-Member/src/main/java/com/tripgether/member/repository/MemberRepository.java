@@ -1,13 +1,13 @@
 package com.tripgether.member.repository;
 
-import com.tripgether.member.entity.MemberEntity;
+import com.tripgether.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
     
-    Optional<MemberEntity> findByEmail(String email);
+    Optional<Member> findByEmail(String email);
     
     boolean existsByEmail(String email);
 }

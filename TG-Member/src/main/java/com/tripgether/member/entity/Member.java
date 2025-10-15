@@ -1,6 +1,7 @@
 package com.tripgether.member.entity;
 
 import com.tripgether.common.entity.BaseEntity;
+import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.MemberStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,10 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberEntity extends BaseEntity {
+public class Member extends SoftDeletableBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,15 +32,15 @@ public class MemberEntity extends BaseEntity {
     private MemberStatus status;
 
     @Builder
-    public MemberEntity(String email, String nickname, String profileImageUrl, MemberStatus status) {
+    public Member(String email, String nickname, String profileImageUrl, MemberStatus status) {
         this.email = email;
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
         this.status = status != null ? status : MemberStatus.ACTIVE;
     }
 
-    public static MemberEntity create(String email, String nickname) {
-        return MemberEntity.builder()
+    public static Member create(String email, String nickname) {
+        return Member.builder()
                 .email(email)
                 .nickname(nickname)
                 .status(MemberStatus.ACTIVE)

@@ -1,6 +1,6 @@
 package com.tripgether.member.dto;
 
-import com.tripgether.member.entity.MemberEntity;
+import com.tripgether.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class MemberDto {
     @Schema(description = "회원 상태", example = "ACTIVE")
     private String status;
 
-    public static MemberDto entityToDto(MemberEntity entity) {
+    public static MemberDto entityToDto(Member entity) {
         return MemberDto.builder()
                 .id(entity.getId())
                 .email(entity.getEmail())

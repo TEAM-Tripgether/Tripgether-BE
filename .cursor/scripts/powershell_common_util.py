@@ -339,7 +339,7 @@ def list_files(
         
         >>> # 재귀적 검색 (하위 디렉토리 포함)
         >>> list_files("./src", pattern="*.py", recursive=True)
-        ['C:/project/src/main.py', 'C:/project/src/utils/helper.py']
+        ['C:/project/src/main.py', 'C:/project/src/util/helper.py']
     """
     dir_path = _normalize_path(path)
     

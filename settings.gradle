@@ -1,1 +1,6 @@
-rootProject.name = 'tripgether-be'
+rootProject.name = 'tripgether'
+
+include 'TG-Common'
+include 'TG-Example'
+include 'TG-Application'
+include 'TG-Web'

@@ -35,5 +35,6 @@ build/
 !build/libs/app.jar
 
 # Application configuration (contains credentials)
-src/main/resources/application-dev.yml
-src/main/resources/application-prod.yml
+# 멀티 모듈 구조 경로
+TG-Web/src/main/resources/application-dev.yml
+TG-Web/src/main/resources/application-prod.yml

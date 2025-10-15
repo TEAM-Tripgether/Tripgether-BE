@@ -1,7 +1,5 @@
 package com.tripgether.global.exception;
 
-import com.tripgether.global.constant.ErrorCode;
-import com.tripgether.global.constant.ErrorCodeContainer;
 import com.tripgether.global.constant.MessageComponent.Action;
 import com.tripgether.global.constant.MessageComponent.Subject;
 import com.tripgether.global.util.MessageUtil;

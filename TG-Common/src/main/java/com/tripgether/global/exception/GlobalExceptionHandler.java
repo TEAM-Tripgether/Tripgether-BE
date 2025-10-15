@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import com.tripgether.global.constant.ErrorCode;
-
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -43,25 +41,6 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(e.getStatus()).body(errorResponse);
-    }
-
-    /**
-     * 비즈니스 예외 처리
-     * 애플리케이션의 비즈니스 로직에서 발생하는 예외를 처리
-     *
-     * @param e 발생한 BusinessException
-     * @return 적절한 상태 코드와 에러 응답
-     */
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e, HttpServletRequest request) {
-
-        log.error("BusinessException 발생: {}", e.getMessage());
-        ErrorCode errorCode = e.getErrorCode();
-        String message = e.getMessage();
-
-        ErrorResponse errorResponse = ErrorResponse.getResponse(errorCode, message);
-
-        return ResponseEntity.status(errorCode.getStatus()).body(errorResponse);
     }
 
     /**

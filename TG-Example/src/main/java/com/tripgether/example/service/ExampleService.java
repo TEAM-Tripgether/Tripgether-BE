@@ -3,7 +3,6 @@ package com.tripgether.domain.example.service;
 import com.tripgether.domain.example.dto.ExampleDto;
 import com.tripgether.domain.example.entity.ExampleEntity;
 import com.tripgether.domain.example.repository.ExampleRepository;
-import com.tripgether.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class ExampleService {
      * 예시 데이터 생성
      * @param exampleDto 생성할 예시 데이터
      * @return 생성된 예시 데이터
-     * @throws BusinessException 생성 실패 시
      */
     @Transactional
     public ExampleDto createExample(ExampleDto exampleDto) {

@@ -82,18 +82,18 @@ jobs:
 
       # 4. Spring Boot 운영 환경 설정 파일 생성
       # GitHub Secrets에서 APPLICATION_PROD_YML 값을 읽어와서
-      # src/main/resources/application-prod.yml 파일로 생성
+      # TG-Web/src/main/resources/application-prod.yml 파일로 생성
       - name: application-prod.yml 생성
         run: |
-          # 리소스 디렉토리 생성 (프로젝트 구조에 따라 경로 조정 필요)
-          mkdir -p src/main/resources
+          # TG-Web 모듈의 리소스 디렉토리 생성
+          mkdir -p TG-Web/src/main/resources
 
           # GitHub Secrets의 APPLICATION_PROD_YML 내용을 파일로 저장
-          cat << 'EOF' > ./src/main/resources/application-prod.yml
+          cat << 'EOF' > ./TG-Web/src/main/resources/application-prod.yml
           ${{ secrets.APPLICATION_PROD_YML }}
           EOF
 
-          echo "✅ application-prod.yml 파일 생성 완료"
+          echo "✅ application-prod.yml 파일 생성 완료 (TG-Web/src/main/resources/)"
 
       # 5. Gradle 빌드 실행
       # 테스트는 제외하고 운영 프로파일로 빌드
@@ -113,7 +113,7 @@ jobs:
           echo "  🔖 커밋: ${{ github.sha }}"
           echo "  ⏰ 빌드 시간: $(date '+%Y-%m-%d %H:%M:%S')"
           echo ""
-          ls -lh build/libs/ || echo "빌드 파일 확인 실패"
+          ls -lh TG-Web/build/libs/ || echo "빌드 파일 확인 실패"
 
 # ===================================================================
 # 사용 예시

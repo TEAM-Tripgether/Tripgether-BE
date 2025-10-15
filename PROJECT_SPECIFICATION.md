@@ -5,7 +5,7 @@
 **프로젝트명**: Tripgether  
 **서비스 유형**: 여행 동행 및 코스마켓 플랫폼  
 **버전**: v0.0.8 (2025-10-13)  
-**개발 환경**: Spring Boot 3.5.6, Java 21, PostgreSQL
+**개발 환경**: Spring Boot 3.5.6, Java 21, PostgreSQL, Gradle 멀티모듈
 
 ## 🎯 서비스 목표
 
@@ -162,6 +162,7 @@ Tripgether는 개인 맞춤형 여행 코스를 판매하고 구매할 수 있�
 ## 🔧 기술적 요구사항
 
 ### 백엔드 요구사항
+- **아키텍처**: Spring Boot 멀티모듈 구조 (TG-Common, TG-Example, TG-Web)
 - **인증**: JWT 기반 인증 시스템
 - **소셜 로그인**: 카카오/네이버/구글 OAuth 연동
 - **결제**: PG사 연동 (토스페이먼츠, 카카오페이 등)

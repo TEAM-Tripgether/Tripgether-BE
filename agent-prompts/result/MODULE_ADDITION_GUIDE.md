@@ -5,7 +5,7 @@
 이 문서는 Tripgether 프로젝트에 새로운 도메인 모듈을 추가하는 방법을 단계별로 설명합니다. 현재 프로젝트는 멀티모듈 구조로 구성되어 있으며, 새 모듈 추가 시 일관된 구조와 의존성을 유지해야 합니다.
 
 **프로젝트 구조**: Spring Boot 멀티모듈 (Gradle)  
-**현재 모듈**: TG-Common, TG-Example, TG-Application, TG-Web  
+**현재 모듈**: TG-Common, TG-Member, TG-Application, TG-Web  
 **문서 버전**: v1.0.0
 
 ---
@@ -92,10 +92,10 @@ touch TG-Member/src/main/java/com/tripgether/domain/member/dto/.gitkeep
 rootProject.name = 'tripgether'
 
 include 'TG-Common'
-include 'TG-Example'
+include 'TG-Member'
 include 'TG-Application'
-include 'TG-Member'        // 새 모듈 추가
 include 'TG-Web'
+include 'TG-Post'        // 새 모듈 추가 예시
 ```
 
 ### Step 6: TG-Web/build.gradle에 의존성 추가
@@ -106,9 +106,9 @@ include 'TG-Web'
 dependencies {
     // 모든 모듈 의존
     implementation project(':TG-Common')
-    implementation project(':TG-Example')
+    implementation project(':TG-Member')
     implementation project(':TG-Application')
-    implementation project(':TG-Member')     // 새 모듈 의존성 추가
+    implementation project(':TG-Post')     // 새 모듈 의존성 추가 예시
 }
 ```
 
@@ -120,10 +120,9 @@ dependencies {
 dependencies {
     // 모든 도메인 모듈 의존
     api project(':TG-Common')
-    api project(':TG-Example')
-    api project(':TG-Member')               // 새 모듈 의존성 추가
+    api project(':TG-Member')
+    api project(':TG-Post')               // 새 모듈 의존성 추가 예시
     // 향후 추가될 도메인들
-    // api project(':TG-Post')
     // api project(':TG-Place')
 }
 ```
@@ -169,7 +168,7 @@ dependencies {
 ## 🔗 의존성 구조
 
 ```
-TG-Web → TG-Application → TG-Member + TG-Example + TG-Common
+TG-Web → TG-Application → TG-Member + TG-Post + ... + TG-Common
 ```
 
 ### 의존성 방향 규칙
@@ -384,7 +383,7 @@ public class MemberService {
 - [ERD_DESIGN.md](./ERD_DESIGN.md) - 데이터베이스 설계
 
 ### 참고 모듈
-- **TG-Example**: 예시 도메인 모듈 (참고용)
+- **TG-Member**: 회원 도메인 모듈 (참고용)
 - **TG-Common**: 공통 라이브러리 모듈
 - **TG-Application**: 통합 비즈니스 로직 모듈
 

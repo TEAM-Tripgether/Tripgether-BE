@@ -46,7 +46,8 @@ Clean Architecture와 DDD(Domain-Driven Design) 기반으로 설계되어 확장
 멀티모듈 Gradle 프로젝트로 구성되어 있습니다.
 
 - **TG-Common**: 공통 라이브러리 (예외 처리, 유틸리티)
-- **TG-Example**: 예시 도메인 모듈 (참고용)
+- **TG-Member**: 회원 도메인 모듈
+- **TG-Application**: 도메인 통합 모듈
 - **TG-Web**: 웹 애플리케이션 모듈 (실행 가능한 메인 모듈)
 
 ## ✨ 주요 기능

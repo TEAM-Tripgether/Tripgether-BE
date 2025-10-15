@@ -234,7 +234,19 @@ get_project_file_version() {
 
     case "$PROJECT_TYPE" in
         "spring")
-            project_version=$(sed -nE "s/^[[:space:]]*version[[:space:]]*=[[:space:]]*['\"]([0-9]+\.[0-9]+\.[0-9]+)['\"].*/\1/p" "$VERSION_FILE" | head -1)
+            # 멀티모듈: allprojects/subprojects 블록 내부 버전 검색
+            project_version=$(awk '/^[[:space:]]*(allprojects|subprojects)[[:space:]]*\{/,/^}/ {
+                if ($0 ~ /version[[:space:]]*=[[:space:]]*['\''"][0-9]+\.[0-9]+\.[0-9]+['\''"]/) {
+                    match($0, /version[[:space:]]*=[[:space:]]*['\''"]([0-9]+\.[0-9]+\.[0-9]+)['\''"]/, arr)
+                    print arr[1]
+                    exit
+                }
+            }' "$VERSION_FILE" 2>/dev/null)
+            
+            # 못 찾았으면 단일모듈: 루트 레벨에서 검색
+            if [ -z "$project_version" ]; then
+                project_version=$(sed -nE "s/^[[:space:]]*version[[:space:]]*=[[:space:]]*['\"]([0-9]+\.[0-9]+\.[0-9]+)['\"].*/\1/p" "$VERSION_FILE" | head -1)
+            fi
             ;;
         "flutter")
             project_version=$(grep "^version:" "$VERSION_FILE" | sed 's/version: *\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/' | head -1)
@@ -331,12 +343,24 @@ update_project_file_version() {
 
     case "$PROJECT_TYPE" in
         "spring")
-            # 모든 build.gradle 파일 업데이트
-            find . -maxdepth 2 -name "build.gradle" -type f | while read -r gradle_file; do
-                sed -i.bak "s/version = '[^']*'/version = '$new_version'/g; s/version = \"[^\"]*\"/version = \"$new_version\"/g" "$gradle_file"
-                rm -f "${gradle_file}.bak"
-                log_success "업데이트: $gradle_file"
-            done
+            # 루트 build.gradle 업데이트
+            if [ -f "./build.gradle" ]; then
+                # 멀티모듈 프로젝트 감지 (allprojects 또는 subprojects 블록 존재)
+                if grep -q "allprojects\|subprojects" "./build.gradle"; then
+                    log_info "멀티모듈 프로젝트 감지, allprojects/subprojects 블록 내 버전 업데이트"
+                    
+                    # 간단한 sed로 탭 포함하여 처리
+                    sed -i.bak "s/\(^[[:space:]]*version[[:space:]]*=[[:space:]]*\)['\"][^'\"]*['\"]/\1'$new_version'/g" "./build.gradle"
+                    rm -f "./build.gradle.bak"
+                    log_success "멀티모듈 루트 업데이트: ./build.gradle"
+                else
+                    # 단일 프로젝트: 루트 레벨 버전 업데이트
+                    log_info "단일 프로젝트 감지, 루트 레벨 버전 업데이트"
+                    sed -i.bak "s/version[[:space:]]*=[[:space:]]*['\"][^'\"]*['\"]/ version = '$new_version'/g" "./build.gradle"
+                    rm -f "./build.gradle.bak"
+                    log_success "단일 프로젝트 업데이트: ./build.gradle"
+                fi
+            fi
             ;;
         "flutter")
             # Flutter는 version: x.y.z+buildNumber 형식 사용

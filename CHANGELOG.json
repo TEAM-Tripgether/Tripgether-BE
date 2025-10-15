@@ -1,11 +1,48 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-13T09:44:32Z",
-    "currentVersion": "0.0.8",
+    "lastUpdated": "2025-10-15T11:10:18Z",
+    "currentVersion": "0.0.10",
     "projectType": "spring",
-    "totalReleases": 3
+    "totalReleases": 4
   },
   "releases": [
+    {
+      "version": "0.0.10",
+      "project_type": "spring",
+      "date": "2025-10-15",
+      "pr_number": 18,
+      "raw_summary": "Summary by CodeRabbit\n\n신기능\n\n예제 API 엔드포인트 추가 및 빈 데이터 처리 개선\nJPA 감사(Auditing) 활성화로 생성/수정 시간 자동 관리\nGitHub Discussions용 회의록 템플릿 신규 도입\n\n\n문서\n\nREADME 전면 개편 및 멀티모듈 구조 안내 추가\n프로젝트 명세, ERD 설계, 모듈 추가/구조 가이드, 회의 가이드 문서 추가\n\n\n리팩터\n\n로깅 AOP 범위 정비 및 공통/예외 패키지 구조 재정리\n\n\n작업\n\nCI/CD 경로 및 Docker 이미지 빌드 경로 멀티모듈에 맞게 업데이트\n버전 업데이트: 0.0.10",
+      "parsed_changes": {
+        "신기능": {
+          "title": "신기능",
+          "items": [
+            "예제 API 엔드포인트 추가 및 빈 데이터 처리 개선",
+            "JPA 감사(Auditing) 활성화로 생성/수정 시간 자동 관리",
+            "GitHub Discussions용 회의록 템플릿 신규 도입"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "README 전면 개편 및 멀티모듈 구조 안내 추가",
+            "프로젝트 명세, ERD 설계, 모듈 추가/구조 가이드, 회의 가이드 문서 추가"
+          ]
+        },
+        "리팩터": {
+          "title": "리팩터",
+          "items": [
+            "로깅 AOP 범위 정비 및 공통/예외 패키지 구조 재정리"
+          ]
+        },
+        "작업": {
+          "title": "작업",
+          "items": [
+            "CI/CD 경로 및 Docker 이미지 빌드 경로 멀티모듈에 맞게 업데이트",
+            "버전 업데이트: 0.0.10"
+          ]
+        }
+      }
+    },
     {
       "version": "0.0.8",
       "project_type": "spring",

@@ -1,7 +1,7 @@
 # Tripgether-BE
 
 <!-- 수정하지마세요 자동으로 동기화 됩니다 -->
-## 최신 버전 : v0.0.3 (2025-10-06)
+## 최신 버전 : v0.0.8 (2025-10-13)
 [전체 버전 기록 보기](CHANGELOG.md)
 </br>
 
@@ -43,51 +43,11 @@ Clean Architecture와 DDD(Domain-Driven Design) 기반으로 설계되어 확장
 
 ## 📂 프로젝트 구조
 
-```
-src/main/java/com/tripgether/be/
-├── TripgetherBeApplication.java           # 메인 애플리케이션 클래스
-├── domain/                                # 도메인별 비즈니스 로직
-│   └── example/                          # 예시 도메인 (참고용)
-│       ├── controller/                   # REST API 컨트롤러
-│       │   └── ExampleController.java
-│       ├── service/                      # 비즈니스 로직
-│       │   └── ExampleService.java
-│       ├── repository/                   # 데이터 액세스
-│       │   └── ExampleRepository.java
-│       ├── entity/                       # JPA 엔티티
-│       │   └── ExampleEntity.java
-│       └── dto/                          # 데이터 전송 객체
-│           └── ExampleDto.java
-└── global/                               # 전역 설정 및 공통 기능
-    ├── aop/                              # AOP 관련
-    │   ├── aspect/
-    │   │   └── MethodLoggingAspect.java  # 메소드 실행 로깅
-    │   └── annotation/
-    │       └── LogExecutionTime.java     # 커스텀 로깅 어노테이션
-    ├── common/                           # 공통 기능
-    │   ├── constant/                     # 상수 및 코드 정의
-    │   │   ├── ErrorCode.java           # 에러 코드 정의
-    │   │   ├── SuccessCode.java         # 성공 코드 정의
-    │   │   ├── ErrorCodeFactory.java    # 에러 응답 생성
-    │   │   └── SuccessCodeFactory.java  # 성공 응답 생성
-    │   ├── entity/
-    │   │   └── BaseEntity.java          # 공통 엔티티 (소프트 삭제, 감사 추적)
-    │   ├── exception/                    # 예외 처리
-    │   │   ├── BusinessException.java   # 비즈니스 예외
-    │   │   └── CustomException.java     # 커스텀 예외
-    │   ├── response/                     # 공통 응답 형식
-    │   │   ├── SuccessResponse.java     # 성공 응답
-    │   │   └── ErrorResponse.java       # 에러 응답
-    │   └── handler/
-    │       └── GlobalExceptionHandler.java # 전역 예외 처리
-    ├── config/                           # 설정 클래스
-    │   ├── SwaggerConfig.java            # Swagger 설정
-    │   └── DotenvEnvironmentPostProcessor.java # .env 파일 처리
-    └── logging/                          # 로깅 관련
-        └── p6spy/
-            ├── P6SpyConfig.java          # P6Spy 설정
-            └── CustomP6SpyFormatter.java # SQL 로그 포맷터
-```
+멀티모듈 Gradle 프로젝트로 구성되어 있습니다.
+
+- **TG-Common**: 공통 라이브러리 (예외 처리, 유틸리티)
+- **TG-Example**: 예시 도메인 모듈 (참고용)
+- **TG-Web**: 웹 애플리케이션 모듈 (실행 가능한 메인 모듈)
 
 ## ✨ 주요 기능
 

@@ -117,6 +117,21 @@ public class AuthService {
         // 새로운 accessToken 생성
         CustomUserDetails customUserDetails = (CustomUserDetails) jwtUtil
                 .getAuthentication(refreshToken).getPrincipal();
+        
+        // Redis에 저장된 refreshToken과 일치 여부 확인
+        String refreshKey = REFRESH_KEY_PREFIX + customUserDetails.getMemberId();
+        String storedRefreshToken = (String) redisTemplate.opsForValue().get(refreshKey);
+        
+        if (storedRefreshToken == null) {
+            log.error("Redis에 저장된 refreshToken을 찾을 수 없습니다. memberId: {}", customUserDetails.getMemberId());
+            throw new CustomException(ErrorCode.REFRESH_TOKEN_NOT_STORED);
+        }
+        
+        if (!storedRefreshToken.equals(refreshToken)) {
+            log.error("Redis에 저장된 refreshToken과 일치하지 않습니다. memberId: {}", customUserDetails.getMemberId());
+            throw new CustomException(ErrorCode.REFRESH_TOKEN_MISMATCH);
+        }
+        
         String newAccessToken = jwtUtil.createAccessToken(customUserDetails);
 
         Member member = memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
@@ -124,6 +139,7 @@ public class AuthService {
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
+                .refreshToken(refreshToken)
                 .isFirstLogin(false)
                 .build();
     }

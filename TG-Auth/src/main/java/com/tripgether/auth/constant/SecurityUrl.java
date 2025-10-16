@@ -1,11 +1,11 @@
-package com.tripgether.auth.dto;
+package com.tripgether.auth.constant;
 
 import java.util.List;
 
 /**
  * Security 관련 URL 상수 관리
  */
-public class SecurityUrls {
+public class SecurityUrl {
 
     /**
      * 인증을 생략할 URL 패턴 목록

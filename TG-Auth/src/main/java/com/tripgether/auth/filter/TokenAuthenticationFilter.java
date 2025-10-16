@@ -1,7 +1,7 @@
 package com.tripgether.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tripgether.auth.dto.SecurityUrls;
+import com.tripgether.auth.constant.SecurityUrl;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.auth.service.CustomUserDetailsService;
 import com.tripgether.common.exception.CustomException;
@@ -121,7 +121,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
      * 화이트리스트 경로 확인 (인증x)
      */
     private boolean isWhitelistedPath(String uri) {
-        return SecurityUrls.AUTH_WHITELIST.stream()
+        return SecurityUrl.AUTH_WHITELIST.stream()
                 .anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 }

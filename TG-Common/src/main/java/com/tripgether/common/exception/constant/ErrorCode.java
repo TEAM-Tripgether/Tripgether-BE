@@ -42,6 +42,10 @@ public enum ErrorCode {
 
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레시 토큰을 찾을 수 없습니다."),
 
+    REFRESH_TOKEN_NOT_STORED(HttpStatus.UNAUTHORIZED, "Redis에 저장된 리프레시 토큰을 찾을 수 없습니다."),
+
+    REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "Redis에 저장된 리프레시 토큰과 일치하지 않습니다."),
+
     TOKEN_BLACKLISTED(HttpStatus.UNAUTHORIZED, "블랙리스트 처리된 토큰입니다."),
 
     // Member

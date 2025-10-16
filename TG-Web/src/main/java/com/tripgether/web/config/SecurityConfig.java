@@ -1,6 +1,6 @@
 package com.tripgether.web.config;
 
-import com.tripgether.auth.dto.SecurityUrls;
+import com.tripgether.auth.constant.SecurityUrl;
 import com.tripgether.auth.filter.TokenAuthenticationFilter;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.auth.service.CustomUserDetailsService;
@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         (authorize) ->
                                 authorize.requestMatchers(
-                                        SecurityUrls.AUTH_WHITELIST
+                                        SecurityUrl.AUTH_WHITELIST
                                                 .toArray(new String[0]))
                                         .permitAll() // AUTH_WHITELIST에 등록된 URL은 인증 허용
                                         .anyRequest()

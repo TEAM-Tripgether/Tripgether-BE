@@ -1,11 +1,34 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-16T07:14:24Z",
-    "currentVersion": "0.1.1",
+    "lastUpdated": "2025-10-16T13:23:37Z",
+    "currentVersion": "0.1.2",
     "projectType": "spring",
-    "totalReleases": 5
+    "totalReleases": 6
   },
   "releases": [
+    {
+      "version": "0.1.2",
+      "project_type": "spring",
+      "date": "2025-10-16",
+      "pr_number": 27,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nNew Features\n\n장소(Place) 모듈 추가로 장소 관리 기능 지원\nSNS 모듈 추가로 소셜 미디어 콘텐츠 분석 기능 지원\n\n\n\nChores\n\n프로젝트 버전 0.1.2로 업데이트\n빌드 구성 및 모듈 의존성 업데이트",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "장소(Place) 모듈 추가로 장소 관리 기능 지원",
+            "SNS 모듈 추가로 소셜 미디어 콘텐츠 분석 기능 지원"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "프로젝트 버전 0.1.2로 업데이트",
+            "빌드 구성 및 모듈 의존성 업데이트"
+          ]
+        }
+      }
+    },
     {
       "version": "0.1.1",
       "project_type": "spring",

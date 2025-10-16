@@ -25,7 +25,6 @@ public enum ErrorCode {
 
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 오류가 발생했습니다."),
 
-
     // Authentication
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
 
@@ -45,14 +44,11 @@ public enum ErrorCode {
 
     TOKEN_BLACKLISTED(HttpStatus.UNAUTHORIZED, "블랙리스트 처리된 토큰입니다."),
 
-
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
 
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다.");
 
-
     private final HttpStatus status;
     private final String message;
 }
-

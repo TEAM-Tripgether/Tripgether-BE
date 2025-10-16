@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum MemberStatus {
-  ACTIVE,
-  INACTIVE,
-  BANNED
+    ACTIVE,
+    INACTIVE,
+    BANNED
 }

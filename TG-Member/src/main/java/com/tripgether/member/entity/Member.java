@@ -45,7 +45,13 @@ public class Member extends SoftDeletableBaseEntity {
     private Role role;
 
     @Builder
-    public Member(String email, String nickname, String profileImageUrl, MemberStatus status, SocialPlatform socialPlatform, Role role) {
+    public Member(
+            String email,
+            String nickname,
+            String profileImageUrl,
+            MemberStatus status,
+            SocialPlatform socialPlatform,
+            Role role) {
         this.email = email;
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
@@ -64,7 +70,8 @@ public class Member extends SoftDeletableBaseEntity {
                 .build();
     }
 
-    public static Member createSocialMember(String email, String nickname, String profileImageUrl, SocialPlatform socialPlatform) {
+    public static Member createSocialMember(
+            String email, String nickname, String profileImageUrl, SocialPlatform socialPlatform) {
         return Member.builder()
                 .email(email)
                 .nickname(nickname)

@@ -44,7 +44,9 @@ public class MemberDto {
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
                 .profileImageUrl(entity.getProfileImageUrl())
-                .status(entity.getStatus().name())
+                .status(
+                        entity.getStatus()
+                                .name())
                 .build();
     }
 }

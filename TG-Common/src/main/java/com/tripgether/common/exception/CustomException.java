@@ -4,10 +4,7 @@ import com.tripgether.common.exception.constant.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/**
- * 커스텀 예외 클래스
- * ErrorCode enum을 사용하여 정의된 에러 코드와 메시지를 포함하는 예외
- */
+/** 커스텀 예외 클래스 ErrorCode enum을 사용하여 정의된 에러 코드와 메시지를 포함하는 예외 */
 @Getter
 public class CustomException extends RuntimeException {
 
@@ -16,30 +13,35 @@ public class CustomException extends RuntimeException {
     private int httpStatusCode;
 
     /**
-     * ErrorCode를 인자로 받는 생성자
-     * 에러 코드의 메시지를 상위 클래스의 메시지로 사용
+     * ErrorCode를 인자로 받는 생성자 에러 코드의 메시지를 상위 클래스의 메시지로 사용
+     *
      * @param errorCode 예외와 관련된 에러 코드
      */
     public CustomException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.message = errorCode.getMessage();
-        this.httpStatusCode = errorCode.getStatus().value();
+        this.httpStatusCode =
+                errorCode.getStatus()
+                        .value();
     }
 
     /**
      * ErrorCodeBuilder를 인자로 받는 생성자
+     *
      * @param errorCodeBuilder 동적으로 생성된 에러 코드 빌더
      */
     public CustomException(ErrorCodeBuilder errorCodeBuilder) {
         super(errorCodeBuilder.getMessage());
         this.errorCodeBuilder = errorCodeBuilder;
         this.message = errorCodeBuilder.getMessage();
-        this.httpStatusCode = errorCodeBuilder.getHttpStatus().value();
+        this.httpStatusCode =
+                errorCodeBuilder.getHttpStatus()
+                        .value();
     }
-
 
     /**
      * HTTP 상태 코드 getter
+     *
      * @return HTTP 상태 코드
      */
     public int getStatusCode() {
@@ -48,6 +50,7 @@ public class CustomException extends RuntimeException {
 
     /**
      * HttpStatus 객체 반환 (GlobalExceptionHandler 호환성)
+     *
      * @return HttpStatus 객체
      */
     public HttpStatus getStatus() {

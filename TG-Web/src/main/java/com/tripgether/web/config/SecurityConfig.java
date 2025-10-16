@@ -32,44 +32,36 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
 
-    /**
-     * Security Filter Chain 설정
-     */
+    /** Security Filter Chain 설정 */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        return http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(SecurityUrls.AUTH_WHITELIST.toArray(new String[0]))
-                        .permitAll() // AUTH_WHITELIST에 등록된 URL은 인증 허용
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .authorizeHttpRequests(
+                        (authorize) ->
+                                authorize.requestMatchers(
+                                        SecurityUrls.AUTH_WHITELIST
+                                                .toArray(new String[0]))
+                                        .permitAll() // AUTH_WHITELIST에 등록된 URL은 인증 허용
+                                        .anyRequest()
+                                        .authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(
                         new TokenAuthenticationFilter(jwtUtil, customUserDetailsService),
-                        UsernamePasswordAuthenticationFilter.class
-                )
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
-    /**
-     * 인증 매니저 설정
-     */
+    /** 인증 매니저 설정 */
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration)
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /**
-     * CORS 설정 소스 빈
-     */
+    /** CORS 설정 소스 빈 */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -84,12 +76,9 @@ public class SecurityConfig {
         return source;
     }
 
-    /**
-     * 비밀번호 인코더 빈 (BCrypt)
-     */
+    /** 비밀번호 인코더 빈 (BCrypt) */
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
-

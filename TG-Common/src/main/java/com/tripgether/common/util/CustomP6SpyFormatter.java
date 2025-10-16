@@ -14,9 +14,11 @@ public class CustomP6SpyFormatter implements MessageFormattingStrategy {
     private static final int EVICTION_SIZE = 20;
 
     @Override
-    public String formatMessage(int connectionId, String now, long elapsed, String category,
-                                String prepared, String sql, String url) {
-        if (sql == null || sql.trim().isEmpty()) {
+    public String formatMessage(
+            int connectionId, String now, long elapsed, String category, String prepared, String sql, String url) {
+        if (sql == null
+                || sql.trim()
+                        .isEmpty()) {
             return "";
         }
 
@@ -25,11 +27,14 @@ public class CustomP6SpyFormatter implements MessageFormattingStrategy {
 
         // 캐시 크기 제한 (LRU 방식으로 오래된 항목 제거)
         if (recentQueryCache.size() > CACHE_SIZE_LIMIT) {
-            recentQueryCache.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .limit(EVICTION_SIZE)
-                .map(Map.Entry::getKey)
-                .forEach(recentQueryCache::remove);
+            recentQueryCache.entrySet()
+                    .stream()
+                    .sorted(
+                            Map.Entry
+                                    .comparingByValue())
+                    .limit(EVICTION_SIZE)
+                    .map(Map.Entry::getKey)
+                    .forEach(recentQueryCache::remove);
         }
 
         // 중복 검사 (타임스탬프 저장)
@@ -44,17 +49,30 @@ public class CustomP6SpyFormatter implements MessageFormattingStrategy {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n------------------------------------------------------------------------------------------");
-        sb.append("\n[SQL] ").append(TimeUtil.getCurrentStandardDateTime());
-        sb.append(" | ").append(elapsed).append("ms");
-        sb.append(" | ").append(category);
-        sb.append(" | connection ").append(connectionId);
-        if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("select")) {
+        sb.append("\n[SQL] ")
+                .append(TimeUtil.getCurrentStandardDateTime());
+        sb.append(" | ")
+                .append(elapsed)
+                .append("ms");
+        sb.append(" | ")
+                .append(category);
+        sb.append(" | connection ")
+                .append(connectionId);
+        if (formattedSql.trim()
+                .toLowerCase(Locale.ROOT)
+                .startsWith("select")) {
             sb.append("\n[SELECT 쿼리]\n");
-        } else if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("insert")) {
+        } else if (formattedSql.trim()
+                .toLowerCase(Locale.ROOT)
+                .startsWith("insert")) {
             sb.append("\n[INSERT 쿼리]\n");
-        } else if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("update")) {
+        } else if (formattedSql.trim()
+                .toLowerCase(Locale.ROOT)
+                .startsWith("update")) {
             sb.append("\n[UPDATE 쿼리]\n");
-        } else if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("delete")) {
+        } else if (formattedSql.trim()
+                .toLowerCase(Locale.ROOT)
+                .startsWith("delete")) {
             sb.append("\n[DELETE 쿼리]\n");
         } else {
             sb.append("\n[기타 쿼리]\n");
@@ -66,22 +84,39 @@ public class CustomP6SpyFormatter implements MessageFormattingStrategy {
     }
 
     private String formatSql(String category, String sql) {
-        if (sql == null || sql.trim().isEmpty()) {
+        if (sql == null
+                || sql.trim()
+                        .isEmpty()) {
             return sql;
         }
 
         // DDL은 HibernateSQL 포맷으로 출력
-        if (category.contains("statement") && sql.trim().toLowerCase(Locale.ROOT).startsWith("create")) {
-            return FormatStyle.DDL.getFormatter().format(sql);
+        if (category.contains("statement")
+                && sql.trim()
+                        .toLowerCase(Locale.ROOT)
+                        .startsWith("create")) {
+            return FormatStyle.DDL
+                    .getFormatter()
+                    .format(sql);
         }
 
         // DML은 HibernateSQL 포맷으로 출력
-        if (category.contains("statement") && (
-                sql.trim().toLowerCase(Locale.ROOT).startsWith("select") ||
-                        sql.trim().toLowerCase(Locale.ROOT).startsWith("insert") ||
-                        sql.trim().toLowerCase(Locale.ROOT).startsWith("update") ||
-                        sql.trim().toLowerCase(Locale.ROOT).startsWith("delete"))) {
-            return FormatStyle.BASIC.getFormatter().format(sql);
+        if (category.contains("statement")
+                && (sql.trim()
+                                .toLowerCase(Locale.ROOT)
+                                .startsWith("select")
+                        || sql.trim()
+                                .toLowerCase(Locale.ROOT)
+                                .startsWith("insert")
+                        || sql.trim()
+                                .toLowerCase(Locale.ROOT)
+                                .startsWith("update")
+                        || sql.trim()
+                                .toLowerCase(Locale.ROOT)
+                                .startsWith("delete"))) {
+            return FormatStyle.BASIC
+                    .getFormatter()
+                    .format(sql);
         }
 
         return sql;

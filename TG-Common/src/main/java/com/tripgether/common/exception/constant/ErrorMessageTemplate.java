@@ -4,14 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/**
- * 메시지 구성 요소들을 정의하는 클래스
- */
+/** 메시지 구성 요소들을 정의하는 클래스 */
 public class ErrorMessageTemplate {
 
-    /**
-     * 메시지의 주체(명사) 정의
-     */
+    /** 메시지의 주체(명사) 정의 */
     @Getter
     @AllArgsConstructor
     public enum Subject {
@@ -23,10 +19,7 @@ public class ErrorMessageTemplate {
         private final String value;
     }
 
-
-    /**
-     * 메시지의 결과 상태 정의
-     */
+    /** 메시지의 결과 상태 정의 */
     @Getter
     @AllArgsConstructor
     public enum BusinessStatus {

@@ -15,18 +15,21 @@ public class MethodLoggingAspect {
     private final ThreadLocal<StringBuilder> flowBuilder = ThreadLocal.withInitial(StringBuilder::new);
     private final ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
 
-    /**
-     * Controller, Service, Repository 메소드 통합 로깅
-     * 와일드카드 패턴으로 모든 모듈 자동 적용
-     */
-    @Around("within(com.tripgether..*) && " +
-            "(execution(* *Controller.*(..)) || " +
-            " execution(* *Service.*(..)) || " +
-            " execution(* *Repository.*(..)))")
+    /** Controller, Service, Repository 메소드 통합 로깅 와일드카드 패턴으로 모든 모듈 자동 적용 */
+    @Around(
+            "within(com.tripgether..*) && "
+                    + "(execution(* *Controller.*(..)) || "
+                    + " execution(* *Service.*(..)) || "
+                    + " execution(* *Repository.*(..)))")
     public Object logMethods(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        String className = joinPoint.getTarget().getClass().getSimpleName();
-        String methodName = joinPoint.getSignature().getName();
+        String className =
+                joinPoint.getTarget()
+                        .getClass()
+                        .getSimpleName();
+        String methodName =
+                joinPoint.getSignature()
+                        .getName();
         String layer = determineLayer(className);
 
         int currentDepth = depth.get();
@@ -39,11 +42,16 @@ public class MethodLoggingAspect {
             if (currentDepth == 0) {
                 flow.setLength(0);
                 log.info("🚀 {} {}.{}()", getLayerIcon(layer), className, methodName);
-                flow.append(className).append(".").append(methodName);
+                flow.append(className)
+                        .append(".")
+                        .append(methodName);
             } else {
                 String indent = "  ".repeat(currentDepth);
                 log.info("{}↳ {} {}.{}()", indent, getLayerIcon(layer), className, methodName);
-                flow.append(" → ").append(className).append(".").append(methodName);
+                flow.append(" → ")
+                        .append(className)
+                        .append(".")
+                        .append(methodName);
             }
 
             depth.set(currentDepth + 1);
@@ -57,7 +65,13 @@ public class MethodLoggingAspect {
             // 완료 로그
             String indent = "  ".repeat(currentDepth);
             if (executionTime > 100) {
-                log.warn("{}⚡ {} {}.{}() 완료 [{}ms] 🐌", indent, getLayerIcon(layer), className, methodName, executionTime);
+                log.warn(
+                        "{}⚡ {} {}.{}() 완료 [{}ms] 🐌",
+                        indent,
+                        getLayerIcon(layer),
+                        className,
+                        methodName,
+                        executionTime);
             } else {
                 log.info("{}✅ {} {}.{}() 완료 [{}ms]", indent, getLayerIcon(layer), className, methodName, executionTime);
             }
@@ -73,9 +87,14 @@ public class MethodLoggingAspect {
         } catch (Exception e) {
             stopWatch.stop();
             String indent = "  ".repeat(currentDepth);
-            log.error("{}❌ {} {}.{}() 실패 [{}ms]: {}",
-                    indent, getLayerIcon(layer), className, methodName,
-                    stopWatch.getTotalTimeMillis(), e.getMessage());
+            log.error(
+                    "{}❌ {} {}.{}() 실패 [{}ms]: {}",
+                    indent,
+                    getLayerIcon(layer),
+                    className,
+                    methodName,
+                    stopWatch.getTotalTimeMillis(),
+                    e.getMessage());
 
             if (currentDepth == 0) {
                 log.error("💥 에러 흐름: {}", flow.toString());
@@ -92,9 +111,7 @@ public class MethodLoggingAspect {
         }
     }
 
-    /**
-     * 클래스명으로 계층 판단
-     */
+    /** 클래스명으로 계층 판단 */
     private String determineLayer(String className) {
         if (className.contains("Controller")) return "CONTROLLER";
         if (className.contains("Service")) return "SERVICE";
@@ -102,9 +119,7 @@ public class MethodLoggingAspect {
         return "UNKNOWN";
     }
 
-    /**
-     * 계층별 아이콘 반환
-     */
+    /** 계층별 아이콘 반환 */
     private String getLayerIcon(String layer) {
         return switch (layer) {
             case "CONTROLLER" -> "🎯";
@@ -118,9 +133,14 @@ public class MethodLoggingAspect {
      * @LogExecutionTime 어노테이션 처리
      */
     @Around("@annotation(logExecutionTime)")
-    public Object logAnnotatedMethods(ProceedingJoinPoint joinPoint, LogExecutionTime logExecutionTime) throws Throwable {
-        String description = logExecutionTime.description().isEmpty() ?
-                joinPoint.getSignature().getName() : logExecutionTime.description();
+    public Object logAnnotatedMethods(ProceedingJoinPoint joinPoint, LogExecutionTime logExecutionTime)
+            throws Throwable {
+        String description =
+                logExecutionTime.description()
+                                .isEmpty()
+                        ? joinPoint.getSignature()
+                                .getName()
+                        : logExecutionTime.description();
         long threshold = logExecutionTime.threshold();
 
         StopWatch stopWatch = new StopWatch();

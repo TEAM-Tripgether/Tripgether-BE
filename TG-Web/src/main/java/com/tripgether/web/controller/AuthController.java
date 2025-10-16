@@ -23,23 +23,23 @@ public class AuthController {
 
     @Operation(
             summary = "소셜 로그인",
-            description = """
+            description =
+                    """
                     ## 소셜 로그인 API
-                    
+
                     클라이언트에서 Kakao/Google OAuth 처리 후, 받은 사용자 정보로 서버에 JWT 토큰을 요청합니다.
-                    
+
                     **요청 파라미터:**
                     - socialPlatform: 소셜 플랫폼 (KAKAO, GOOGLE)
                     - email: 이메일
                     - nickname: 닉네임
                     - profileUrl: 프로필 이미지 URL (선택)
-                    
+
                     **응답:**
                     - accessToken: 액세스 토큰 (1시간)
                     - refreshToken: 리프레시 토큰 (7일)
                     - isFirstLogin: 첫 로그인 여부
-                    """
-    )
+                    """)
     @PostMapping("/sign-in")
     public ResponseEntity<AuthResponse> signIn(@RequestBody AuthRequest request) {
         log.debug("소셜 로그인 요청: {}", request);
@@ -48,18 +48,18 @@ public class AuthController {
 
     @Operation(
             summary = "토큰 재발급",
-            description = """
+            description =
+                    """
                     ## 액세스 토큰 재발급 API
-                    
+
                     만료된 액세스 토큰을 리프레시 토큰으로 재발급합니다.
-                    
+
                     **요청 파라미터:**
                     - refreshToken: 리프레시 토큰
-                    
+
                     **응답:**
                     - accessToken: 새로운 액세스 토큰
-                    """
-    )
+                    """)
     @PostMapping("/reissue")
     public ResponseEntity<AuthResponse> reissue(@RequestBody AuthRequest request) {
         log.debug("토큰 재발급 요청");
@@ -68,14 +68,14 @@ public class AuthController {
 
     @Operation(
             summary = "로그아웃",
-            description = """
-                    ## 로그아웃 API
-                    
-                    액세스 토큰을 블랙리스트에 등록하고, 리프레시 토큰을 삭제합니다.
-                    
-                    **인증 필요:** Bearer Token
+            description =
                     """
-    )
+                    ## 로그아웃 API
+
+                    액세스 토큰을 블랙리스트에 등록하고, 리프레시 토큰을 삭제합니다.
+
+                    **인증 필요:** Bearer Token
+                    """)
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -85,11 +85,13 @@ public class AuthController {
         request.setMember(customUserDetails.getMember());
 
         if (authorization != null && authorization.startsWith("Bearer ")) {
-            request.setAccessToken(authorization.substring(7).trim());
+            request.setAccessToken(
+                    authorization.substring(7)
+                            .trim());
         }
 
         authService.logout(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 }
-

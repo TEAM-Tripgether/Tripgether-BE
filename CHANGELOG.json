@@ -1,11 +1,43 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-15T11:10:18Z",
-    "currentVersion": "0.0.10",
+    "lastUpdated": "2025-10-16T07:14:24Z",
+    "currentVersion": "0.1.1",
     "projectType": "spring",
-    "totalReleases": 4
+    "totalReleases": 5
   },
   "releases": [
+    {
+      "version": "0.1.1",
+      "project_type": "spring",
+      "date": "2025-10-16",
+      "pr_number": 24,
+      "raw_summary": "Summary by CodeRabbit\nRelease Notes\n\n\nNew Features\n\n소셜 로그인을 통한 사용자 인증 시스템 추가\n회원 가입 및 프로필 관리 기능 추가\nJWT 토큰 기반 인증 및 토큰 재발급 기능 구현\n로그아웃 기능 추가\n\n\n\nImprovements\n\nAPI 보안 및 CORS 설정 강화\n중앙화된 오류 응답 처리로 일관성 개선\n\n\n\nRefactor\n\n프로젝트 모듈 구조 개선 (TG-Member, TG-Auth 추가)\n공통 라이브러리 패키지 재구성",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "소셜 로그인을 통한 사용자 인증 시스템 추가",
+            "회원 가입 및 프로필 관리 기능 추가",
+            "JWT 토큰 기반 인증 및 토큰 재발급 기능 구현",
+            "로그아웃 기능 추가"
+          ]
+        },
+        "improvements": {
+          "title": "Improvements",
+          "items": [
+            "API 보안 및 CORS 설정 강화",
+            "중앙화된 오류 응답 처리로 일관성 개선"
+          ]
+        },
+        "refactor": {
+          "title": "Refactor",
+          "items": [
+            "프로젝트 모듈 구조 개선 (TG-Member, TG-Auth 추가)",
+            "공통 라이브러리 패키지 재구성"
+          ]
+        }
+      }
+    },
     {
       "version": "0.0.10",
       "project_type": "spring",

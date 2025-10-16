@@ -2,5 +2,6 @@ rootProject.name = 'tripgether'
 
 include 'TG-Common'
 include 'TG-Member'
+include 'TG-Auth'
 include 'TG-Application'
 include 'TG-Web'

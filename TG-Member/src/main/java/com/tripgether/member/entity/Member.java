@@ -1,22 +1,29 @@
 package com.tripgether.member.entity;
 
-import com.tripgether.common.entity.BaseEntity;
+import com.tripgether.common.constant.MemberRole;
+import com.tripgether.common.constant.SocialPlatform;
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.MemberStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends SoftDeletableBaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID memberId;
 
     @Column(nullable = false, unique = true, length = 100)
     private String email;
@@ -31,19 +38,11 @@ public class Member extends SoftDeletableBaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    @Builder
-    public Member(String email, String nickname, String profileImageUrl, MemberStatus status) {
-        this.email = email;
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
-        this.status = status != null ? status : MemberStatus.ACTIVE;
-    }
+    @Column(nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    private SocialPlatform socialPlatform;
 
-    public static Member create(String email, String nickname) {
-        return Member.builder()
-                .email(email)
-                .nickname(nickname)
-                .status(MemberStatus.ACTIVE)
-                .build();
-    }
+    @Column(nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    private MemberRole memberRole;
 }

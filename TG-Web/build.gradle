@@ -8,6 +8,7 @@ dependencies {
     // 모든 모듈 의존
     implementation project(':TG-Common')
     implementation project(':TG-Member')
+    implementation project(':TG-Auth')
     implementation project(':TG-Application')
 }
 

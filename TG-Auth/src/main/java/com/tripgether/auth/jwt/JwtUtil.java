@@ -116,7 +116,7 @@ public class JwtUtil {
                 .subject(customUserDetails.getUsername())
                 .claim("category", category)
                 .claim("username", customUserDetails.getUsername())
-                .claim("role", customUserDetails.getMember().getRole())
+                .claim("role", customUserDetails.getMember().getMemberRole())
                 .issuer(issuer)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredAt))

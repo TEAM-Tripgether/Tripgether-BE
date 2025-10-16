@@ -22,7 +22,7 @@ public class CustomUserDetails implements UserDetails, Principal {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(member.getRole().name()));
+        return Collections.singletonList(new SimpleGrantedAuthority(member.getMemberRole().name()));
     }
 
     @Override

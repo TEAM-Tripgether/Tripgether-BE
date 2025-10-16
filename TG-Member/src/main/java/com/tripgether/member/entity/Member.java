@@ -1,12 +1,12 @@
 package com.tripgether.member.entity;
 
-import com.tripgether.common.constant.Role;
+import com.tripgether.common.constant.MemberRole;
 import com.tripgether.common.constant.SocialPlatform;
-import com.tripgether.common.entity.BaseEntity;
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.MemberStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +14,10 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends SoftDeletableBaseEntity {
 
     @Id
@@ -42,43 +44,5 @@ public class Member extends SoftDeletableBaseEntity {
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Builder
-    public Member(
-            String email,
-            String nickname,
-            String profileImageUrl,
-            MemberStatus status,
-            SocialPlatform socialPlatform,
-            Role role) {
-        this.email = email;
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
-        this.status = status != null ? status : MemberStatus.ACTIVE;
-        this.socialPlatform = socialPlatform != null ? socialPlatform : SocialPlatform.NORMAL;
-        this.role = role != null ? role : Role.ROLE_USER;
-    }
-
-    public static Member create(String email, String nickname) {
-        return Member.builder()
-                .email(email)
-                .nickname(nickname)
-                .status(MemberStatus.ACTIVE)
-                .socialPlatform(SocialPlatform.NORMAL)
-                .role(Role.ROLE_USER)
-                .build();
-    }
-
-    public static Member createSocialMember(
-            String email, String nickname, String profileImageUrl, SocialPlatform socialPlatform) {
-        return Member.builder()
-                .email(email)
-                .nickname(nickname)
-                .profileImageUrl(profileImageUrl)
-                .status(MemberStatus.ACTIVE)
-                .socialPlatform(socialPlatform)
-                .role(Role.ROLE_USER)
-                .build();
-    }
+    private MemberRole memberRole;
 }

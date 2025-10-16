@@ -4,7 +4,7 @@ import com.tripgether.auth.dto.AuthRequest;
 import com.tripgether.auth.dto.AuthResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.auth.jwt.JwtUtil;
-import com.tripgether.common.constant.Role;
+import com.tripgether.common.constant.MemberRole;
 import com.tripgether.common.constant.SocialPlatform;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -58,7 +58,7 @@ public class AuthService {
                     .nickname(nickname)
                     .profileImageUrl(profileUrl)
                     .socialPlatform(socialPlatform)
-                    .role(Role.ROLE_USER)
+                    .memberRole(MemberRole.ROLE_USER)
                     .status(MemberStatus.ACTIVE)
                     .build();
             memberRepository.save(member);

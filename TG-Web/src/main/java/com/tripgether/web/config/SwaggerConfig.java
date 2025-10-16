@@ -11,12 +11,10 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI tripgetherOpenAPI() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title("Tripgether API")
+        return new OpenAPI().info(
+                new Info().title("Tripgether API")
                         .description("Tripgether의 REST API 문서")
                         .version("v1.0.0")
-                        .contact(new Contact()
-                                .name("Tripgether Team")));
+                        .contact(new Contact().name("Tripgether Team")));
     }
 }

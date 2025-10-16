@@ -10,10 +10,14 @@ bootJar {
 
 allprojects {
 	group = 'com.tripgether'
-	version = '0.0.11'
+	version = '0.0.12'
 
 	repositories {
 		mavenCentral()
+		// Suh-Nexus
+		maven {
+			url "https://nexus.suhsaechan.kr/repository/maven-releases/"
+		}
 	}
 }
 

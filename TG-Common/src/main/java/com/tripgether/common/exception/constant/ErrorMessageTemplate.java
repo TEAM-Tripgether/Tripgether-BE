@@ -14,7 +14,6 @@ public class ErrorMessageTemplate {
     @Getter
     @AllArgsConstructor
     public enum Subject {
-        EXAMPLE("예시"),
         MEMBER("회원"),
         USER("사용자"),
         AUTH("인증");

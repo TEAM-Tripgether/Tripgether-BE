@@ -36,4 +36,3 @@ public class AuthRequest {
     @Schema(hidden = true)
     private String refreshToken;
 }
-

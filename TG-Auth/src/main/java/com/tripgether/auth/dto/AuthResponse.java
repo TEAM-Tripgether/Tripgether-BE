@@ -20,4 +20,3 @@ public class AuthResponse {
     @Schema(description = "첫 로그인 여부")
     private Boolean isFirstLogin;
 }
-

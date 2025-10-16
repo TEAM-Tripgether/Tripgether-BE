@@ -22,9 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * JWT 토큰 기반 인증 필터
- */
+/** JWT 토큰 기반 인증 필터 */
 @RequiredArgsConstructor
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
@@ -52,19 +50,22 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         try {
             String token = null;
             String bearerToken = request.getHeader("Authorization");
-            
+
             // API 요청 : Authorization 헤더에서 "Bearer " 토큰 추출
             if (isApiRequest) {
                 log.debug("일반 API 요청입니다.");
                 if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-                    token = bearerToken.substring(7).trim(); // "Bearer " 제거
+                    token =
+                            bearerToken.substring(7)
+                                    .trim(); // "Bearer " 제거
                 }
             }
 
             // 토큰 검증: 토큰이 유효하면 인증 설정
             if (token != null && jwtUtil.validateToken(token)) {
                 Authentication authentication = jwtUtil.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
 
                 // 인증 성공
                 filterChain.doFilter(request, response);
@@ -103,12 +104,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    /**
-     * 에러 응답을 JSON 형태로 클라이언트에 전송
-     */
+    /** 에러 응답을 JSON 형태로 클라이언트에 전송 */
     private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(errorCode.getStatus().value());
+        response.setStatus(
+                errorCode.getStatus()
+                        .value());
         response.setCharacterEncoding("UTF-8");
 
         ErrorResponse errorResponse = ErrorResponse.getResponse(errorCode);
@@ -117,12 +118,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         mapper.writeValue(response.getWriter(), errorResponse);
     }
 
-    /**
-     * 화이트리스트 경로 확인 (인증x)
-     */
+    /** 화이트리스트 경로 확인 (인증x) */
     private boolean isWhitelistedPath(String uri) {
-        return SecurityUrl.AUTH_WHITELIST.stream()
+        return SecurityUrl.AUTH_WHITELIST
+                .stream()
                 .anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 }
-

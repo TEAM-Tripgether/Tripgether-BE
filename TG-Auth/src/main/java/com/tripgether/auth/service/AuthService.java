@@ -32,10 +32,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    /**
-     * 로그인 로직
-     * 클라이언트로부터 플랫폼, 닉네임, 프로필url, 이메일을 입력받아 JWT를 발급합니다.
-     */
+    /** 로그인 로직 클라이언트로부터 플랫폼, 닉네임, 프로필url, 이메일을 입력받아 JWT를 발급합니다. */
     @Transactional
     public AuthResponse signIn(AuthRequest request) {
         // 요청 값으로부터 사용자 정보 획득
@@ -53,14 +50,15 @@ public class AuthService {
             member = existMember.get();
             log.debug("기존 회원 로그인: {}", email);
         } else { // 신규 회원
-            member = Member.builder()
-                    .email(email)
-                    .nickname(nickname)
-                    .profileImageUrl(profileUrl)
-                    .socialPlatform(socialPlatform)
-                    .memberRole(MemberRole.ROLE_USER)
-                    .status(MemberStatus.ACTIVE)
-                    .build();
+            member =
+                    Member.builder()
+                            .email(email)
+                            .nickname(nickname)
+                            .profileImageUrl(profileUrl)
+                            .socialPlatform(socialPlatform)
+                            .memberRole(MemberRole.ROLE_USER)
+                            .status(MemberStatus.ACTIVE)
+                            .build();
             memberRepository.save(member);
             isFirstLogin = true;
             log.debug("신규 회원 가입: {}", email);
@@ -74,12 +72,12 @@ public class AuthService {
         log.debug("로그인 성공: email={}, accessToken={}, refreshToken={}", email, accessToken, refreshToken);
 
         // RefreshToken -> Redis 저장 (키: "RT:{memberId}")
-        redisTemplate.opsForValue().set(
-                REFRESH_KEY_PREFIX + customUserDetails.getMemberId(),
-                refreshToken,
-                jwtUtil.getRefreshExpirationTime(),
-                TimeUnit.MILLISECONDS
-        );
+        redisTemplate.opsForValue()
+                .set(
+                        REFRESH_KEY_PREFIX + customUserDetails.getMemberId(),
+                        refreshToken,
+                        jwtUtil.getRefreshExpirationTime(),
+                        TimeUnit.MILLISECONDS);
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -88,9 +86,7 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * refreshToken을 통해 accessToken을 재발급합니다
-     */
+    /** refreshToken을 통해 accessToken을 재발급합니다 */
     @Transactional
     public AuthResponse reissue(AuthRequest request) {
         log.debug("accessToken이 만료되어 토큰 재발급을 진행합니다.");
@@ -115,27 +111,33 @@ public class AuthService {
         }
 
         // 새로운 accessToken 생성
-        CustomUserDetails customUserDetails = (CustomUserDetails) jwtUtil
-                .getAuthentication(refreshToken).getPrincipal();
-        
+        CustomUserDetails customUserDetails =
+                (CustomUserDetails)
+                        jwtUtil.getAuthentication(refreshToken)
+                                .getPrincipal();
+
         // Redis에 저장된 refreshToken과 일치 여부 확인
         String refreshKey = REFRESH_KEY_PREFIX + customUserDetails.getMemberId();
-        String storedRefreshToken = (String) redisTemplate.opsForValue().get(refreshKey);
-        
+        String storedRefreshToken =
+                (String)
+                        redisTemplate.opsForValue()
+                                .get(refreshKey);
+
         if (storedRefreshToken == null) {
             log.error("Redis에 저장된 refreshToken을 찾을 수 없습니다. memberId: {}", customUserDetails.getMemberId());
             throw new CustomException(ErrorCode.REFRESH_TOKEN_NOT_STORED);
         }
-        
+
         if (!storedRefreshToken.equals(refreshToken)) {
             log.error("Redis에 저장된 refreshToken과 일치하지 않습니다. memberId: {}", customUserDetails.getMemberId());
             throw new CustomException(ErrorCode.REFRESH_TOKEN_MISMATCH);
         }
-        
+
         String newAccessToken = jwtUtil.createAccessToken(customUserDetails);
 
-        Member member = memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member =
+                memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
@@ -144,11 +146,7 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * 로그아웃
-     * 액세스 토큰을 블랙리스트에 등록합니다
-     * redis에 저장되어있는 리프레시토큰을 삭제합니다
-     */
+    /** 로그아웃 액세스 토큰을 블랙리스트에 등록합니다 redis에 저장되어있는 리프레시토큰을 삭제합니다 */
     @Transactional
     public void logout(AuthRequest request) {
         Member member = request.getMember();
@@ -161,4 +159,3 @@ public class AuthService {
         jwtUtil.deactivateToken(accessToken, key);
     }
 }
-

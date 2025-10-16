@@ -92,31 +92,28 @@ public class JwtUtil {
                 .get("category", String.class);
     }
 
-    /**
-     * AccessToken 생성
-     */
+    /** AccessToken 생성 */
     public String createAccessToken(CustomUserDetails customUserDetails) {
         log.debug("액세스 토큰 생성 중: 회원: {}", customUserDetails.getUsername());
         return createToken(ACCESS_CATEGORY, customUserDetails, accessTokenExpTime);
     }
 
-    /**
-     * RefreshToken 생성
-     */
+    /** RefreshToken 생성 */
     public String createRefreshToken(CustomUserDetails customUserDetails) {
         log.debug("리프레시 토큰 생성 중: 회원: {}", customUserDetails.getUsername());
         return createToken(REFRESH_CATEGORY, customUserDetails, refreshTokenExpTime);
     }
 
-    /**
-     * JWT 토큰 생성 메서드
-     */
+    /** JWT 토큰 생성 메서드 */
     private String createToken(String category, CustomUserDetails customUserDetails, Long expiredAt) {
         return Jwts.builder()
                 .subject(customUserDetails.getUsername())
                 .claim("category", category)
                 .claim("username", customUserDetails.getUsername())
-                .claim("role", customUserDetails.getMember().getMemberRole())
+                .claim(
+                        "role",
+                        customUserDetails.getMember()
+                                .getMemberRole())
                 .issuer(issuer)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredAt))
@@ -124,9 +121,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    /**
-     * JWT 토큰 유효성 검사
-     */
+    /** JWT 토큰 유효성 검사 */
     public boolean validateToken(String token) throws ExpiredJwtException {
         try {
             Jwts.parser()
@@ -154,13 +149,13 @@ public class JwtUtil {
         return false;
     }
 
-    /**
-     * JWT 서명에 사용할 키 생성
-     */
+    /** JWT 서명에 사용할 키 생성 */
     private SecretKey getSignKey() {
         try {
             // Base64 문자열로부터 SecretKey를 생성
-            byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+            byte[] keyBytes =
+                    Decoders.BASE64
+                            .decode(secretKey);
             return Keys.hmacShaKeyFor(keyBytes);
         } catch (IllegalArgumentException e) {
             log.error("비밀 키 생성 실패: {}", e.getMessage());
@@ -168,9 +163,7 @@ public class JwtUtil {
         }
     }
 
-    /**
-     * JWT 토큰에서 클레임 (Claims) 추출
-     */
+    /** JWT 토큰에서 클레임 (Claims) 추출 */
     public Claims getClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSignKey())
@@ -179,9 +172,7 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    /**
-     * token의 남은 유효기간(밀리초)를 반환합니다.
-     */
+    /** token의 남은 유효기간(밀리초)를 반환합니다. */
     public long getRemainingValidationMilliSecond(String token) {
         Claims claims = getClaims(token);
         Date expiration = claims.getExpiration();
@@ -190,16 +181,12 @@ public class JwtUtil {
         return remaining > 0 ? remaining : 0;
     }
 
-    /**
-     * 리프레시 토큰 만료 시간 반환
-     */
+    /** 리프레시 토큰 만료 시간 반환 */
     public long getRefreshExpirationTime() {
         return refreshTokenExpTime;
     }
 
-    /**
-     * JWT 토큰에서 Authentication 객체 생성
-     */
+    /** JWT 토큰에서 Authentication 객체 생성 */
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
         String username = claims.getSubject();
@@ -208,9 +195,7 @@ public class JwtUtil {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
-    /**
-     * "Authorization" 헤더에서 순수한 accessToken을 파싱 후 반환합니다.
-     */
+    /** "Authorization" 헤더에서 순수한 accessToken을 파싱 후 반환합니다. */
     public String extractAccessToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         log.debug("요청된 AuthorizationHeader: {}", authorizationHeader);
@@ -218,12 +203,11 @@ public class JwtUtil {
             log.error("액세스 토큰이 담긴 헤더가 존재하지 않습니다.");
             throw new CustomException(ErrorCode.MISSING_AUTH_TOKEN);
         }
-        return authorizationHeader.substring("Bearer ".length()).trim();
+        return authorizationHeader.substring("Bearer ".length())
+                .trim();
     }
 
-    /**
-     * 토큰을 비활성화 합니다
-     */
+    /** 토큰을 비활성화 합니다 */
     public void deactivateToken(String accessToken, String refreshTokenKey) {
         // accessToken 블랙리스트 등록
         if (isTokenBlacklisted(accessToken)) {
@@ -240,23 +224,22 @@ public class JwtUtil {
     // accessToken을 블랙리스트에 등록합니다
     private void blacklistAccessToken(String accessToken) {
         String key = BLACKLIST_PREFIX + accessToken;
-        redisTemplate.opsForValue().set(
-                key,
-                BLACKLIST_VALUE,
-                getRemainingValidationMilliSecond(accessToken),
-                TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue()
+                .set(key, BLACKLIST_VALUE, getRemainingValidationMilliSecond(accessToken), TimeUnit.MILLISECONDS);
     }
 
     // 해당 토큰이 블랙리스트에 있는지 확인합니다
     private Boolean isTokenBlacklisted(String accessToken) {
         String key = BLACKLIST_PREFIX + accessToken;
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+        return Boolean.TRUE
+                .equals(redisTemplate.hasKey(key));
     }
 
     // redis에 저장된 리프레시 토큰을 삭제
     private void deleteRefreshToken(String key) {
         Boolean isDeleted = redisTemplate.delete(key);
-        if (Boolean.TRUE.equals(isDeleted)) {
+        if (Boolean.TRUE
+                .equals(isDeleted)) {
             log.debug("리프레시 토큰 삭제 성공");
         } else { // 토큰이 이미 삭제되었거나, 존재하지 않는 경우
             log.debug("리프레시 토큰을 찾을 수 없습니다.");
@@ -264,4 +247,3 @@ public class JwtUtil {
         }
     }
 }
-

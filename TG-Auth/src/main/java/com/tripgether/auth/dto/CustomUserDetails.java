@@ -22,7 +22,10 @@ public class CustomUserDetails implements UserDetails, Principal {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(member.getMemberRole().name()));
+        return Collections.singletonList(
+                new SimpleGrantedAuthority(
+                        member.getMemberRole()
+                                .name()));
     }
 
     @Override
@@ -64,4 +67,3 @@ public class CustomUserDetails implements UserDetails, Principal {
         return member.getEmail();
     }
 }
-

@@ -1,8 +1,6 @@
 package com.tripgether.common.exception;
 
 import com.tripgether.common.exception.constant.ErrorCode;
-import com.tripgether.common.exception.constant.ErrorMessageTemplate.Action;
-import com.tripgether.common.exception.constant.ErrorMessageTemplate.Subject;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,14 +44,6 @@ public class ErrorResponse {
                 .build();
     }
 
-    /**
-     * Subject와 Action을 이용해 동적으로 실패 메시지를 생성하는 정적 팩토리 메소드
-     */
-    public static ErrorResponse getFailResponse(Subject subject, Action action) {
-        return ErrorResponse.builder()
-                .message(ErrorCodeBuilder.failMessage(subject, action))
-                .build();
-    }
 
     /**
      * ErrorCodeBuilder로부터 에러 응답 객체를 생성하는 정적 팩토리 메소드

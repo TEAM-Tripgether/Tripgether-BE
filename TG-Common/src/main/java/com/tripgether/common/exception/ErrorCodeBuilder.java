@@ -1,6 +1,5 @@
 package com.tripgether.common.exception;
 
-import com.tripgether.common.exception.constant.ErrorMessageTemplate.Action;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.BusinessStatus;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Subject;
 import lombok.AccessLevel;
@@ -20,16 +19,19 @@ public class ErrorCodeBuilder {
     private HttpStatus httpStatus;
     private String message;
 
-    /**
-     * 실패 기반 에러 코드 생성
-     */
-    public static ErrorCodeBuilder fail(Subject subject, Action action, HttpStatus httpStatus) {
-        String message = failMessage(subject, action);
-        return new ErrorCodeBuilder(httpStatus, message);
-    }
 
     /**
      * 상태 기반 에러 코드 생성
+     * BusinessStatus의 기본 HttpStatus를 사용
+     */
+    public static ErrorCodeBuilder businessStatus(Subject subject, BusinessStatus businessStatus) {
+        String message = businessStatusMessage(subject, businessStatus);
+        return new ErrorCodeBuilder(businessStatus.getHttpStatus(), message);
+    }
+
+    /**
+     * 상태 기반 에러 코드 생성 (HttpStatus 오버라이드 버전)
+     * 명시적으로 HttpStatus를 지정하여 기본값을 오버라이드할 수 있음
      */
     public static ErrorCodeBuilder businessStatus(Subject subject, BusinessStatus businessStatus, HttpStatus httpStatus) {
         String message = businessStatusMessage(subject, businessStatus);
@@ -52,17 +54,6 @@ public class ErrorCodeBuilder {
         return this;
     }
 
-    /**
-     * 실패 메시지 생성
-     * 예: "공통 코드 그룹 생성에 실패했습니다."
-     *
-     * @param subject 메시지 주체 (명사)
-     * @param action 메시지 행위 (동사)
-     * @return 생성된 실패 메시지
-     */
-    public static String failMessage(Subject subject, Action action) {
-        return String.format("%s %s에 실패했습니다.", subject.getValue(), action.getValue());
-    }
 
     /**
      * 상태별 메시지 생성
@@ -85,16 +76,4 @@ public class ErrorCodeBuilder {
         }
     }
 
-    /**
-     * 사용자 정의 메시지 생성
-     * 예: "공통 코드 그룹 생성 중 오류: 유효하지 않은 입력값"
-     *
-     * @param subject 메시지 주체 (명사)
-     * @param action 메시지 행위 (동사)
-     * @param detail 세부 메시지
-     * @return 생성된 사용자 정의 메시지
-     */
-    public static String customMessage(Subject subject, Action action, String detail) {
-        return String.format("%s %s 중 오류: %s", subject.getValue(), action.getValue(), detail);
-    }
 }

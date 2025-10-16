@@ -2,6 +2,7 @@ package com.tripgether.common.exception.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 /**
  * 메시지 구성 요소들을 정의하는 클래스
@@ -21,19 +22,6 @@ public class ErrorMessageTemplate {
         private final String value;
     }
 
-    /**
-     * 메시지의 행위(동사) 정의
-     */
-    @Getter
-    @AllArgsConstructor
-    public enum Action {
-        CREATE("생성"),
-        UPDATE("수정"),
-        DELETE("삭제"),
-        FIND("조회");
-
-        private final String value;
-    }
 
     /**
      * 메시지의 결과 상태 정의
@@ -41,14 +29,15 @@ public class ErrorMessageTemplate {
     @Getter
     @AllArgsConstructor
     public enum BusinessStatus {
-        SUCCESS("성공"),
-        FAIL("실패"),
-        NOT_FOUND("찾을 수 없음"),
-        DUPLICATE("중복"),
-        INVALID("유효하지 않음"),
-        EXPIRED("만료됨"),
-        DENIED("거부됨");
+        SUCCESS("성공", HttpStatus.OK),
+        FAIL("실패", HttpStatus.BAD_REQUEST),
+        NOT_FOUND("찾을 수 없음", HttpStatus.NOT_FOUND),
+        DUPLICATE("중복", HttpStatus.CONFLICT),
+        INVALID("유효하지 않음", HttpStatus.BAD_REQUEST),
+        EXPIRED("만료됨", HttpStatus.UNAUTHORIZED),
+        DENIED("거부됨", HttpStatus.FORBIDDEN);
 
         private final String value;
+        private final HttpStatus httpStatus;
     }
 }

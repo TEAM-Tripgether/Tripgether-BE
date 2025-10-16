@@ -2,6 +2,7 @@ package com.tripgether.common.exception;
 
 import com.tripgether.common.exception.constant.ErrorCode;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 /**
  * 커스텀 예외 클래스
@@ -12,7 +13,7 @@ public class CustomException extends RuntimeException {
 
     private ErrorCodeBuilder errorCodeBuilder;
     private String message;
-    private int status;
+    private int httpStatusCode;
 
     /**
      * ErrorCode를 인자로 받는 생성자
@@ -22,7 +23,7 @@ public class CustomException extends RuntimeException {
     public CustomException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.message = errorCode.getMessage();
-        this.status = errorCode.getStatus().value();
+        this.httpStatusCode = errorCode.getStatus().value();
     }
 
     /**
@@ -33,7 +34,7 @@ public class CustomException extends RuntimeException {
         super(errorCodeBuilder.getMessage());
         this.errorCodeBuilder = errorCodeBuilder;
         this.message = errorCodeBuilder.getMessage();
-        this.status = errorCodeBuilder.getStatus().value();
+        this.httpStatusCode = errorCodeBuilder.getHttpStatus().value();
     }
 
 
@@ -42,6 +43,14 @@ public class CustomException extends RuntimeException {
      * @return HTTP 상태 코드
      */
     public int getStatusCode() {
-        return this.status;
+        return this.httpStatusCode;
+    }
+
+    /**
+     * HttpStatus 객체 반환 (GlobalExceptionHandler 호환성)
+     * @return HttpStatus 객체
+     */
+    public HttpStatus getStatus() {
+        return HttpStatus.valueOf(this.httpStatusCode);
     }
 }

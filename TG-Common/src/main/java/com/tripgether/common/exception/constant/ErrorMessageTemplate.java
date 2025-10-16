@@ -14,7 +14,6 @@ public class ErrorMessageTemplate {
     @Getter
     @AllArgsConstructor
     public enum Subject {
-        EXAMPLE("예시"),
         MEMBER("회원"),
         USER("사용자"),
         AUTH("인증");
@@ -41,7 +40,7 @@ public class ErrorMessageTemplate {
      */
     @Getter
     @AllArgsConstructor
-    public enum Status {
+    public enum BusinessStatus {
         SUCCESS("성공"),
         FAIL("실패"),
         NOT_FOUND("찾을 수 없음"),

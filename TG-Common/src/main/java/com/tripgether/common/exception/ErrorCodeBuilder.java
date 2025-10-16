@@ -1,7 +1,7 @@
 package com.tripgether.common.exception;
 
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Action;
-import com.tripgether.common.exception.constant.ErrorMessageTemplate.Status;
+import com.tripgether.common.exception.constant.ErrorMessageTemplate.BusinessStatus;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Subject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorCodeBuilder {
-    private HttpStatus status;
+    private HttpStatus httpStatus;
     private String message;
 
     /**
@@ -31,8 +31,8 @@ public class ErrorCodeBuilder {
     /**
      * 상태 기반 에러 코드 생성
      */
-    public static ErrorCodeBuilder status(Subject subject, Status status, HttpStatus httpStatus) {
-        String message = statusMessage(subject, status);
+    public static ErrorCodeBuilder businessStatus(Subject subject, BusinessStatus businessStatus, HttpStatus httpStatus) {
+        String message = businessStatusMessage(subject, businessStatus);
         return new ErrorCodeBuilder(httpStatus, message);
     }
 
@@ -69,11 +69,11 @@ public class ErrorCodeBuilder {
      * 예: "공통 코드 그룹을 찾을 수 없습니다."
      *
      * @param subject 메시지 주체 (명사)
-     * @param status 메시지 상태
+     * @param businessStatus 메시지 상태
      * @return 생성된 상태 메시지
      */
-    public static String statusMessage(Subject subject, Status status) {
-        switch (status) {
+    public static String businessStatusMessage(Subject subject, BusinessStatus businessStatus) {
+        switch (businessStatus) {
             case NOT_FOUND:
                 return String.format("%s을(를) 찾을 수 없습니다.", subject.getValue());
             case DUPLICATE:
@@ -81,7 +81,7 @@ public class ErrorCodeBuilder {
             case INVALID:
                 return String.format("유효하지 않은 %s입니다.", subject.getValue());
             default:
-                return String.format("%s이(가) %s 상태입니다.", subject.getValue(), status.getValue());
+                return String.format("%s이(가) %s 상태입니다.", subject.getValue(), businessStatus.getValue());
         }
     }
 

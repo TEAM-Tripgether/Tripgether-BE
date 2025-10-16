@@ -71,6 +71,14 @@ public class ErrorCodeBuilder {
                 return String.format("이미 존재하는 %s입니다.", subject.getValue());
             case INVALID:
                 return String.format("유효하지 않은 %s입니다.", subject.getValue());
+            case UNAUTHORIZED:
+                return String.format("%s 인증이 필요합니다.", subject.getValue());
+            case FORBIDDEN:
+                return String.format("%s에 대한 접근 권한이 없습니다.", subject.getValue());
+            case ALREADY_EXISTS:
+                return String.format("%s이(가) 이미 존재합니다.", subject.getValue());
+            case DISABLED:
+                return String.format("%s이(가) 비활성화되었습니다.", subject.getValue());
             default:
                 return String.format("%s이(가) %s 상태입니다.", subject.getValue(), businessStatus.getValue());
         }

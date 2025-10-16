@@ -17,7 +17,8 @@ public class ErrorMessageTemplate {
     public enum Subject {
         MEMBER("회원"),
         USER("사용자"),
-        AUTH("인증");
+        AUTH("인증"),
+        ;
 
         private final String value;
     }
@@ -35,7 +36,12 @@ public class ErrorMessageTemplate {
         DUPLICATE("중복", HttpStatus.CONFLICT),
         INVALID("유효하지 않음", HttpStatus.BAD_REQUEST),
         EXPIRED("만료됨", HttpStatus.UNAUTHORIZED),
-        DENIED("거부됨", HttpStatus.FORBIDDEN);
+        DENIED("거부됨", HttpStatus.FORBIDDEN),
+        UNAUTHORIZED("인증되지 않음", HttpStatus.UNAUTHORIZED),
+        FORBIDDEN("접근 권한 없음", HttpStatus.FORBIDDEN),
+        ALREADY_EXISTS("이미 존재함", HttpStatus.CONFLICT),
+        DISABLED("비활성화됨", HttpStatus.FORBIDDEN),
+        ;
 
         private final String value;
         private final HttpStatus httpStatus;

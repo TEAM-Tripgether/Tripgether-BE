@@ -33,3 +33,8 @@ springdoc:
     packages-to-scan: com.tripgether
     paths-to-match: /api/**
 
+# GitHub Issue 연동
+suhapilog:
+    github:
+        base-url: https://github.com/TEAM-Tripgether/Tripgether-BE/issues/
+

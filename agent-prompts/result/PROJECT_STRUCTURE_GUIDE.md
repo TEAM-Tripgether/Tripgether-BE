@@ -5,7 +5,8 @@
 ```
 Tripgether-BE/
 ├── TG-Common/          # 공통 라이브러리 모듈
-├── TG-Example/         # 예시 도메인 모듈 (참고용)
+├── TG-Member/          # 회원 도메인 모듈
+├── TG-Application/     # 도메인 통합 모듈
 ├── TG-Web/             # 웹 애플리케이션 모듈 (실행 가능)
 └── build.gradle        # 루트 빌드 설정
 ```
@@ -22,22 +23,29 @@ Tripgether-BE/
   - 상수 정의 (`ErrorCode`, `ErrorMessageTemplate`)
 - **의존성**: Spring Boot 기본 의존성 + PostgreSQL JDBC 드라이버
 
-### TG-Example (예시 도메인)
-- **역할**: 개발 패턴 참고용 예시 모듈
+### TG-Member (회원 도메인)
+- **역할**: 회원 관련 비즈니스 로직 처리
 - **포함 기능**:
-  - Entity (`ExampleEntity`)
-  - Repository (`ExampleRepository`)
-  - Service (`ExampleService`)
-  - DTO (`ExampleDto`)
+  - Entity (`MemberEntity`)
+  - Repository (`MemberRepository`)
+  - Service (`MemberService`)
+  - DTO (`MemberDto`)
 - **의존성**: TG-Common만 의존
+
+### TG-Application (도메인 통합)
+- **역할**: 여러 도메인에 걸친 복잡한 비즈니스 로직 처리
+- **포함 기능**:
+  - 도메인 간 조합 로직
+  - 복잡한 트랜잭션 처리
+- **의존성**: TG-Common + 모든 도메인 모듈
 
 ### TG-Web (웹 애플리케이션)
 - **역할**: 실행 가능한 메인 모듈
 - **포함 기능**:
-  - Controller (`ExampleController`)
+  - Controller (`MemberController`, 기타 컨트롤러)
   - Configuration (`ComponentScanConfig`, `SwaggerConfig`, `JpaConfig`)
   - Application (`TripgetherApplication`)
-- **의존성**: TG-Common + TG-Example
+- **의존성**: TG-Common + TG-Member + TG-Application
 
 ## 📦 패키지 배치 규칙
 
@@ -89,9 +97,9 @@ dependencies {
 }
 ```
 
-### 도메인별 의존성 (TG-Example, TG-User 등)
+### 도메인별 의존성 (TG-Member, TG-Post 등)
 ```gradle
-// TG-Example/build.gradle
+// TG-Member/build.gradle
 dependencies {
     // TG-Common 의존
     api project(':TG-Common')
@@ -107,8 +115,9 @@ dependencies {
 dependencies {
     // 모든 모듈 의존
     implementation project(':TG-Common')
-    implementation project(':TG-Example')
-    implementation project(':TG-User')      // 새 도메인 추가시
+    implementation project(':TG-Member')
+    implementation project(':TG-Application')
+    implementation project(':TG-Post')      // 새 도메인 추가시
 }
 ```
 
@@ -163,9 +172,10 @@ TG-User/src/main/java/com/tripgether/domain/user/
 ```gradle
 // settings.gradle
 include 'TG-Common'
-include 'TG-Example'
+include 'TG-Member'
+include 'TG-Application'
 include 'TG-Web'
-include 'TG-User'        // 새 모듈 추가
+include 'TG-Post'        // 새 모듈 추가 예시
 ```
 
 ### 5. TG-Web에 의존성 추가
@@ -173,8 +183,9 @@ include 'TG-User'        // 새 모듈 추가
 // TG-Web/build.gradle
 dependencies {
     implementation project(':TG-Common')
-    implementation project(':TG-Example')
-    implementation project(':TG-User')      // 새 모듈 의존성 추가
+    implementation project(':TG-Member')
+    implementation project(':TG-Application')
+    implementation project(':TG-Post')      // 새 모듈 의존성 추가 예시
 }
 ```
 
@@ -182,9 +193,9 @@ dependencies {
 ```java
 // TG-Web/src/main/java/com/tripgether/web/config/ComponentScanConfig.java
 @ComponentScan(basePackages = {
-    "com.tripgether.global",
-    "com.tripgether.example",
-    "com.tripgether.user",        // 새 도메인 패키지 추가
+    "com.tripgether.common",
+    "com.tripgether.domain.member",
+    "com.tripgether.domain.post",    // 새 도메인 패키지 추가 예시
     "com.tripgether.web"
 })
 ```
@@ -193,11 +204,12 @@ dependencies {
 
 ### 의존성 방향
 - **TG-Common** → 다른 모듈 의존 금지
-- **TG-Example, TG-User** → TG-Common만 의존
+- **TG-Member, TG-Post** 등 도메인 모듈 → TG-Common만 의존
+- **TG-Application** → TG-Common + 모든 도메인 모듈 의존
 - **TG-Web** → 모든 모듈 의존 가능
 
 ### 패키지 네이밍 규칙
-- **공통 기능**: `com.tripgether.global.*`
+- **공통 기능**: `com.tripgether.common.*`
 - **도메인 기능**: `com.tripgether.domain.{domain}.*`
 - **웹 기능**: `com.tripgether.web.*`
 

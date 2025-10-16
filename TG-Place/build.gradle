@@ -14,10 +14,6 @@ jar {
 }
 
 dependencies {
-    // 모든 도메인 모듈 의존
+    // TG-Common 의존
     api project(':TG-Common')
-    api project(':TG-Member')
-    api project(':TG-Auth')
-    api project(':TG-Place')
-    api project(':TG-SNS')
 }

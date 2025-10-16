@@ -9,6 +9,8 @@ dependencies {
     implementation project(':TG-Common')
     implementation project(':TG-Member')
     implementation project(':TG-Auth')
+    implementation project(':TG-Place')
+    implementation project(':TG-SNS')
     implementation project(':TG-Application')
 }
 

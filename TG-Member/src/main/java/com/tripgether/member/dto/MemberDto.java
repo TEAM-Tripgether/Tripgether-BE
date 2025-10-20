@@ -20,7 +20,7 @@ import java.util.UUID;
 public class MemberDto {
 
     @Schema(description = "회원 ID", example = "550e8400-e29b-41d4-a716-446655440000")
-    private UUID memberId;
+    private UUID Id;
 
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
@@ -30,22 +30,18 @@ public class MemberDto {
     @NotBlank(message = "닉네임은 필수입니다.")
     @Size(min = 2, max = 50, message = "닉네임은 2자 이상 50자 이하여야 합니다.")
     @Schema(description = "닉네임", example = "여행러버", required = true)
-    private String nickname;
+    private String name;
 
-    @Schema(description = "프로필 이미지 URL", example = "https://example.com/profile.jpg")
-    private String profileImageUrl;
-
-    @Schema(description = "회원 상태", example = "ACTIVE")
-    private String status;
+    @Schema(description = "회원 상태", example = "NOT_STARTED")
+    private String onboardingStatus;
 
     public static MemberDto entityToDto(Member entity) {
         return MemberDto.builder()
-                .memberId(entity.getMemberId())
+                .Id(entity.getMemberId())
                 .email(entity.getEmail())
-                .nickname(entity.getNickname())
-                .profileImageUrl(entity.getProfileImageUrl())
-                .status(
-                        entity.getStatus()
+                .name(entity.getNickname())
+                .onboardingStatus(
+                        entity.getOnboardingStatus()
                                 .name())
                 .build();
     }

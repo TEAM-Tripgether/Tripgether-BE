@@ -14,7 +14,6 @@ public abstract class SoftDeletableBaseEntity extends BaseEntity {
     private Boolean isDeleted = false;
 
     private LocalDateTime deletedAt;
-
     private String deletedBy;
 
     public void softDelete(String deletedBy) {

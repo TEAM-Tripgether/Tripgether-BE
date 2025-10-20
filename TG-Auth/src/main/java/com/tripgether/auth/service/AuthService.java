@@ -37,9 +37,7 @@ public class AuthService {
     public AuthResponse signIn(AuthRequest request) {
         // 요청 값으로부터 사용자 정보 획득
         String email = request.getEmail();
-        String nickname = request.getNickname();
-        String profileUrl = request.getProfileUrl();
-        SocialPlatform socialPlatform = request.getSocialPlatform();
+        String name = request.getName();
 
         // 회원 조회
         Optional<Member> existMember = memberRepository.findByEmail(email);
@@ -53,11 +51,8 @@ public class AuthService {
             member =
                     Member.builder()
                             .email(email)
-                            .nickname(nickname)
-                            .profileImageUrl(profileUrl)
-                            .socialPlatform(socialPlatform)
-                            .memberRole(MemberRole.ROLE_USER)
-                            .status(MemberStatus.ACTIVE)
+                            .name(name)
+                            .onboardingStatus(MemberStatus.NOT_STARTED)
                             .build();
             memberRepository.save(member);
             isFirstLogin = true;

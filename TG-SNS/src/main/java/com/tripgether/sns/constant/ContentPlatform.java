@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum SnsPlatform {
+public enum ContentPlatform {
     INSTAGRAM,  // 인스타그램
     TIKTOK,     // 틱톡
     YOUTUBE,    // 유튜브

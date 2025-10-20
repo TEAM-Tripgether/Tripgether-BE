@@ -16,4 +16,5 @@ jar {
 dependencies {
     // TG-Common 의존
     api project(':TG-Common')
+    api project(':TG-Place')
 }

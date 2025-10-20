@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MemberStatus {
-    NOT_STARTED,
-    IN_PROGRESS,
-    COMPLETED
+public enum MemberGender {
+    MALE,
+    FEMALE
 }

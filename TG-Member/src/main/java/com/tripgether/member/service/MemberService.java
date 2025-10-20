@@ -44,8 +44,7 @@ public class MemberService {
         Member entity =
                 Member.builder()
                         .email(memberDto.getEmail())
-                        .nickname(memberDto.getNickname())
-                        .profileImageUrl(memberDto.getProfileImageUrl())
+                        .name(memberDto.getName())
                         .build();
 
         Member savedEntity = memberRepository.save(entity);

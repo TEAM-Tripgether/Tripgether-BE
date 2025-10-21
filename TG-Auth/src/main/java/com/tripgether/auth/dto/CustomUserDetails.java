@@ -59,11 +59,11 @@ public class CustomUserDetails implements UserDetails, Principal {
     }
 
     public UUID getMemberId() {
-        return member.getMemberId();
+        return member.getId();
     }
 
     @Override
     public String getName() {
-        return member.getEmail();
+        return member.getName();
     }
 }

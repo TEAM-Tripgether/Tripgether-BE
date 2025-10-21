@@ -2,7 +2,7 @@ package com.tripgether.member.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.MemberRole;
-import com.tripgether.member.constant.MemberStatus;
+import com.tripgether.member.constant.MemberOnboardingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,13 +35,12 @@ public class Member extends SoftDeletableBaseEntity {
     @Column(length = 10)
     private MemberGender gender;      //null 허용
 
-    @Getter
+    //
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private MemberStatus onboardingStatus;
+    private MemberOnboardingStatus onboardingStatus;
 
     @Column(nullable = false)
-    @Builder.Default
     private Boolean tutorialEnabled = false;
 
     @Enumerated(EnumType.STRING)
@@ -51,17 +50,9 @@ public class Member extends SoftDeletableBaseEntity {
     @PrePersist
     protected void onCreate() {
         if (onboardingStatus == null)
-            onboardingStatus = MemberStatus.NOT_STARTED;
+            onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
         if (memberRole == null)
-            memberRole = MemberRole.GENERAL;    //기본값
-    }
-
-    public UUID getMemberId() {
-        return id;
-    }
-
-    public String getNickname() {
-        return email;
+            memberRole = MemberRole.ROLE_USER;    //기본값
     }
 
 }

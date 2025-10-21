@@ -2,6 +2,8 @@ package com.tripgether.place.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +13,11 @@ import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import org.hibernate.annotations.Check;
+
+@Check(constraints = "latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180")
+//아래 위도,경도에 잘못된 좌표 저장 방지
 @Entity
-@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,9 +35,13 @@ public class Place extends SoftDeletableBaseEntity {
     private String address;
 
     @Column(nullable = false, precision = 10, scale = 7)
+    @DecimalMin("-90.0")
+    @DecimalMax("90.0")
     private BigDecimal latitude;    //위도
 
     @Column(nullable = false, precision = 10, scale = 7)
+    @DecimalMin("-180.0")
+    @DecimalMax("180.0")
     private BigDecimal longitude;   //경도
 
     @Column(length = 100)

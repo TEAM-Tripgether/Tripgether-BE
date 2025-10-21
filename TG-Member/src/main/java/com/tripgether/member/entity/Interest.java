@@ -1,7 +1,6 @@
 package com.tripgether.member.entity;
 
 import com.tripgether.common.entity.BaseEntity;
-import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.InterestCategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +8,6 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

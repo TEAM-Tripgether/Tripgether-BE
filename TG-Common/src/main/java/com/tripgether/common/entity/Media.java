@@ -13,12 +13,10 @@ import jakarta.persistence.Lob;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,7 +39,6 @@ public class Media extends BaseEntity {
     private String url;             //video면 원본 url
 
     @Column(nullable = false)
-    @Builder.Default
     private int position = 0;       //인스타에서 캐러셀의 경우 정렬할 때 사용
 
 }

@@ -5,8 +5,8 @@ import com.tripgether.member.entity.Member;
 
 import com.tripgether.place.constant.FolderVisibility;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.PrePersist;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
@@ -25,7 +25,6 @@ import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 
 @Entity
-@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -37,6 +36,7 @@ public class Folder extends SoftDeletableBaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private Member owner;
 
     @Column(nullable = false, length = 100)

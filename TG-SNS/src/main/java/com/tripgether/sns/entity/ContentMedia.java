@@ -12,12 +12,25 @@ import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+
 @Entity
-@Builder
+@Table(
+        name = "content_media",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_content_media_pair", columnNames = {"content_id", "media_id"})
+        },
+        indexes = {
+                @Index(name = "idx_content_media_content", columnList = "content_id"),
+                @Index(name = "idx_content_media_media", columnList = "media_id")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -28,9 +41,11 @@ public class ContentMedia extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "content_id", nullable = false)
     private Content content;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "media_id", nullable = false)
     private Media media;
 
     //createdAt, updatedAt 생략

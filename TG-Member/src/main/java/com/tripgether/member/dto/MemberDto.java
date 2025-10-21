@@ -20,7 +20,7 @@ import java.util.UUID;
 public class MemberDto {
 
     @Schema(description = "회원 ID", example = "550e8400-e29b-41d4-a716-446655440000")
-    private UUID Id;
+    private UUID id;
 
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
@@ -37,9 +37,9 @@ public class MemberDto {
 
     public static MemberDto entityToDto(Member entity) {
         return MemberDto.builder()
-                .Id(entity.getMemberId())
+                .id(entity.getId())
                 .email(entity.getEmail())
-                .name(entity.getNickname())
+                .name(entity.getName())
                 .onboardingStatus(
                         entity.getOnboardingStatus()
                                 .name())

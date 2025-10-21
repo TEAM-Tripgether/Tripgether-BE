@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MemberStatus {
+public enum MemberOnboardingStatus {
     NOT_STARTED,
     IN_PROGRESS,
-    COMPLETED
+    COMPLETED   //onboardingStatus
 }

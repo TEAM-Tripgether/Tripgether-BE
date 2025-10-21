@@ -15,12 +15,25 @@ import java.time.LocalTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+
 @Entity
-@Builder
+@Table(
+        name = "place_business_hour",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_place_weekday", columnNames = {"place_id", "weekday"})
+        },
+        indexes = {
+                @Index(name = "idx_business_hour_place", columnList = "place_id")
+        }
+
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -32,6 +45,7 @@ public class PlaceBusinessHour extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
     @Enumerated(EnumType.STRING)

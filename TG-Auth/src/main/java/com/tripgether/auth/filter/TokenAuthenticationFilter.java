@@ -36,7 +36,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
-        log.debug("요청된 URI: {}", uri);
+        String method = request.getMethod();
+        log.debug("요청된 URI: {}, Method: {}", uri, method);
+
+        // OPTIONS 요청 (CORS Preflight) 즉시 통과
+        if ("OPTIONS".equals(method)) {
+            log.debug("OPTIONS 요청 - CORS Preflight 통과");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // 화이트리스트 체크 : 화이트리스트 경로면 필터링 건너뜀
         if (isWhitelistedPath(uri)) {

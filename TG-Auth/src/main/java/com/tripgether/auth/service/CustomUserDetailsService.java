@@ -16,13 +16,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
 
-    @Override
-    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member savedMember =
-                memberRepository.findByEmail(username)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        return new CustomUserDetails(savedMember);
-    }
+  @Override
+  public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    Member savedMember = memberRepository.findByEmail(username)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    return new CustomUserDetails(savedMember);
+  }
 }

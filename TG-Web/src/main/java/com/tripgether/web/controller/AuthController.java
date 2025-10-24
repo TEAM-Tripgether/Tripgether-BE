@@ -18,36 +18,33 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController implements AuthControllerDocs {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    @PostMapping("/sign-in")
-    public ResponseEntity<AuthResponse> signIn(@RequestBody AuthRequest request) {
-        log.debug("소셜 로그인 요청: {}", request);
-        return ResponseEntity.ok(authService.signIn(request));
+  @PostMapping("/sign-in")
+  public ResponseEntity<AuthResponse> signIn(@RequestBody AuthRequest request) {
+    log.debug("소셜 로그인 요청: {}", request);
+    return ResponseEntity.ok(authService.signIn(request));
+  }
+
+  @PostMapping("/reissue")
+  public ResponseEntity<AuthResponse> reissue(@RequestBody AuthRequest request) {
+    log.debug("토큰 재발급 요청");
+    return ResponseEntity.ok(authService.reissue(request));
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @RequestHeader(value = "Authorization", required = false) String authorization,
+      @RequestBody AuthRequest request) {
+    log.debug("로그아웃 요청: {}", customUserDetails.getUsername());
+    request.setMember(customUserDetails.getMember());
+
+    if (authorization != null && authorization.startsWith("Bearer ")) {
+      request.setAccessToken(authorization.substring(7).trim());
     }
 
-    @PostMapping("/reissue")
-    public ResponseEntity<AuthResponse> reissue(@RequestBody AuthRequest request) {
-        log.debug("토큰 재발급 요청");
-        return ResponseEntity.ok(authService.reissue(request));
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestHeader(value = "Authorization", required = false) String authorization,
-            @RequestBody AuthRequest request) {
-        log.debug("로그아웃 요청: {}", customUserDetails.getUsername());
-        request.setMember(customUserDetails.getMember());
-
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            request.setAccessToken(
-                    authorization.substring(7)
-                            .trim());
-        }
-
-        authService.logout(request);
-        return ResponseEntity.ok()
-                .build();
-    }
+    authService.logout(request);
+    return ResponseEntity.ok().build();
+  }
 }

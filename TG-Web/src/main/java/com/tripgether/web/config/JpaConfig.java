@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = "com.tripgether")
 @EntityScan(basePackages = "com.tripgether")
-public class JpaConfig {}
+public class JpaConfig {
+
+}

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,25 +39,28 @@ public class SwaggerConfig {
 
     return new OpenAPI()
         .components(new Components().addSecuritySchemes("Bearer Token", bearerAuth))
-        .addSecurityItem(new SecurityRequirement().addList("Bearer Token"));
-//        .servers(List.of(
-//            new io.swagger.v3.oas.models.servers.Server()
-//                .url("https://api.tripgether.suhsaechan.kr")
-//                .description("메인 서버"),
-//            new io.swagger.v3.oas.models.servers.Server()
-//                .url("http://localhost:8080")
-//                .description("로컬 서버")
-//        ));
+        .addSecurityItem(new SecurityRequirement().addList("Bearer Token"))
+        .servers(List.of(
+            new io.swagger.v3.oas.models.servers.Server()
+                .url("https://api.tripgether.suhsaechan.kr")
+                .description("메인 서버"),
+            new io.swagger.v3.oas.models.servers.Server()
+                .url("https://api.test.tripgether.suhsaechan.kr")
+                .description("테스트 서버"),
+            new io.swagger.v3.oas.models.servers.Server()
+                .url("http://localhost:8080")
+                .description("로컬 서버")
+        ));
   }
 
-  @Bean
-  public OpenApiCustomizer serverCustomizer() {
-    return openApi -> {
-      springDocProperties.getServers().forEach(server ->
-          openApi.addServersItem(new io.swagger.v3.oas.models.servers.Server()
-              .url(server.getUrl())
-              .description(server.getDescription()))
-      );
-    };
-  }
+//  @Bean
+//  public OpenApiCustomizer serverCustomizer() {
+//    return openApi -> {
+//      springDocProperties.getServers().forEach(server ->
+//          openApi.addServersItem(new io.swagger.v3.oas.models.servers.Server()
+//              .url(server.getUrl())
+//              .description(server.getDescription()))
+//      );
+//    };
+//  }
 }

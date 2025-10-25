@@ -28,57 +28,59 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService customUserDetailsService;
-    private final AuthenticationConfiguration authenticationConfiguration;
+  private final JwtUtil jwtUtil;
 
-    /** Security Filter Chain 설정 */
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        (authorize) ->
-                                authorize.requestMatchers(
-                                        SecurityUrl.AUTH_WHITELIST
-                                                .toArray(new String[0]))
-                                        .permitAll() // AUTH_WHITELIST에 등록된 URL은 인증 허용
-                                        .anyRequest()
-                                        .authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(
-                        new TokenAuthenticationFilter(jwtUtil, customUserDetailsService),
-                        UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+  /**
+   * Security Filter Chain 설정
+   */
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(
+            (authorize) ->
+                authorize.requestMatchers(SecurityUrl.AUTH_WHITELIST.toArray(new String[0]))
+                    .permitAll() // AUTH_WHITELIST URL 인증 ByPass
+                    .anyRequest()
+                    .authenticated())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(new TokenAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+        .build();
+  }
 
-    /** 인증 매니저 설정 */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+  /**
+   * 인증 매니저 설정
+   */
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+      throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
 
-    /** CORS 설정 소스 빈 */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // 모든 Origin 허용
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
-        configuration.setMaxAge(3600L);
+  /**
+   * CORS 설정 소스 빈
+   */
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // 모든 Origin 허용
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    configuration.setAllowCredentials(false);
+    configuration.setAllowedHeaders(Collections.singletonList("*"));
+    configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 
-    /** 비밀번호 인코더 빈 (BCrypt) */
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  /**
+   * 비밀번호 인코더 빈 (BCrypt)
+   */
+  @Bean
+  public BCryptPasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

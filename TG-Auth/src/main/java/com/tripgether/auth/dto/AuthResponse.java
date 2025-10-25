@@ -11,12 +11,12 @@ import lombok.*;
 @NoArgsConstructor
 public class AuthResponse {
 
-    @Schema(description = "액세스 토큰")
-    private String accessToken;
+  @Schema(description = "액세스 토큰")
+  private String accessToken;
 
-    @Schema(description = "리프레시 토큰")
-    private String refreshToken;
+  @Schema(description = "리프레시 토큰")
+  private String refreshToken;
 
-    @Schema(description = "첫 로그인 여부")
-    private Boolean isFirstLogin;
+  @Schema(description = "첫 로그인 여부")
+  private Boolean isFirstLogin;
 }

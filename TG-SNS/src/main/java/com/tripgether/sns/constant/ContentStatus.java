@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum SnsStatus {
+public enum ContentStatus {
     PENDING,    // 분석 대기 중
     ANALYZING,  // 분석 중
     COMPLETED,  // 분석 완료

@@ -4,11 +4,8 @@ import com.tripgether.auth.dto.AuthRequest;
 import com.tripgether.auth.dto.AuthResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.auth.jwt.JwtUtil;
-import com.tripgether.common.constant.MemberRole;
-import com.tripgether.common.constant.SocialPlatform;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
-import com.tripgether.member.constant.MemberStatus;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -32,14 +29,14 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    /** 로그인 로직 클라이언트로부터 플랫폼, 닉네임, 프로필url, 이메일을 입력받아 JWT를 발급합니다. */
+    /**
+     * 로그인 로직 클라이언트로부터 플랫폼, 닉네임, 프로필url, 이메일을 입력받아 JWT를 발급합니다.
+     */
     @Transactional
     public AuthResponse signIn(AuthRequest request) {
         // 요청 값으로부터 사용자 정보 획득
         String email = request.getEmail();
-        String nickname = request.getNickname();
-        String profileUrl = request.getProfileUrl();
-        SocialPlatform socialPlatform = request.getSocialPlatform();
+        String name = request.getName();
 
         // 회원 조회
         Optional<Member> existMember = memberRepository.findByEmail(email);
@@ -53,11 +50,7 @@ public class AuthService {
             member =
                     Member.builder()
                             .email(email)
-                            .nickname(nickname)
-                            .profileImageUrl(profileUrl)
-                            .socialPlatform(socialPlatform)
-                            .memberRole(MemberRole.ROLE_USER)
-                            .status(MemberStatus.ACTIVE)
+                            .name(name)
                             .build();
             memberRepository.save(member);
             isFirstLogin = true;
@@ -86,7 +79,9 @@ public class AuthService {
                 .build();
     }
 
-    /** refreshToken을 통해 accessToken을 재발급합니다 */
+    /**
+     * refreshToken을 통해 accessToken을 재발급합니다
+     */
     @Transactional
     public AuthResponse reissue(AuthRequest request) {
         log.debug("accessToken이 만료되어 토큰 재발급을 진행합니다.");
@@ -135,9 +130,9 @@ public class AuthService {
 
         String newAccessToken = jwtUtil.createAccessToken(customUserDetails);
 
-        Member member =
-                memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        // 회원 존재 여부 검증
+        memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
@@ -146,14 +141,22 @@ public class AuthService {
                 .build();
     }
 
-    /** 로그아웃 액세스 토큰을 블랙리스트에 등록합니다 redis에 저장되어있는 리프레시토큰을 삭제합니다 */
+    /**
+     * 로그아웃 액세스 토큰을 블랙리스트에 등록합니다 redis에 저장되어있는 리프레시토큰을 삭제합니다
+     */
     @Transactional
     public void logout(AuthRequest request) {
         Member member = request.getMember();
         String accessToken = request.getAccessToken();
 
+        // accessToken 입력값 검증
+        if (member == null || accessToken == null || accessToken.isBlank()) {
+            log.error("로그아웃 요청에 필수 정보가 누락되었습니다.");
+            throw new CustomException(ErrorCode.MISSING_AUTH_TOKEN);
+        }
+
         // 저장된 refreshToken 키
-        String key = REFRESH_KEY_PREFIX + member.getMemberId();
+        String key = REFRESH_KEY_PREFIX + member.getId();
 
         // 토큰 비활성화
         jwtUtil.deactivateToken(accessToken, key);

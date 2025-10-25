@@ -18,17 +18,17 @@ public class AuthRequest {
     @JsonIgnore
     private Member member;
 
-    @Schema(description = "로그인 플랫폼 (KAKAO, GOOGLE 등)", example = "KAKAO")
-    private SocialPlatform socialPlatform;
+    /*@Schema(description = "로그인 플랫폼 (KAKAO, GOOGLE 등)", example = "KAKAO")
+    private SocialPlatform socialPlatform;*/
 
     @Schema(description = "소셜 로그인 후 반환된 이메일", example = "user@example.com")
     private String email;
 
     @Schema(description = "소셜 로그인 후 반환된 닉네임", example = "홍길동")
-    private String nickname;
+    private String name;
 
-    @Schema(description = "소셜 로그인 후 반환된 프로필 URL", example = "https://example.com/profile.jpg")
-    private String profileUrl;
+    /*@Schema(description = "소셜 로그인 후 반환된 프로필 URL", example = "https://example.com/profile.jpg")
+    private String profileUrl;*/
 
     @Schema(hidden = true)
     private String accessToken;

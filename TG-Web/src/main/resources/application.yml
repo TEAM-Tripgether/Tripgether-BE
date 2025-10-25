@@ -20,6 +20,13 @@ decorator:
 
 # Swagger/OpenAPI 설정
 springdoc:
+    servers:
+        - url: https://api.tripgether.suhsaechan.kr
+          description: main-server
+        - url: https://api.test.tripgether.suhsaechan.kr
+          description: test-server
+        - url: http://localhost:8080
+          description: local-server
     api-docs:
         path: /v3/api-docs
         enabled: true
@@ -32,6 +39,8 @@ springdoc:
         filter: true
     packages-to-scan: com.tripgether
     paths-to-match: /api/**
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
 
 # GitHub Issue 연동
 suhapilog:

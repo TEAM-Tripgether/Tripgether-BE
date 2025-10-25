@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MemberStatus {
-    ACTIVE,
-    INACTIVE,
-    BANNED
+public enum TargetType {
+    CONTENT,
+    PLACE,
+    FOLDER
 }

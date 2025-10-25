@@ -1,11 +1,36 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-22T10:27:05Z",
-    "currentVersion": "0.1.3",
+    "lastUpdated": "2025-10-25T17:18:53Z",
+    "currentVersion": "0.1.5",
     "projectType": "spring",
-    "totalReleases": 7
+    "totalReleases": 8
   },
   "releases": [
+    {
+      "version": "0.1.5",
+      "project_type": "spring",
+      "date": "2025-10-25",
+      "pr_number": 36,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트 v0.1.5\n\n\n새로운 기능\n\nAI 작업 관리 시스템 추가\n폴더 기반 콘텐츠 정렬 기능 도입\n미디어 파일 관리 기능 강화\n업소 영업 시간 정보 추가\n\n\n\n개선 사항\n\n사용자 프로필 필드 간소화 (이름 기반으로 통일)\nAPI 문서화 및 서버 설정 업데이트",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "AI 작업 관리 시스템 추가",
+            "폴더 기반 콘텐츠 정렬 기능 도입",
+            "미디어 파일 관리 기능 강화",
+            "업소 영업 시간 정보 추가"
+          ]
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": [
+            "사용자 프로필 필드 간소화 (이름 기반으로 통일)",
+            "API 문서화 및 서버 설정 업데이트"
+          ]
+        }
+      }
+    },
     {
       "version": "0.1.3",
       "project_type": "spring",

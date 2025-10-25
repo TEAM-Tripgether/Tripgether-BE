@@ -1,17 +1,14 @@
 package com.tripgether.member.entity;
 
-import com.tripgether.common.constant.MemberRole;
-import com.tripgether.common.constant.SocialPlatform;
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
-import com.tripgether.member.constant.MemberStatus;
+import com.tripgether.member.constant.MemberRole;
+import com.tripgether.member.constant.MemberOnboardingStatus;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
+import com.tripgether.member.constant.MemberGender;
 
 @Entity
 @Builder
@@ -23,26 +20,42 @@ public class Member extends SoftDeletableBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
-    private UUID memberId;
+    private UUID id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(nullable = false, length = 50)
-    private String nickname;
+    @Column(nullable = false, length = 100)
+    private String name;
 
-    @Column(length = 255)
-    private String profileImageUrl;
+    @Column
+    private LocalDate birthDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private MemberGender gender;      //null 허용
+
+    //
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private MemberOnboardingStatus onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberStatus status;
+    @Builder.Default
+    private Boolean tutorialEnabled = false;
 
-    @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    private SocialPlatform socialPlatform;
+    @Column(nullable = false)
+    @Builder.Default
+    private MemberRole memberRole = MemberRole.ROLE_USER;
 
-    @Column(nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
-    private MemberRole memberRole;
+    @PrePersist
+    protected void onCreate() {
+        if (onboardingStatus == null)
+            onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
+        if (memberRole == null)
+            memberRole = MemberRole.ROLE_USER;    //기본값
+    }
+
 }

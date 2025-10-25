@@ -9,6 +9,7 @@ import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,17 +35,18 @@ public class MemberService {
     public MemberDto createMember(MemberDto memberDto) {
         // 이메일 중복 체크
         if (memberRepository.existsByEmail(memberDto.getEmail())) {
-            throw new CustomException(ErrorCodeBuilder.businessStatus(Subject.MEMBER, BusinessStatus.DUPLICATE));
+            ErrorCodeBuilder errorCode =
+                    ErrorCodeBuilder.businessStatus(Subject.MEMBER, BusinessStatus.DUPLICATE, HttpStatus.CONFLICT);
+            throw new CustomException(errorCode);
         }
 
-        // 회원 생성
-        Member entity = Member.builder()
-            .email(memberDto.getEmail())
-            .nickname(memberDto.getNickname())
-            .profileImageUrl(memberDto.getProfileImageUrl())
-            .build();
+        // Entity 변환 및 저장
+        Member entity =
+                Member.builder()
+                        .email(memberDto.getEmail())
+                        .name(memberDto.getName())
+                        .build();
 
-        // 회원 저장
         Member savedEntity = memberRepository.save(entity);
         return MemberDto.entityToDto(savedEntity);
     }
@@ -57,8 +59,8 @@ public class MemberService {
     public List<MemberDto> getAllMembers() {
         List<Member> entities = memberRepository.findAll();
         return entities.stream()
-            .map(MemberDto::entityToDto)
-            .collect(Collectors.toList());
+                .map(MemberDto::entityToDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -68,10 +70,17 @@ public class MemberService {
      * @return 회원 데이터
      */
     public MemberDto getMemberById(UUID memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(
-                ErrorCodeBuilder.businessStatus(Subject.MEMBER, BusinessStatus.NOT_FOUND)));
-        return MemberDto.entityToDto(member);
+        Member entity =
+                memberRepository.findById(memberId)
+                        .orElseThrow(
+                                () -> {
+                                    ErrorCodeBuilder errorCode =
+                                            ErrorCodeBuilder.businessStatus(
+                                                    Subject.MEMBER, BusinessStatus.NOT_FOUND, HttpStatus.NOT_FOUND);
+                                    return new CustomException(errorCode);
+                                });
+
+        return MemberDto.entityToDto(entity);
     }
 
     /**
@@ -81,9 +90,16 @@ public class MemberService {
      * @return 회원 데이터
      */
     public MemberDto getMemberByEmail(String email) {
-        Member entity = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new CustomException(
-                ErrorCodeBuilder.businessStatus(Subject.MEMBER, BusinessStatus.NOT_FOUND)));
+        Member entity =
+                memberRepository.findByEmail(email)
+                        .orElseThrow(
+                                () -> {
+                                    ErrorCodeBuilder errorCode =
+                                            ErrorCodeBuilder.businessStatus(
+                                                    Subject.MEMBER, BusinessStatus.NOT_FOUND, HttpStatus.NOT_FOUND);
+                                    return new CustomException(errorCode);
+                                });
+
         return MemberDto.entityToDto(entity);
     }
 }

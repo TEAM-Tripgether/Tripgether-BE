@@ -40,8 +40,4 @@ public class Media extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String url;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int position = 0;
-
 }

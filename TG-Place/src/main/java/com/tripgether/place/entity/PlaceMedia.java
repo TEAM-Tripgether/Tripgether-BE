@@ -31,4 +31,8 @@ public class PlaceMedia {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Media media;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int position = 0;
 }

@@ -149,6 +149,12 @@ public class AuthService {
         Member member = request.getMember();
         String accessToken = request.getAccessToken();
 
+        // accessToken 입력값 검증
+        if (member == null || accessToken == null || accessToken.isBlank()) {
+            log.error("로그아웃 요청에 필수 정보가 누락되었습니다.");
+            throw new CustomException(ErrorCode.MISSING_AUTH_TOKEN);
+        }
+
         // 저장된 refreshToken 키
         String key = REFRESH_KEY_PREFIX + member.getId();
 

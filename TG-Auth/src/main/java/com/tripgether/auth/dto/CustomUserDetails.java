@@ -1,5 +1,6 @@
 package com.tripgether.auth.dto;
 
+import com.tripgether.member.constant.MemberRole;
 import com.tripgether.member.entity.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,10 +23,12 @@ public class CustomUserDetails implements UserDetails, Principal {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        MemberRole role = member.getMemberRole();
+        if (role == null) {
+            role = MemberRole.ROLE_USER; // 기본값 fallback
+        }
         return Collections.singletonList(
-                new SimpleGrantedAuthority(
-                        member.getMemberRole()
-                                .name()));
+                new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

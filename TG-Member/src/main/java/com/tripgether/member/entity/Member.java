@@ -37,15 +37,18 @@ public class Member extends SoftDeletableBaseEntity {
 
     //
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private MemberOnboardingStatus onboardingStatus;
+    @Column(nullable = false)
+    @Builder.Default
+    private MemberOnboardingStatus onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean tutorialEnabled = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MemberRole memberRole;
+    @Builder.Default
+    private MemberRole memberRole = MemberRole.ROLE_USER;
 
     @PrePersist
     protected void onCreate() {

@@ -6,7 +6,6 @@ import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
-import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -52,7 +51,6 @@ public class AuthService {
                     Member.builder()
                             .email(email)
                             .name(name)
-                            .onboardingStatus(MemberOnboardingStatus.NOT_STARTED)
                             .build();
             memberRepository.save(member);
             isFirstLogin = true;
@@ -132,9 +130,9 @@ public class AuthService {
 
         String newAccessToken = jwtUtil.createAccessToken(customUserDetails);
 
-        Member member =
-                memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        // 회원 존재 여부 검증
+        memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)

@@ -7,6 +7,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,10 +19,8 @@ public class MemberInterest extends SoftDeletableBaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "interest_id", nullable = false)
     private Interest interest;
 }

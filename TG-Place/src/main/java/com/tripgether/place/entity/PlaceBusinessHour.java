@@ -10,18 +10,17 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(
@@ -32,8 +31,8 @@ import jakarta.persistence.JoinColumn;
         indexes = {
                 @Index(name = "idx_business_hour_place", columnList = "place_id")
         }
-
 )
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -45,7 +44,6 @@ public class PlaceBusinessHour extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
     @Enumerated(EnumType.STRING)

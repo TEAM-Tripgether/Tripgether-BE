@@ -10,15 +10,16 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,7 +31,6 @@ public class PlaceExternal extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
     @Enumerated(EnumType.STRING)
@@ -38,6 +38,6 @@ public class PlaceExternal extends BaseEntity {
     private PlatformSource platformSource;
 
     @Column(nullable = false, length = 255)
-    private String externalId;      //외부서비스에서 사용하는 식별자(Identifier)
+    private String externalId;
 
 }

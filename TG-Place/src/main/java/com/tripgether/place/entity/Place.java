@@ -16,8 +16,8 @@ import java.util.UUID;
 import org.hibernate.annotations.Check;
 
 @Check(constraints = "latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180")
-//아래 위도,경도에 잘못된 좌표 저장 방지
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

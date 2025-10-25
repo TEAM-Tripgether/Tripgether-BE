@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import com.tripgether.sns.entity.Content;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -36,7 +37,7 @@ public class AiJob extends BaseEntity {
     private UUID id;
 
     @jakarta.persistence.Version
-    private Long version;       //job 상태,시도수 갱신 충돌방지, 중복 실행/유실 업데이트를 줄일 수 있음
+    private Long version;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Content content;
@@ -47,12 +48,15 @@ public class AiJob extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AiJobStatus status;
+    @Builder.Default
+    private AiJobStatus status = AiJobStatus.PENDING;
 
     @Column(nullable = false)
+    @Builder.Default
     private int attempt = 0;
 
     @Column(nullable = false)
+    @Builder.Default
     private int maxAttempt = 3;
 
     @Lob
@@ -71,7 +75,6 @@ public class AiJob extends BaseEntity {
             status = AiJobStatus.PENDING;
         if (maxAttempt <= 0)
             maxAttempt = 3;
-        // attempt/maxAttempt는 int라 null 불가(기본 0). maxAttempt가 0 이하로 들어오면 방어적으로 3 세팅
     }
 
 }

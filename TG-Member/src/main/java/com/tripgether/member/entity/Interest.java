@@ -8,6 +8,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -20,10 +21,9 @@ public class Interest extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private InterestCategory category;     // ENUM (필수)
+    private InterestCategory category;
 
     @Column(length = 100, nullable = false)
-    private String name;                   // VARCHAR(100) (필수)
-
+    private String name;
 
 }

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,7 +20,6 @@ public class AuthCredential extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(nullable = false, length = 255)
@@ -27,7 +27,5 @@ public class AuthCredential extends BaseEntity {
 
     @Column(nullable = true)
     private LocalDateTime lastPasswordChangeAt;
-
-    //BaseEntity를 상속받았기 때문에 createdAt, updatedAt 생략
 
 }

@@ -49,6 +49,10 @@ public class Folder extends SoftDeletableBaseEntity {
   @Column(columnDefinition = "TEXT")
   private String shareLink;
 
+  @Lob
+  @Column(columnDefinition = "TEXT")
+  private String thumbnailUrl;
+
   @PrePersist
   protected void onCreate() {
       if (name == null) {
@@ -57,6 +61,10 @@ public class Folder extends SoftDeletableBaseEntity {
       if (visibility == null) {
           visibility = FolderVisibility.PRIVATE;
       }
+  }
+
+  public void updateThumbnail(String thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
   }
 
 }

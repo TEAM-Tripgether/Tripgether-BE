@@ -1,12 +1,13 @@
 package com.tripgether.place.entity;
 
-import com.tripgether.common.entity.Media;
+import com.tripgether.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PlaceMedia {
+public class PlaceMedia extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,10 +31,14 @@ public class PlaceMedia {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   private Place place;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  private Media media;
+  @Lob
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String url;
+
+  @Column(length = 100)
+  private String mimeType;
 
   @Column(nullable = false)
   @Builder.Default
-  private int position = 0;
+  private Integer position = 0;
 }

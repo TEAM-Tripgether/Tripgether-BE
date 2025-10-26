@@ -3,6 +3,15 @@ spring:
         name: tripgether-be
     profiles:
         active: prod
+    flyway:
+        enabled: true
+        baseline-on-migrate: true
+        baseline-version: 0.1.0
+        locations: classpath:db/migration
+        sql-migration-prefix: V
+        sql-migration-separator: __
+        sql-migration-suffixes: .sql
+        validate-on-migrate: true
 
 # 서버 설정
 server:

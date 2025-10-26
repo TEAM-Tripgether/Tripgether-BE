@@ -3,12 +3,12 @@ package com.tripgether.member.entity;
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.MemberRole;
 import com.tripgether.member.constant.MemberOnboardingStatus;
+import com.tripgether.member.constant.MemberGender;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import com.tripgether.member.constant.MemberGender;
 
 @Entity
 @Builder
@@ -50,6 +50,10 @@ public class Member extends SoftDeletableBaseEntity {
   @Builder.Default
   private MemberRole memberRole = MemberRole.ROLE_USER;
 
+  @Lob
+  @Column(columnDefinition = "TEXT")
+  private String profileImageUrl;
+
   @PrePersist
   protected void onCreate() {
       if (onboardingStatus == null) {
@@ -58,6 +62,10 @@ public class Member extends SoftDeletableBaseEntity {
       if (memberRole == null) {
           memberRole = MemberRole.ROLE_USER;    //기본값
       }
+  }
+
+  public void updateProfileImage(String profileImageUrl) {
+    this.profileImageUrl = profileImageUrl;
   }
 
 }

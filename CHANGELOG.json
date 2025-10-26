@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-25T17:18:53Z",
-    "currentVersion": "0.1.5",
+    "lastUpdated": "2025-10-26T10:19:54Z",
+    "currentVersion": "0.1.7",
     "projectType": "spring",
-    "totalReleases": 8
+    "totalReleases": 9
   },
   "releases": [
+    {
+      "version": "0.1.7",
+      "project_type": "spring",
+      "date": "2025-10-26",
+      "pr_number": 40,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\n새로운 기능\n\n회원 프로필 이미지 업로드 기능 추가\n폴더 썸네일 기능 추가\n데이터베이스 마이그레이션 시스템 도입\n\n\n\n개선사항\n\n미디어 저장 구조 간소화\n데이터베이스 스키마 최적화\n\n\n\n버전\n\nv0.1.7로 업데이트 (v0.1.5 → v0.1.7)",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "회원 프로필 이미지 업로드 기능 추가",
+            "폴더 썸네일 기능 추가",
+            "데이터베이스 마이그레이션 시스템 도입"
+          ]
+        },
+        "개선사항": {
+          "title": "개선사항",
+          "items": [
+            "미디어 저장 구조 간소화",
+            "데이터베이스 스키마 최적화"
+          ]
+        },
+        "버전": {
+          "title": "버전",
+          "items": [
+            "v0.1.7로 업데이트 (v0.1.5 → v0.1.7)"
+          ]
+        }
+      }
+    },
     {
       "version": "0.1.5",
       "project_type": "spring",

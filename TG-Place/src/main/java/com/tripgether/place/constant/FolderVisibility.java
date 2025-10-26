@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum FolderVisibility {
-    PRIVATE,
-    SHARED
+  PRIVATE,
+  SHARED
 }

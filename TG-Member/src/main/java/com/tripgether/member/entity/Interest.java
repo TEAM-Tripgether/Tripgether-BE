@@ -14,16 +14,16 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Interest extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private InterestCategory category;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private InterestCategory category;
 
-    @Column(length = 100, nullable = false)
-    private String name;
+  @Column(length = 100, nullable = false)
+  private String name;
 
 }

@@ -19,9 +19,9 @@ public class MethodLoggingAspect {
    * Controller, Service, Repository 메소드 통합 로깅 와일드카드 패턴으로 모든 모듈 자동 적용
    */
   @Around("within(com.tripgether..*) && "
-          + "(execution(* *Controller.*(..)) || "
-          + " execution(* *Service.*(..)) || "
-          + " execution(* *Repository.*(..)))")
+      + "(execution(* *Controller.*(..)) || "
+      + " execution(* *Service.*(..)) || "
+      + " execution(* *Repository.*(..)))")
   public Object logMethods(ProceedingJoinPoint joinPoint) throws Throwable {
 
     String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -104,15 +104,15 @@ public class MethodLoggingAspect {
    * 클래스명으로 계층 판단
    */
   private String determineLayer(String className) {
-      if (className.contains("Controller")) {
-          return "CONTROLLER";
-      }
-      if (className.contains("Service")) {
-          return "SERVICE";
-      }
-      if (className.contains("Repository") || className.contains("Proxy")) {
-          return "REPOSITORY";
-      }
+    if (className.contains("Controller")) {
+      return "CONTROLLER";
+    }
+    if (className.contains("Service")) {
+      return "SERVICE";
+    }
+    if (className.contains("Repository") || className.contains("Proxy")) {
+      return "REPOSITORY";
+    }
     return "UNKNOWN";
   }
 

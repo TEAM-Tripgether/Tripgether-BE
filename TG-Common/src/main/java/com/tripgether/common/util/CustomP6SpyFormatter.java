@@ -50,9 +50,9 @@ public class CustomP6SpyFormatter implements MessageFormattingStrategy {
     sb.append(" | ").append(category);
     sb.append(" | connection ").append(connectionId);
     if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("select")) {
-        sb.append("\n[SELECT 쿼리]\n");
+      sb.append("\n[SELECT 쿼리]\n");
     } else if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("insert")) {
-        sb.append("\n[INSERT 쿼리]\n");
+      sb.append("\n[INSERT 쿼리]\n");
     } else if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("update")) {
       sb.append("\n[UPDATE 쿼리]\n");
     } else if (formattedSql.trim().toLowerCase(Locale.ROOT).startsWith("delete")) {

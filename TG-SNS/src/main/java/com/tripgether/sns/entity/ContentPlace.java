@@ -21,33 +21,34 @@ import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(
-        name = "content_place",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_content_place_pair", columnNames = {"content_id", "place_id"}),
-                @UniqueConstraint(name = "uk_content_place_pos", columnNames = {"content_id", "position"})
-        },
-        indexes = {
-                @Index(name = "idx_content_place_content", columnList = "content_id"),
-                @Index(name = "idx_content_place_place", columnList = "place_id")
-        }
+    name = "content_place",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_content_place_pair", columnNames = {"content_id", "place_id"}),
+        @UniqueConstraint(name = "uk_content_place_pos", columnNames = {"content_id", "position"})
+    },
+    indexes = {
+        @Index(name = "idx_content_place_content", columnList = "content_id"),
+        @Index(name = "idx_content_place_place", columnList = "place_id")
+    }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContentPlace extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "content_id", nullable = false)
-    private Content content;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "place_id", nullable = false)
-    private Place place;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "content_id", nullable = false)
+  private Content content;
 
-    @Column(nullable = false)
-    private int position = 0;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "place_id", nullable = false)
+  private Place place;
+
+  @Column(nullable = false)
+  private int position = 0;
 }

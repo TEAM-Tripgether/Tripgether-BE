@@ -31,50 +31,52 @@ import com.tripgether.sns.entity.Content;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AiJob extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @jakarta.persistence.Version
-    private Long version;
+  @jakarta.persistence.Version
+  private Long version;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Content content;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Content content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AiJobType jobType;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private AiJobType jobType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private AiJobStatus status = AiJobStatus.PENDING;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  @Builder.Default
+  private AiJobStatus status = AiJobStatus.PENDING;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int attempt = 0;
+  @Column(nullable = false)
+  @Builder.Default
+  private int attempt = 0;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int maxAttempt = 3;
+  @Column(nullable = false)
+  @Builder.Default
+  private int maxAttempt = 3;
 
-    @Lob
-    @Column(columnDefinition = "JSONB")
-    private String result;
+  @Lob
+  @Column(columnDefinition = "JSONB")
+  private String result;
 
-    @Column
-    private LocalDateTime startedAt;
+  @Column
+  private LocalDateTime startedAt;
 
-    @Column
-    private LocalDateTime finishedAt;
+  @Column
+  private LocalDateTime finishedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        if (status == null)
-            status = AiJobStatus.PENDING;
-        if (maxAttempt <= 0)
-            maxAttempt = 3;
+  @PrePersist
+  protected void onCreate() {
+    if (status == null) {
+      status = AiJobStatus.PENDING;
     }
+    if (maxAttempt <= 0) {
+      maxAttempt = 3;
+    }
+  }
 
 }

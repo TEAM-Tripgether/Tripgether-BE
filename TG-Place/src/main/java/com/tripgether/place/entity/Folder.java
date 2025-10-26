@@ -28,33 +28,43 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Folder extends SoftDeletableBaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Member owner;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Member owner;
 
-    @Column(nullable = false, length = 100)
-    @Builder.Default
-    private String name = "제목 없음";
+  @Column(nullable = false, length = 100)
+  @Builder.Default
+  private String name = "제목 없음";
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private FolderVisibility visibility = FolderVisibility.PRIVATE;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  @Builder.Default
+  private FolderVisibility visibility = FolderVisibility.PRIVATE;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String shareLink;
+  @Lob
+  @Column(columnDefinition = "TEXT")
+  private String shareLink;
 
-    @PrePersist
-    protected void onCreate() {
-        if (name == null)
-            name = "제목 없음";
-        if (visibility == null)
-            visibility = FolderVisibility.PRIVATE;
-    }
+  @Lob
+  @Column(columnDefinition = "TEXT")
+  private String thumbnailUrl;
+
+  @PrePersist
+  protected void onCreate() {
+      if (name == null) {
+          name = "제목 없음";
+      }
+      if (visibility == null) {
+          visibility = FolderVisibility.PRIVATE;
+      }
+  }
+
+  public void updateThumbnail(String thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
+  }
 
 }

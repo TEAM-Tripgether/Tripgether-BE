@@ -15,6 +15,7 @@ public class SpringDocProperties {
   @Getter
   @AllArgsConstructor
   public static class Server {
+
     private String url;
     private String description;
   }

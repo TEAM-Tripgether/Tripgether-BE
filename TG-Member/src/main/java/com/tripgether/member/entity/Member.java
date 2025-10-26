@@ -17,45 +17,47 @@ import com.tripgether.member.constant.MemberGender;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends SoftDeletableBaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @Column(nullable = false, unique = true, length = 255)
-    private String email;
+  @Column(nullable = false, unique = true, length = 255)
+  private String email;
 
-    @Column(nullable = false, length = 100)
-    private String name;
+  @Column(nullable = false, length = 100)
+  private String name;
 
-    @Column
-    private LocalDate birthDate;
+  @Column
+  private LocalDate birthDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 10)
-    private MemberGender gender;      //null 허용
+  @Enumerated(EnumType.STRING)
+  @Column(length = 10)
+  private MemberGender gender;      //null 허용
 
-    //
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private MemberOnboardingStatus onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
+  //
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  @Builder.Default
+  private MemberOnboardingStatus onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean tutorialEnabled = false;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean tutorialEnabled = false;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private MemberRole memberRole = MemberRole.ROLE_USER;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  @Builder.Default
+  private MemberRole memberRole = MemberRole.ROLE_USER;
 
-    @PrePersist
-    protected void onCreate() {
-        if (onboardingStatus == null)
-            onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
-        if (memberRole == null)
-            memberRole = MemberRole.ROLE_USER;    //기본값
-    }
+  @PrePersist
+  protected void onCreate() {
+      if (onboardingStatus == null) {
+          onboardingStatus = MemberOnboardingStatus.NOT_STARTED;
+      }
+      if (memberRole == null) {
+          memberRole = MemberRole.ROLE_USER;    //기본값
+      }
+  }
 
 }

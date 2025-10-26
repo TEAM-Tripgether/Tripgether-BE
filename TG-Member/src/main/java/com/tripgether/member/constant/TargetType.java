@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TargetType {
-    CONTENT,
-    PLACE,
-    FOLDER
+  CONTENT,
+  PLACE,
+  FOLDER
 }

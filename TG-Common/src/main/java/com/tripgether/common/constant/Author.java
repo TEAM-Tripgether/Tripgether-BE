@@ -7,9 +7,9 @@ public final class Author {
   private Author() {
   }
 
-    public static final String SUHSAECHAN = "서새찬";
+  public static final String SUHSAECHAN = "서새찬";
   public static final String KANGJIYUN = "강지윤";
-    public static final String KIMCHANYEOUNG = "김찬영";
+  public static final String KIMCHANYEOUNG = "김찬영";
 //    public static final String HEEUNSIBAL = "박희운";
 //    public static final String NAUICHAN = "나의찬";
 }

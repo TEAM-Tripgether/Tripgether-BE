@@ -19,30 +19,30 @@ import java.util.UUID;
 @Schema(description = "회원 정보 DTO")
 public class MemberDto {
 
-    @Schema(description = "회원 ID", example = "550e8400-e29b-41d4-a716-446655440000")
-    private UUID id;
+  @Schema(description = "회원 ID", example = "550e8400-e29b-41d4-a716-446655440000")
+  private UUID id;
 
-    @NotBlank(message = "이메일은 필수입니다.")
-    @Email(message = "올바른 이메일 형식이 아닙니다.")
-    @Schema(description = "이메일", example = "user@example.com", required = true)
-    private String email;
+  @NotBlank(message = "이메일은 필수입니다.")
+  @Email(message = "올바른 이메일 형식이 아닙니다.")
+  @Schema(description = "이메일", example = "user@example.com", required = true)
+  private String email;
 
-    @NotBlank(message = "닉네임은 필수입니다.")
-    @Size(min = 2, max = 50, message = "닉네임은 2자 이상 50자 이하여야 합니다.")
-    @Schema(description = "닉네임", example = "여행러버", required = true)
-    private String name;
+  @NotBlank(message = "닉네임은 필수입니다.")
+  @Size(min = 2, max = 50, message = "닉네임은 2자 이상 50자 이하여야 합니다.")
+  @Schema(description = "닉네임", example = "여행러버", required = true)
+  private String name;
 
-    @Schema(description = "회원 상태", example = "NOT_STARTED")
-    private String onboardingStatus;
+  @Schema(description = "회원 상태", example = "NOT_STARTED")
+  private String onboardingStatus;
 
-    public static MemberDto entityToDto(Member entity) {
-        return MemberDto.builder()
-                .id(entity.getId())
-                .email(entity.getEmail())
-                .name(entity.getName())
-                .onboardingStatus(
-                        entity.getOnboardingStatus()
-                                .name())
-                .build();
-    }
+  public static MemberDto entityToDto(Member entity) {
+    return MemberDto.builder()
+        .id(entity.getId())
+        .email(entity.getEmail())
+        .name(entity.getName())
+        .onboardingStatus(
+            entity.getOnboardingStatus()
+                .name())
+        .build();
+  }
 }

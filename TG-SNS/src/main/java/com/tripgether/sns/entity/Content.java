@@ -25,38 +25,38 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Content extends SoftDeletableBaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ContentPlatform platform;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private ContentPlatform platform;
 
-    @Column(nullable = false, length = 255)
-    private String platformUploader;
+  @Column(nullable = false, length = 255)
+  private String platformUploader;
 
-    @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String caption;
+  @Lob
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String caption;
 
-    @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String thumbnailUrl;
+  @Lob
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String thumbnailUrl;
 
-    @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String originalUrl;
+  @Lob
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String originalUrl;
 
-    @Column(nullable = false, length = 500)
-    private String title;
+  @Column(nullable = false, length = 500)
+  private String title;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String summary;
+  @Lob
+  @Column(columnDefinition = "TEXT")
+  private String summary;
 
-    @Column
-    private LocalDateTime lastCheckedAt;
+  @Column
+  private LocalDateTime lastCheckedAt;
 
 }

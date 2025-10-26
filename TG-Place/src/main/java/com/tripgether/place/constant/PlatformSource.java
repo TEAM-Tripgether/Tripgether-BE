@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum PlatformSource {
-    Naver,
-    Google
+  Naver,
+  Google
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum MediaOwnerType {
-    CONTENT,
-    PLACE,
-    USER
+  CONTENT,
+  PLACE,
+  USER
 }

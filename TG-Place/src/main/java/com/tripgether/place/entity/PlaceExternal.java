@@ -25,19 +25,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PlaceExternal extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Place place;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Place place;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PlatformSource platformSource;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private PlatformSource platformSource;
 
-    @Column(nullable = false, length = 255)
-    private String externalId;
+  @Column(nullable = false, length = 255)
+  private String externalId;
 
 }

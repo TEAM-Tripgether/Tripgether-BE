@@ -22,19 +22,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FolderPlace extends SoftDeletableBaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Folder folder;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Folder folder;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Place place;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Place place;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int position = 0;
+  @Column(nullable = false)
+  @Builder.Default
+  private int position = 0;
 
 }

@@ -24,13 +24,13 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
-        name = "place_business_hour",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_place_weekday", columnNames = {"place_id", "weekday"})
-        },
-        indexes = {
-                @Index(name = "idx_business_hour_place", columnList = "place_id")
-        }
+    name = "place_business_hour",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_place_weekday", columnNames = {"place_id", "weekday"})
+    },
+    indexes = {
+        @Index(name = "idx_business_hour_place", columnList = "place_id")
+    }
 )
 @Builder
 @Getter
@@ -38,22 +38,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PlaceBusinessHour extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Place place;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Place place;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PlaceWeekday weekday;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private PlaceWeekday weekday;
 
-    @Column(nullable = false)
-    private LocalTime openTime;
+  @Column(nullable = false)
+  private LocalTime openTime;
 
-    @Column(nullable = false)
-    private LocalTime closeTime;
+  @Column(nullable = false)
+  private LocalTime closeTime;
 
 }

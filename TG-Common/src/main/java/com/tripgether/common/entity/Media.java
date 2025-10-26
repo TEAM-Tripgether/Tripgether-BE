@@ -23,21 +23,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Media extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private MediaOwnerType ownerType;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private MediaType mediaType;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private MediaOwnerType ownerType;
 
-    @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String url;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private MediaType mediaType;
+
+  @Lob
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String url;
 
 }

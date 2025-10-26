@@ -22,19 +22,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContentMedia extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Content content;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Media media;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Content content;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private int position = 0;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Media media;
+
+  @Column(nullable = false)
+  @Builder.Default
+  private int position = 0;
 
 }

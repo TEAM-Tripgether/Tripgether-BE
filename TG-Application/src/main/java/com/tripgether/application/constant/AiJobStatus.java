@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AiJobStatus {
-    PENDING,
-    COMPLETED,
-    FAILED
+  PENDING,
+  COMPLETED,
+  FAILED
 }

@@ -26,28 +26,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Notification extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Member recipientMember;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Member recipientMember;
 
-    @Column(nullable = false, length = 50)
-    private String type;
+  @Column(nullable = false, length = 50)
+  private String type;
 
-    @Column(nullable = false, length = 200)
-    private String title;
+  @Column(nullable = false, length = 200)
+  private String title;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TargetType targetType;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private TargetType targetType;
 
-    @Column
-    private UUID targetId;
+  @Column
+  private UUID targetId;
 
-    @Column
-    private LocalDateTime readAt;
+  @Column
+  private LocalDateTime readAt;
 
 }

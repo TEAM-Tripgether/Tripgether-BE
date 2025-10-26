@@ -14,18 +14,18 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthCredential extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(updatable = false, nullable = false)
+  private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Member member;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Member member;
 
-    @Column(nullable = false, length = 255)
-    private String passwordHash;
+  @Column(nullable = false, length = 255)
+  private String passwordHash;
 
-    @Column(nullable = true)
-    private LocalDateTime lastPasswordChangeAt;
+  @Column(nullable = true)
+  private LocalDateTime lastPasswordChangeAt;
 
 }

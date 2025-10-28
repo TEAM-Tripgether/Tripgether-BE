@@ -1,11 +1,28 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-28T08:15:34Z",
-    "currentVersion": "0.1.8",
+    "lastUpdated": "2025-10-28T09:19:12Z",
+    "currentVersion": "0.1.9",
     "projectType": "spring",
-    "totalReleases": 10
+    "totalReleases": 11
   },
   "releases": [
+    {
+      "version": "0.1.9",
+      "project_type": "spring",
+      "date": "2025-10-28",
+      "pr_number": 46,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\nChores\n\n버전을 v0.1.8에서 v0.1.9로 업데이트했습니다.\n데이터베이스 마이그레이션 프로세스를 개선하여 안정성을 강화했습니다.\n타임스탬프 및 버전 관리 설정을 갱신했습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전을 v0.1.8에서 v0.1.9로 업데이트했습니다.",
+            "데이터베이스 마이그레이션 프로세스를 개선하여 안정성을 강화했습니다.",
+            "타임스탬프 및 버전 관리 설정을 갱신했습니다."
+          ]
+        }
+      }
+    },
     {
       "version": "0.1.8",
       "project_type": "spring",

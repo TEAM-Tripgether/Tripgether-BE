@@ -1,11 +1,34 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-28T09:19:12Z",
-    "currentVersion": "0.1.9",
+    "lastUpdated": "2025-10-29T15:22:12Z",
+    "currentVersion": "0.1.11",
     "projectType": "spring",
-    "totalReleases": 11
+    "totalReleases": 12
   },
   "releases": [
+    {
+      "version": "0.1.11",
+      "project_type": "spring",
+      "date": "2025-10-29",
+      "pr_number": 49,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\n버전 업데이트\n\n애플리케이션 버전 0.1.11로 업데이트\n빌드 번호 21로 증가 (19에서 변경)\n최종 업데이트: 2025-10-29 15:18:50\n\n\n\n문서\n\n개발 워크플로우 및 설정 가이드 추가",
+      "parsed_changes": {
+        "버전_업데이트": {
+          "title": "버전 업데이트",
+          "items": [
+            "애플리케이션 버전 0.1.11로 업데이트",
+            "빌드 번호 21로 증가 (19에서 변경)",
+            "최종 업데이트: 2025-10-29 15:18:50"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "개발 워크플로우 및 설정 가이드 추가"
+          ]
+        }
+      }
+    },
     {
       "version": "0.1.9",
       "project_type": "spring",

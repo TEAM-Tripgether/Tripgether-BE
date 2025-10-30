@@ -1,5 +1,5 @@
 ---
-name: 🔍 시험일감
+name: 🔍 시험요청
 about: 기능 개발/버그 수정 완료 후 시험 요청 템플릿
 labels: [작업 전]
 assignees: [chanbonggg]

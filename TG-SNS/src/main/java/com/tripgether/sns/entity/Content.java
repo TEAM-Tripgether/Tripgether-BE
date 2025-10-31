@@ -2,6 +2,7 @@ package com.tripgether.sns.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.sns.constant.ContentPlatform;
+import com.tripgether.sns.constant.ContentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,6 +35,11 @@ public class Content extends SoftDeletableBaseEntity {
   @Column(nullable = false)
   private ContentPlatform platform;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  @Builder.Default
+  private ContentStatus status = ContentStatus.PENDING;
+
   @Column(nullable = false, length = 255)
   private String platformUploader;
 
@@ -58,5 +64,14 @@ public class Content extends SoftDeletableBaseEntity {
 
   @Column
   private LocalDateTime lastCheckedAt;
+
+  /**
+   * Content의 상태를 변경합니다.
+   *
+   * @param newStatus 새로운 상태
+   */
+  public void updateStatus(ContentStatus newStatus) {
+    this.status = newStatus;
+  }
 
 }

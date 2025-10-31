@@ -34,6 +34,9 @@ public class Place extends SoftDeletableBaseEntity {
   @Column(length = 500)
   private String address;
 
+  @Column(length = 2, nullable = false)
+  private String country;         //국가 코드 (ISO 3166-1 alpha-2: KR, US, JP, CN 등)
+
   @Column(nullable = false, precision = 10, scale = 7)
   @DecimalMin("-90.0")
   @DecimalMax("90.0")

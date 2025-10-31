@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/ai")
-@Tag(name = "AI 서버 Callback", description = "AI 서버로부터 분석 결과를 수신하는 Webhook API")
-public class AiCallbackController implements AiCallbackControllerDocs {
+@Tag(name = "AI 서버 API", description = "AI 서버 연동 관련 API 제공")
+public class AiController implements AiControllerDocs {
 
   private final AiCallbackService aiCallbackService;
   private final AiServerProperties aiServerProperties;

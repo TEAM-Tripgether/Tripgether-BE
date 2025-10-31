@@ -8,7 +8,7 @@ import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;
 
-public interface AiCallbackControllerDocs {
+public interface AiControllerDocs {
 
   @ApiChangeLogs({
       @ApiChangeLog(

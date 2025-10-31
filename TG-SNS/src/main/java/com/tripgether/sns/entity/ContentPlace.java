@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.tripgether.place.entity.Place;
@@ -31,6 +32,7 @@ import jakarta.persistence.JoinColumn;
         @Index(name = "idx_content_place_place", columnList = "place_id")
     }
 )
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

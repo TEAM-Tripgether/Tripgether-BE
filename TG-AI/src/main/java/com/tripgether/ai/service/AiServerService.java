@@ -1,9 +1,9 @@
-package com.tripgether.sns.service;
+package com.tripgether.ai.service;
 
+import com.tripgether.ai.dto.PlaceExtractionRequest;
+import com.tripgether.ai.dto.PlaceExtractionResponse;
 import com.tripgether.common.properties.AiServerProperties;
 import com.tripgether.common.util.NetworkUtil;
-import com.tripgether.sns.dto.PlaceExtractionRequest;
-import com.tripgether.sns.dto.PlaceExtractionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

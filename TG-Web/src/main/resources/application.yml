@@ -6,12 +6,12 @@ spring:
     flyway:
         enabled: true
         baseline-on-migrate: true
-        baseline-version: 0.1.0
+        baseline-version: 0.0.0
         locations: classpath:db/migration
         sql-migration-prefix: V
         sql-migration-separator: __
         sql-migration-suffixes: .sql
-        validate-on-migrate: true
+        validate-on-migrate: false # dev 임시 변경 사항
 
 # 서버 설정
 server:

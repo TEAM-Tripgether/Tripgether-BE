@@ -1,11 +1,11 @@
 package com.tripgether.sns.service;
 
+import com.tripgether.ai.dto.AiCallbackRequest;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.place.entity.Place;
 import com.tripgether.place.repository.PlaceRepository;
 import com.tripgether.sns.constant.ContentStatus;
-import com.tripgether.sns.dto.AiCallbackRequest;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.entity.ContentPlace;
 import com.tripgether.sns.repository.ContentPlaceRepository;
@@ -35,7 +35,7 @@ public class AiCallbackService {
    * @param request Callback 요청 데이터
    */
   @Transactional
-  public void processCallback(AiCallbackRequest request) {
+  public void processAiServerCallback(AiCallbackRequest request) {
     log.info("Processing AI callback: contentId={}, resultStatus={}",
         request.getContentId(), request.getResultStatus());
 
@@ -45,7 +45,7 @@ public class AiCallbackService {
 
     // 2. 결과 상태에 따른 처리
     if ("SUCCESS".equals(request.getResultStatus())) {
-      processSuccessCallback(content, request);
+      processAiServerSuccessCallback(content, request);
     } else if ("FAILED".equals(request.getResultStatus())) {
       processFailedCallback(content, request);
     } else {
@@ -59,7 +59,7 @@ public class AiCallbackService {
   /**
    * 성공 Callback 처리
    */
-  private void processSuccessCallback(Content content, AiCallbackRequest request) {
+  private void processAiServerSuccessCallback(Content content, AiCallbackRequest request) {
     log.debug("Processing SUCCESS callback for contentId={}", content.getId());
 
     // Content 상태를 COMPLETED로 변경
@@ -133,7 +133,6 @@ public class AiCallbackService {
         .build();
 
     contentPlaceRepository.save(contentPlace);
-    log.debug("Created ContentPlace: contentId={}, placeId={}, position={}",
-        content.getId(), place.getId(), position);
+    log.debug("Created ContentPlace: contentId={}, placeId={}, position={}", content.getId(), place.getId(), position);
   }
 }

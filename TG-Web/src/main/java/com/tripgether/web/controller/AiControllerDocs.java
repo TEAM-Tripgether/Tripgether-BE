@@ -1,8 +1,8 @@
 package com.tripgether.web.controller;
 
+import com.tripgether.ai.dto.AiCallbackRequest;
+import com.tripgether.ai.dto.AiCallbackResponse;
 import com.tripgether.common.constant.Author;
-import com.tripgether.sns.dto.AiCallbackRequest;
-import com.tripgether.sns.dto.AiCallbackResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;

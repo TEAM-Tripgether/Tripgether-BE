@@ -44,11 +44,9 @@ public class ContentPlace extends BaseEntity {
   private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "content_id", nullable = false)
   private Content content;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "place_id", nullable = false)
   private Place place;
 
   @Column(nullable = false)

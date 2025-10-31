@@ -1,10 +1,10 @@
 package com.tripgether.web.controller;
 
+import com.tripgether.ai.dto.AiCallbackRequest;
+import com.tripgether.ai.dto.AiCallbackResponse;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.properties.AiServerProperties;
-import com.tripgether.sns.dto.AiCallbackRequest;
-import com.tripgether.sns.dto.AiCallbackResponse;
 import com.tripgether.sns.service.AiCallbackService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -44,7 +44,7 @@ public class AiController implements AiControllerDocs {
     }
 
     // Callback 처리
-    aiCallbackService.processCallback(request);
+    aiCallbackService.processAiServerCallback(request);
 
     // 응답 생성
     AiCallbackResponse response = AiCallbackResponse.builder()

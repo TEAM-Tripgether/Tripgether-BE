@@ -1,11 +1,35 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-29T15:22:12Z",
-    "currentVersion": "0.1.11",
+    "lastUpdated": "2025-10-31T16:32:23Z",
+    "currentVersion": "0.2.1",
     "projectType": "spring",
-    "totalReleases": 12
+    "totalReleases": 13
   },
   "releases": [
+    {
+      "version": "0.2.1",
+      "project_type": "spring",
+      "date": "2025-10-31",
+      "pr_number": 56,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nNew Features\n\nAI 서버 콜백 웹훅 엔드포인트 추가로 콘텐츠 처리 상태 자동 관리\n장소 정보에 국가 필드 추가\n콘텐츠 상태 추적 (대기, 분석, 완료, 실패)\n\n\n\nChores\n\n프로젝트 버전 0.2.1로 업데이트\n외부 API 통신 의존성 추가",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "AI 서버 콜백 웹훅 엔드포인트 추가로 콘텐츠 처리 상태 자동 관리",
+            "장소 정보에 국가 필드 추가",
+            "콘텐츠 상태 추적 (대기, 분석, 완료, 실패)"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "프로젝트 버전 0.2.1로 업데이트",
+            "외부 API 통신 의존성 추가"
+          ]
+        }
+      }
+    },
     {
       "version": "0.1.11",
       "project_type": "spring",

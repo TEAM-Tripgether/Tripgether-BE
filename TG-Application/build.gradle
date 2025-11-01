@@ -20,4 +20,5 @@ dependencies {
     api project(':TG-Auth')
     api project(':TG-Place')
     api project(':TG-SNS')
+    api project(':TG-AI')
 }

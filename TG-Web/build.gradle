@@ -6,13 +6,13 @@ plugins {
 
 dependencies {
     // 모든 모듈 의존
-    implementation project(':TG-Common')
-    implementation project(':TG-Member')
-    implementation project(':TG-Auth')
-    implementation project(':TG-Place')
-    implementation project(':TG-SNS')
-    implementation project(':TG-AI')
-    implementation project(':TG-Application')
+    api project(':TG-Common')
+    api project(':TG-Member')
+    api project(':TG-Auth')
+    api project(':TG-Place')
+    api project(':TG-SNS')
+    api project(':TG-AI')
+    api project(':TG-Application')
 }
 
 tasks.named('bootJar') {

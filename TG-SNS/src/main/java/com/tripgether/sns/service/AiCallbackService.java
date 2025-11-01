@@ -5,7 +5,7 @@ import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.place.entity.Place;
 import com.tripgether.place.repository.PlaceRepository;
-import com.tripgether.sns.constant.ContentStatus;
+import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.entity.ContentPlace;
 import com.tripgether.sns.repository.ContentPlaceRepository;

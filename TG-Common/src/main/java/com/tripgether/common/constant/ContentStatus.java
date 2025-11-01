@@ -1,4 +1,4 @@
-package com.tripgether.sns.constant;
+package com.tripgether.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

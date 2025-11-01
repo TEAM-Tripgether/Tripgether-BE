@@ -33,7 +33,7 @@ public class AiServerService {
    * @param snsUrl    분석할 SNS URL
    * @return AI 서버 응답 (202 Accepted)
    */
-  public PlaceExtractionResponse requestPlaceExtractionToAiServer(UUID contentId, String snsUrl) {
+  public PlaceExtractionResponse sendPlaceExtractionRequest(UUID contentId, String snsUrl) {
     String aiServerPlaceExtractionUrl = aiServerProperties.getBaseUrl() + aiServerProperties.getExtractPlacesUri();
 
     PlaceExtractionRequest aiContentRequest = PlaceExtractionRequest.builder()

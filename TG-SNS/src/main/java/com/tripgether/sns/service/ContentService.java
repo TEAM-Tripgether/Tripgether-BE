@@ -20,12 +20,17 @@ import org.springframework.stereotype.Service;
 public class ContentService {
   private final ContentRepository contentRepository;
   private final AiServerService aiServerService;
-
-  public RequestPlaceExtractionResponse handleRequestPlaceExtractionFromClient(PlaceExtractionRequest request) {
+  /**
+   * 클라이언트로부터 장소 추출 요청을 처리합니다.
+   *
+   * @param request 장소 추출 요청 데이터
+   * @return 장소 추출 요청 처리 결과
+   */
+  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request) {
     // SNS url 추출
     String snsUrl = request.getSnsUrl();
 
-    // Content 객체 생성
+    // Content 객체 생성 createContent
     Content content = Content.builder()
         .originalUrl(snsUrl)
         .status(ContentStatus.PENDING)
@@ -35,9 +40,9 @@ public class ContentService {
     Content savedContent = contentRepository.save(content);
     UUID contentId = savedContent.getId();
 
-    // AI 서버 Content 정보 요청
+    // AI 서버 Content 정보 요청 RequestPlaceExtraction
     PlaceExtractionResponse placeExtractionResponse
-        = aiServerService.requestPlaceExtractionToAiServer(contentId, snsUrl);
+        = aiServerService.sendPlaceExtractionRequest(contentId, snsUrl);
 
     // AI 서버 비정상 응답
     if(placeExtractionResponse == null || !"ACCEPTED".equals(placeExtractionResponse.getStatus())){

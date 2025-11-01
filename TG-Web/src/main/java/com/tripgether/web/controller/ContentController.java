@@ -21,8 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("/api/content")
 //@Tag()
-public class ContentController {
-  private final AiServerService aiServerService;
+public class ContentController implements ContentControllerDocs {
   private final ContentService contentService;
 
   /**
@@ -31,12 +30,14 @@ public class ContentController {
    * - 비즈니스 처리는 AiServerService로 위임
    */
   @PostMapping("/analyze")
-  public ResponseEntity<RequestPlaceExtractionResponse> requestPlaceExtraction(
-      @AuthenticationPrincipal CustomUserDetails userDetails, // JWT 인증
+  @Override
+  public ResponseEntity<RequestPlaceExtractionResponse> createContent(
+      //@AuthenticationPrincipal CustomUserDetails userDetails, // JWT 인증
+      //내부에서 SecurityContextHolder.getContext().getAuthentication()로 꺼내 사용
       @Valid @RequestBody PlaceExtractionRequest request
   ) {
     RequestPlaceExtractionResponse response
-        = contentService.handleRequestPlaceExtractionFromClient(request);
+        = contentService.createContentAndRequestPlaceExtraction(request);
     return ResponseEntity.ok(response);
   }
 }

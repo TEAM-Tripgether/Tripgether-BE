@@ -29,7 +29,7 @@ public interface ContentControllerDocs {
               - **`contentId`**: 콘텐츠 UUID
               - **`platform`**: 콘텐츠 플랫폼 (INSTAGRAM, YOUTUBE, TIKTOK 등)
               - **`status`**: 장소 추출 요청 상태 (PENDING, ANALYZING, COMPLETED, FAILED, DELETED)
-              - **`platformUploader`**: 컨텐츠 업로더 계정 이름
+              - **`platformUploader`**: 콘텐츠 업로더 계정 이름
               - **`caption`**: 게시글 본문
               - **`thumbnailUrl`**: 썸네일 URL
               - **`originalUrl`**: 원본 URL
@@ -50,6 +50,7 @@ public interface ContentControllerDocs {
               ## 에러코드
               - **`CONTENT_NOT_FOUND`**: 해당 콘텐츠를 찾을 수 없습니다.
               - **`INVALID_URL_FORMAT`**: 잘못된 URL 형식입니다.
+              - **`DUPLICATE_CONTENT_REQUEST`**: 동일한 콘텐츠에 대한 중복 요청입니다.
               """)
   ResponseEntity<RequestPlaceExtractionResponse> createContent(PlaceExtractionRequest request);
 

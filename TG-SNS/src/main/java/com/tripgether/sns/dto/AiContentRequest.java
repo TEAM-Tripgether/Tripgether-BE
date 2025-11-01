@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AiContentReqeust {
+public class AiContentRequest {
 
   private UUID contentId;
 

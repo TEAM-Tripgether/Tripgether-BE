@@ -2,7 +2,7 @@ package com.tripgether.sns.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.sns.constant.ContentPlatform;
-import com.tripgether.sns.constant.ContentStatus;
+import com.tripgether.common.constant.ContentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -16,7 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceExtractionResponse {
-
   @Schema(description = "Content UUID")
   private UUID contentId;
 

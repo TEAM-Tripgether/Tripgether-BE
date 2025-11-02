@@ -32,7 +32,7 @@ public class Content extends SoftDeletableBaseEntity {
   private UUID id;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column
   private ContentPlatform platform;
 
   @Enumerated(EnumType.STRING)
@@ -40,22 +40,22 @@ public class Content extends SoftDeletableBaseEntity {
   @Builder.Default
   private ContentStatus status = ContentStatus.PENDING;
 
-  @Column(nullable = false, length = 255)
+  @Column(length = 255)
   private String platformUploader;
 
   @Lob
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(columnDefinition = "TEXT")
   private String caption;
 
   @Lob
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(columnDefinition = "TEXT")
   private String thumbnailUrl;
 
   @Lob
   @Column(nullable = false, columnDefinition = "TEXT")
   private String originalUrl;
 
-  @Column(nullable = false, length = 500)
+  @Column(length = 500)
   private String title;
 
   @Lob

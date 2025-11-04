@@ -4,6 +4,40 @@
 -- Description: 13개 대분류, 123개 소분류 관심사 초기화
 -- ============================================
 
+-- ============================================
+-- 제약조건 추가 (안전한 방식)
+-- ============================================
+
+-- 1) UNIQUE 제약조건 추가 (ON CONFLICT를 위해 필수)
+-- 이미 존재하는 경우 에러를 방지하기 위해 DO $$ 블록 사용
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'interest_category_name_unique'
+    ) THEN
+        ALTER TABLE interest
+        ADD CONSTRAINT interest_category_name_unique UNIQUE (category, name);
+    END IF;
+END $$;
+
+-- 2) Check constraint 수정 (실제 사용하는 카테고리로 변경)
+-- 기존 제약조건 삭제 후 재생성
+ALTER TABLE interest DROP CONSTRAINT IF EXISTS interest_category_check;
+ALTER TABLE interest
+ADD CONSTRAINT interest_category_check CHECK (
+    category IN (
+        'FOOD', 'CAFE_DESSERT', 'LOCAL_MARKET', 'NATURE_OUTDOOR',
+        'URBAN_PHOTOSPOTS', 'CULTURE_ART', 'HISTORY_ARCHITECTURE',
+        'EXPERIENCE_CLASS', 'SHOPPING_FASHION', 'NIGHTLIFE',
+        'WELLNESS', 'FAMILY_KIDS', 'KPOP_CULTURE', 'DRIVE_SUBURBS'
+    )
+);
+
+-- ============================================
+-- 관심사 데이터 INSERT
+-- ============================================
+
 -- 1. 맛집/푸드 (14개)
 INSERT INTO interest (id, category, name, created_at, updated_at)
 VALUES

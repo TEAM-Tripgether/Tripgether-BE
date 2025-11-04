@@ -1,0 +1,28 @@
+package com.tripgether.member.repository;
+
+import com.tripgether.member.constant.InterestCategory;
+import com.tripgether.member.entity.Interest;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface InterestRepository extends JpaRepository<Interest, UUID> {
+
+  /**
+   * 카테고리별 관심사 조회
+   */
+  List<Interest> findByCategory(InterestCategory category);
+
+  /**
+   * 전체 관심사 조회 (카테고리 및 이름 순서로 정렬)
+   */
+  @Query("SELECT i FROM Interest i ORDER BY i.category ASC, i.name ASC")
+  List<Interest> findAllOrderByCategoryAndName();
+
+  /**
+   * 카테고리와 이름으로 존재 여부 확인
+   */
+  boolean existsByCategoryAndName(InterestCategory category, String name);
+}

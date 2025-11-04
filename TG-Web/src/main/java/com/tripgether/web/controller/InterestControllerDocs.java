@@ -1,5 +1,6 @@
 package com.tripgether.web.controller;
 
+import com.tripgether.common.constant.Author;
 import com.tripgether.member.constant.InterestCategory;
 import com.tripgether.member.dto.interest.response.GetAllInterestsResponse;
 import com.tripgether.member.dto.interest.response.GetInterestByIdResponse;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
+import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 

@@ -11,7 +11,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import java.util.UUID;
@@ -24,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Folder extends SoftDeletableBaseEntity {
@@ -45,12 +45,10 @@ public class Folder extends SoftDeletableBaseEntity {
   @Builder.Default
   private FolderVisibility visibility = FolderVisibility.PRIVATE;
 
-  @Lob
-  @Column(columnDefinition = "TEXT")
+  @Column(length = 500)
   private String shareLink;
 
-  @Lob
-  @Column(columnDefinition = "TEXT")
+  @Column(length = 500)
   private String thumbnailUrl;
 
   @PrePersist
@@ -61,10 +59,6 @@ public class Folder extends SoftDeletableBaseEntity {
       if (visibility == null) {
           visibility = FolderVisibility.PRIVATE;
       }
-  }
-
-  public void updateThumbnail(String thumbnailUrl) {
-    this.thumbnailUrl = thumbnailUrl;
   }
 
 }

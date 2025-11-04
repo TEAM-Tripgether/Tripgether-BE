@@ -13,6 +13,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends SoftDeletableBaseEntity {
@@ -50,8 +51,7 @@ public class Member extends SoftDeletableBaseEntity {
   @Builder.Default
   private MemberRole memberRole = MemberRole.ROLE_USER;
 
-  @Lob
-  @Column(columnDefinition = "TEXT")
+  @Column(length = 500)
   private String profileImageUrl;
 
   @PrePersist
@@ -62,10 +62,6 @@ public class Member extends SoftDeletableBaseEntity {
       if (memberRole == null) {
           memberRole = MemberRole.ROLE_USER;    //기본값
       }
-  }
-
-  public void updateProfileImage(String profileImageUrl) {
-    this.profileImageUrl = profileImageUrl;
   }
 
 }

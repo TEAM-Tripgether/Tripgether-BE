@@ -1,5 +1,7 @@
 package com.tripgether.common.util;
 
+import com.tripgether.common.exception.CustomException;
+import com.tripgether.common.exception.constant.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,5 +22,21 @@ public class CommonUtil {
             return "****";
         }
         return secureString.substring(0, 4) + "****";
+    }
+
+    /**
+     * URL 길이 검증
+     * URL이 지정된 최대 길이를 초과하는 경우 예외를 발생시킵니다.
+     *
+     * @param url 검증할 URL
+     * @param maxLength 허용 최대 길이
+     * @throws CustomException URL이 최대 길이를 초과하는 경우
+     */
+    public void validateUrlLength(String url, int maxLength) {
+        if (url != null && url.length() > maxLength) {
+            log.error("URL length exceeds maximum allowed length. URL length: {}, Max: {}",
+                url.length(), maxLength);
+            throw new CustomException(ErrorCode.URL_TOO_LONG);
+        }
     }
 }

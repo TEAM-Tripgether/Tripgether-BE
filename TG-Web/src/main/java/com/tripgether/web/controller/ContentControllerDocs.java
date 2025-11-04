@@ -41,16 +41,18 @@ public interface ContentControllerDocs {
               
               ## 특이사항
               - 프론트엔드에서 전달한 SNS URL을 기반으로 콘텐츠를 생성합니다.
+              - **동일 URL로 이미 COMPLETED된 콘텐츠가 있으면 AI 요청 없이 기존 데이터를 즉시 반환합니다.** (중복 방지 및 비용 절감)
+              - PENDING/FAILED 상태의 콘텐츠는 재사용하여 AI 서버에 재요청합니다.
               - status는 처음에 `PENDING` 상태로 생성됩니다.
               - 생성된 콘텐츠를 기반으로 AI 서버에 장소 추출을 요청합니다.
-              - 동일 콘텐츠에 대해 중복 요청이 불가능합니다.
-              - 장소 추출 요청이 성공적으로 접수되면 상태가 `ANALYZING`으로 변경됩니다.
-              - 장소 추출 요청이 성공적으로 완료되면 상태가 `COMPLETED`으로 변경됩니다.
-              
+              - 장소 추출 요청이 성공적으로 접수되면 상태가 `PENDING`으로 유지됩니다.
+              - AI 서버 처리 완료 시 Webhook을 통해 `COMPLETED` 또는 `FAILED`로 변경됩니다.
+              - URL은 최대 2048자까지 허용됩니다.
+
               ## 에러코드
               - **`CONTENT_NOT_FOUND`**: 해당 콘텐츠를 찾을 수 없습니다.
-              - **`INVALID_URL_FORMAT`**: 잘못된 URL 형식입니다.
-              - **`DUPLICATE_CONTENT_REQUEST`**: 동일한 콘텐츠에 대한 중복 요청입니다.
+              - **`URL_TOO_LONG`**: URL이 허용된 최대 길이(2048자)를 초과했습니다.
+              - **`AI_SERVER_ERROR`**: AI 서버 처리 중 오류가 발생했습니다.
               """)
   ResponseEntity<RequestPlaceExtractionResponse> createContent(PlaceExtractionRequest request);
 

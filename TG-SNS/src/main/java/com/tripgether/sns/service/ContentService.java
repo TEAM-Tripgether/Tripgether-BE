@@ -7,6 +7,7 @@ import com.tripgether.ai.service.AiServerService;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.constant.ContentStatus;
+import com.tripgether.common.util.CommonUtil;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.repository.ContentRepository;
 import java.util.Optional;
@@ -19,8 +20,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class ContentService {
+  private static final int MAX_URL_LENGTH = 2048;
+
   private final ContentRepository contentRepository;
   private final AiServerService aiServerService;
+  private final CommonUtil commonUtil;
 
   /**
    * 클라이언트로부터 장소 추출 요청 처리
@@ -32,6 +36,9 @@ public class ContentService {
    */
   public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request) {
     String snsUrl = request.getSnsUrl();
+
+    // URL 길이 검증
+    commonUtil.validateUrlLength(snsUrl, MAX_URL_LENGTH);
 
     // 기존 COMPLETED Content 조회 - 있으면 즉시 반환 (AI 요청 스킵)
     return contentRepository.findByOriginalUrl(snsUrl)

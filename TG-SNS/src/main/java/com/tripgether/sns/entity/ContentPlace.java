@@ -52,5 +52,6 @@ public class ContentPlace extends BaseEntity {
   private Place place;
 
   @Column(nullable = false)
+  @Builder.Default
   private int position = 0;
 }

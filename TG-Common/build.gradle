@@ -56,5 +56,13 @@ dependencies {
 
     // Development tools
     api 'org.springframework.boot:spring-boot-devtools'
+
+    // Selenium for browser automation (production use)
+    api 'org.seleniumhq.selenium:selenium-java:4.27.0'
+    api 'org.seleniumhq.selenium:selenium-chrome-driver:4.27.0'
+    api 'io.github.bonigarcia:webdrivermanager:5.9.2'
+
+    // Gson for JSON parsing
+    api 'com.google.code.gson:gson:2.10.1'
 }
 

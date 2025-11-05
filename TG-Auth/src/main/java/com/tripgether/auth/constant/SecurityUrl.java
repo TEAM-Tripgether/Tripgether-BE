@@ -16,6 +16,9 @@ public class SecurityUrl {
           "/api/auth/sign-in", // 소셜 로그인
           "/api/auth/reissue", // 토큰 재발급
 
+          // SNS
+          "/api/sns/instagram/capture", // Instagram API 응답 캡처 (테스트)
+
           // Swagger
           "/swagger-ui/**", // Swagger UI
           "/v3/api-docs/**", // Swagger API 문서

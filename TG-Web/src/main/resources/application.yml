@@ -12,6 +12,9 @@ spring:
         sql-migration-separator: __
         sql-migration-suffixes: .sql
         validate-on-migrate: false # dev 임시 변경 사항
+    jackson:
+        serialization:
+            INDENT_OUTPUT: true  # Pretty JSON 출력
 
 # 서버 설정
 server:
@@ -55,4 +58,3 @@ springdoc:
 suhapilog:
     github:
         base-url: https://github.com/TEAM-Tripgether/Tripgether-BE/issues/
-

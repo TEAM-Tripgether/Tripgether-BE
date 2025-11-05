@@ -14,25 +14,6 @@ dependencies {
     api project(':TG-AI')
     api project(':TG-Application')
 
-    // OkHttp for HTTP client (production use)
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
-
-    // GraalVM JavaScript Engine for executing JavaScript code in Java (production use)
-    implementation 'org.graalvm.js:js:23.0.2'
-    implementation 'org.graalvm.js:js-scriptengine:23.0.2'
-
-    // Jakarta Annotations (for @PostConstruct, @PreDestroy)
-    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
-
-    // Selenium for browser automation (production use)
-    implementation 'org.seleniumhq.selenium:selenium-java:4.27.0'
-    implementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.27.0'
-    implementation 'io.github.bonigarcia:webdrivermanager:5.9.2'
-
-    // Test dependencies
-    testImplementation 'com.google.code.gson:gson:2.10.1'
-    testImplementation 'com.squareup.okhttp3:okhttp:4.12.0'
 }
 
 tasks.named('bootJar') {

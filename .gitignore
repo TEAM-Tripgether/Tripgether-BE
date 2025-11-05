@@ -35,5 +35,8 @@ build/
 !build/libs/app.jar
 
 # Application configuration (contains credentials)
-src/main/resources/application-dev.yml
-src/main/resources/application-prod.yml
+TG-Web/src/main/resources/application-dev.yml
+TG-Web/src/main/resources/application-prod.yml
+
+### GitHub Issues ###
+github-issues/

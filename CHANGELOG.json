@@ -1,11 +1,352 @@
 {
   "metadata": {
-    "lastUpdated": "2025-10-05T14:16:16Z",
-    "currentVersion": "0.0.2",
+    "lastUpdated": "2025-10-31T16:32:23Z",
+    "currentVersion": "0.2.1",
     "projectType": "spring",
-    "totalReleases": 1
+    "totalReleases": 13
   },
   "releases": [
+    {
+      "version": "0.2.1",
+      "project_type": "spring",
+      "date": "2025-10-31",
+      "pr_number": 56,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nNew Features\n\nAI 서버 콜백 웹훅 엔드포인트 추가로 콘텐츠 처리 상태 자동 관리\n장소 정보에 국가 필드 추가\n콘텐츠 상태 추적 (대기, 분석, 완료, 실패)\n\n\n\nChores\n\n프로젝트 버전 0.2.1로 업데이트\n외부 API 통신 의존성 추가",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "AI 서버 콜백 웹훅 엔드포인트 추가로 콘텐츠 처리 상태 자동 관리",
+            "장소 정보에 국가 필드 추가",
+            "콘텐츠 상태 추적 (대기, 분석, 완료, 실패)"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "프로젝트 버전 0.2.1로 업데이트",
+            "외부 API 통신 의존성 추가"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.11",
+      "project_type": "spring",
+      "date": "2025-10-29",
+      "pr_number": 49,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\n버전 업데이트\n\n애플리케이션 버전 0.1.11로 업데이트\n빌드 번호 21로 증가 (19에서 변경)\n최종 업데이트: 2025-10-29 15:18:50\n\n\n\n문서\n\n개발 워크플로우 및 설정 가이드 추가",
+      "parsed_changes": {
+        "버전_업데이트": {
+          "title": "버전 업데이트",
+          "items": [
+            "애플리케이션 버전 0.1.11로 업데이트",
+            "빌드 번호 21로 증가 (19에서 변경)",
+            "최종 업데이트: 2025-10-29 15:18:50"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "개발 워크플로우 및 설정 가이드 추가"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.9",
+      "project_type": "spring",
+      "date": "2025-10-28",
+      "pr_number": 46,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\nChores\n\n버전을 v0.1.8에서 v0.1.9로 업데이트했습니다.\n데이터베이스 마이그레이션 프로세스를 개선하여 안정성을 강화했습니다.\n타임스탬프 및 버전 관리 설정을 갱신했습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전을 v0.1.8에서 v0.1.9로 업데이트했습니다.",
+            "데이터베이스 마이그레이션 프로세스를 개선하여 안정성을 강화했습니다.",
+            "타임스탬프 및 버전 관리 설정을 갱신했습니다."
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.8",
+      "project_type": "spring",
+      "date": "2025-10-28",
+      "pr_number": 43,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nChores\n\n버전 0.1.8로 업데이트\n\n\n\nInfrastructure\n\n데이터베이스 스키마를 현대화하여 미디어 저장소를 URL 기반으로 전환\n기존 미디어 데이터에 대한 자동 마이그레이션 수행\n데이터베이스 마이그레이션 프로세스를 안전하고 확장 가능하도록 개선",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전 0.1.8로 업데이트"
+          ]
+        },
+        "infrastructure": {
+          "title": "Infrastructure",
+          "items": [
+            "데이터베이스 스키마를 현대화하여 미디어 저장소를 URL 기반으로 전환",
+            "기존 미디어 데이터에 대한 자동 마이그레이션 수행",
+            "데이터베이스 마이그레이션 프로세스를 안전하고 확장 가능하도록 개선"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.7",
+      "project_type": "spring",
+      "date": "2025-10-26",
+      "pr_number": 40,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\n새로운 기능\n\n회원 프로필 이미지 업로드 기능 추가\n폴더 썸네일 기능 추가\n데이터베이스 마이그레이션 시스템 도입\n\n\n\n개선사항\n\n미디어 저장 구조 간소화\n데이터베이스 스키마 최적화\n\n\n\n버전\n\nv0.1.7로 업데이트 (v0.1.5 → v0.1.7)",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "회원 프로필 이미지 업로드 기능 추가",
+            "폴더 썸네일 기능 추가",
+            "데이터베이스 마이그레이션 시스템 도입"
+          ]
+        },
+        "개선사항": {
+          "title": "개선사항",
+          "items": [
+            "미디어 저장 구조 간소화",
+            "데이터베이스 스키마 최적화"
+          ]
+        },
+        "버전": {
+          "title": "버전",
+          "items": [
+            "v0.1.7로 업데이트 (v0.1.5 → v0.1.7)"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.5",
+      "project_type": "spring",
+      "date": "2025-10-25",
+      "pr_number": 36,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트 v0.1.5\n\n\n새로운 기능\n\nAI 작업 관리 시스템 추가\n폴더 기반 콘텐츠 정렬 기능 도입\n미디어 파일 관리 기능 강화\n업소 영업 시간 정보 추가\n\n\n\n개선 사항\n\n사용자 프로필 필드 간소화 (이름 기반으로 통일)\nAPI 문서화 및 서버 설정 업데이트",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "AI 작업 관리 시스템 추가",
+            "폴더 기반 콘텐츠 정렬 기능 도입",
+            "미디어 파일 관리 기능 강화",
+            "업소 영업 시간 정보 추가"
+          ]
+        },
+        "개선_사항": {
+          "title": "개선 사항",
+          "items": [
+            "사용자 프로필 필드 간소화 (이름 기반으로 통일)",
+            "API 문서화 및 서버 설정 업데이트"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.3",
+      "project_type": "spring",
+      "date": "2025-10-22",
+      "pr_number": 33,
+      "raw_summary": "Summary by CodeRabbit\n릴리즈 노트\n\n\n새로운 기능\n\nPlace 모듈 추가: 장소 관리 기능 지원\nSNS 모듈 추가: 소셜 미디어 콘텐츠 분석 기능 지원\n\n\n\n버그 수정\n\nCORS preflight 요청 처리 개선\n\n\n\nChores\n\n프로젝트 버전을 0.1.3으로 업데이트\n빌드 설정 및 모듈 의존성 갱신\nCORS 자격증명 설정 조정",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "Place 모듈 추가: 장소 관리 기능 지원",
+            "SNS 모듈 추가: 소셜 미디어 콘텐츠 분석 기능 지원"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "CORS preflight 요청 처리 개선"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "프로젝트 버전을 0.1.3으로 업데이트",
+            "빌드 설정 및 모듈 의존성 갱신",
+            "CORS 자격증명 설정 조정"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.2",
+      "project_type": "spring",
+      "date": "2025-10-16",
+      "pr_number": 27,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nNew Features\n\n장소(Place) 모듈 추가로 장소 관리 기능 지원\nSNS 모듈 추가로 소셜 미디어 콘텐츠 분석 기능 지원\n\n\n\nChores\n\n프로젝트 버전 0.1.2로 업데이트\n빌드 구성 및 모듈 의존성 업데이트",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "장소(Place) 모듈 추가로 장소 관리 기능 지원",
+            "SNS 모듈 추가로 소셜 미디어 콘텐츠 분석 기능 지원"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "프로젝트 버전 0.1.2로 업데이트",
+            "빌드 구성 및 모듈 의존성 업데이트"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.1.1",
+      "project_type": "spring",
+      "date": "2025-10-16",
+      "pr_number": 24,
+      "raw_summary": "Summary by CodeRabbit\nRelease Notes\n\n\nNew Features\n\n소셜 로그인을 통한 사용자 인증 시스템 추가\n회원 가입 및 프로필 관리 기능 추가\nJWT 토큰 기반 인증 및 토큰 재발급 기능 구현\n로그아웃 기능 추가\n\n\n\nImprovements\n\nAPI 보안 및 CORS 설정 강화\n중앙화된 오류 응답 처리로 일관성 개선\n\n\n\nRefactor\n\n프로젝트 모듈 구조 개선 (TG-Member, TG-Auth 추가)\n공통 라이브러리 패키지 재구성",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "소셜 로그인을 통한 사용자 인증 시스템 추가",
+            "회원 가입 및 프로필 관리 기능 추가",
+            "JWT 토큰 기반 인증 및 토큰 재발급 기능 구현",
+            "로그아웃 기능 추가"
+          ]
+        },
+        "improvements": {
+          "title": "Improvements",
+          "items": [
+            "API 보안 및 CORS 설정 강화",
+            "중앙화된 오류 응답 처리로 일관성 개선"
+          ]
+        },
+        "refactor": {
+          "title": "Refactor",
+          "items": [
+            "프로젝트 모듈 구조 개선 (TG-Member, TG-Auth 추가)",
+            "공통 라이브러리 패키지 재구성"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.0.10",
+      "project_type": "spring",
+      "date": "2025-10-15",
+      "pr_number": 18,
+      "raw_summary": "Summary by CodeRabbit\n\n신기능\n\n예제 API 엔드포인트 추가 및 빈 데이터 처리 개선\nJPA 감사(Auditing) 활성화로 생성/수정 시간 자동 관리\nGitHub Discussions용 회의록 템플릿 신규 도입\n\n\n문서\n\nREADME 전면 개편 및 멀티모듈 구조 안내 추가\n프로젝트 명세, ERD 설계, 모듈 추가/구조 가이드, 회의 가이드 문서 추가\n\n\n리팩터\n\n로깅 AOP 범위 정비 및 공통/예외 패키지 구조 재정리\n\n\n작업\n\nCI/CD 경로 및 Docker 이미지 빌드 경로 멀티모듈에 맞게 업데이트\n버전 업데이트: 0.0.10",
+      "parsed_changes": {
+        "신기능": {
+          "title": "신기능",
+          "items": [
+            "예제 API 엔드포인트 추가 및 빈 데이터 처리 개선",
+            "JPA 감사(Auditing) 활성화로 생성/수정 시간 자동 관리",
+            "GitHub Discussions용 회의록 템플릿 신규 도입"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "README 전면 개편 및 멀티모듈 구조 안내 추가",
+            "프로젝트 명세, ERD 설계, 모듈 추가/구조 가이드, 회의 가이드 문서 추가"
+          ]
+        },
+        "리팩터": {
+          "title": "리팩터",
+          "items": [
+            "로깅 AOP 범위 정비 및 공통/예외 패키지 구조 재정리"
+          ]
+        },
+        "작업": {
+          "title": "작업",
+          "items": [
+            "CI/CD 경로 및 Docker 이미지 빌드 경로 멀티모듈에 맞게 업데이트",
+            "버전 업데이트: 0.0.10"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.0.8",
+      "project_type": "spring",
+      "date": "2025-10-13",
+      "pr_number": 10,
+      "raw_summary": "Summary by CodeRabbit\n\n\nNew Features\n\n기본 브랜치 자동 감지로 워크플로우가 저장소 설정에 맞춰 동작.\n버전 코드 관리 추가 및 Flutter 형식(x.y.z+build) 자동 반영.\nWindows 경로/인코딩 이슈 대응 유틸리티 제공(폴더 복사/삭제, 파일 정보, 안전한 파일명 등).\n\n\n\nDocumentation\n\nAnalyze/Build/Design/Document/Figma/Implement/Refactor/Review/Test/Troubleshoot 가이드 추가.\n동적 브랜치 관리 시스템(v1.2.7) 문서와 빠른 시작 가이드 추가.\nREADME 간소화 및 버전 정보 업데이트.\n\n\n\nChores\n\n기본 브랜치 참조를 동적으로 사용하는 워크플로우 정비.\n프로젝트 버전 0.0.8 및 메타데이터(version_code 등) 갱신.\nDockerfile 주석 정리.",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "기본 브랜치 자동 감지로 워크플로우가 저장소 설정에 맞춰 동작.",
+            "버전 코드 관리 추가 및 Flutter 형식(x.y.z+build) 자동 반영.",
+            "Windows 경로/인코딩 이슈 대응 유틸리티 제공(폴더 복사/삭제, 파일 정보, 안전한 파일명 등)."
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "Analyze/Build/Design/Document/Figma/Implement/Refactor/Review/Test/Troubleshoot 가이드 추가.",
+            "동적 브랜치 관리 시스템(v1.2.7) 문서와 빠른 시작 가이드 추가.",
+            "README 간소화 및 버전 정보 업데이트."
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "기본 브랜치 참조를 동적으로 사용하는 워크플로우 정비.",
+            "프로젝트 버전 0.0.8 및 메타데이터(version_code 등) 갱신.",
+            "Dockerfile 주석 정리."
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.0.3",
+      "project_type": "spring",
+      "date": "2025-10-06",
+      "pr_number": 7,
+      "raw_summary": "Summary by CodeRabbit\n\nNew Features\n\nSpring Boot 앱 초기화, 예제 API(생성/조회) 추가\n글로벌 예외 처리 및 표준 성공/에러 응답 도입\n실행 시간/계층 로깅과 SQL 로그 포매터 적용\nSwagger UI 기반 API 문서 제공\n\n\nBuild/CI\n\nJava 21로 업그레이드(빌드·런타임), Gradle 래퍼/설정 추가\nDocker 이미지 개선(포트 8080 공개, 메모리 옵션, TZ 설정)\n워크플로우 트리거 및 메타데이터 로깅 개선\n\n\nDocumentation\n\nREADME 대폭 확장, 버전 표기 업데이트, 가이드 문서 제거\n\n\nTests\n\n기본 컨텍스트 로드 테스트 추가\n\n\nChores\n\n.gitignore 확장, 애플리케이션/P6Spy 설정 추가, 버전 갱신",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "Spring Boot 앱 초기화, 예제 API(생성/조회) 추가",
+            "글로벌 예외 처리 및 표준 성공/에러 응답 도입",
+            "실행 시간/계층 로깅과 SQL 로그 포매터 적용",
+            "Swagger UI 기반 API 문서 제공"
+          ]
+        },
+        "build_ci": {
+          "title": "Build/CI",
+          "items": [
+            "Java 21로 업그레이드(빌드·런타임), Gradle 래퍼/설정 추가",
+            "Docker 이미지 개선(포트 8080 공개, 메모리 옵션, TZ 설정)",
+            "워크플로우 트리거 및 메타데이터 로깅 개선"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "README 대폭 확장, 버전 표기 업데이트, 가이드 문서 제거"
+          ]
+        },
+        "tests": {
+          "title": "Tests",
+          "items": [
+            "기본 컨텍스트 로드 테스트 추가"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            ".gitignore 확장, 애플리케이션/P6Spy 설정 추가, 버전 갱신"
+          ]
+        }
+      }
+    },
     {
       "version": "0.0.2",
       "project_type": "spring",

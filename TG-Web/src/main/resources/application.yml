@@ -1,0 +1,60 @@
+spring:
+    application:
+        name: tripgether-be
+    profiles:
+        active: prod
+    flyway:
+        enabled: true
+        baseline-on-migrate: true
+        baseline-version: 0.0.0
+        locations: classpath:db/migration
+        sql-migration-prefix: V
+        sql-migration-separator: __
+        sql-migration-suffixes: .sql
+        validate-on-migrate: false # dev 임시 변경 사항
+    jackson:
+        serialization:
+            INDENT_OUTPUT: true  # Pretty JSON 출력
+
+# 서버 설정
+server:
+    port: 8080
+    servlet:
+        context-path: /
+
+# P6Spy 설정
+decorator:
+    datasource:
+        p6spy:
+            enable-logging: true
+            multiline: true
+            logging: slf4j
+
+# Swagger/OpenAPI 설정
+springdoc:
+    servers:
+        - url: https://api.tripgether.suhsaechan.kr
+          description: main-server
+        - url: https://api.test.tripgether.suhsaechan.kr
+          description: test-server
+        - url: http://localhost:8080
+          description: local-server
+    api-docs:
+        path: /v3/api-docs
+        enabled: true
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true
+        tags-sorter: alpha
+        operations-sorter: alpha
+        try-it-out-enabled: true
+        filter: true
+    packages-to-scan: com.tripgether
+    paths-to-match: /api/**
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
+
+# GitHub Issue 연동
+suhapilog:
+    github:
+        base-url: https://github.com/TEAM-Tripgether/Tripgether-BE/issues/

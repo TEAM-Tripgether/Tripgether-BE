@@ -6,8 +6,10 @@
 # - Spring Boot 애플리케이션을 위한 멀티 스테이지 Dockerfile
 # - 빌드 결과물(app.jar)을 경량화된 런타임 이미지로 실행
 #
+#
+#
 # 🔧 빌드 구조:
-# - Gradle 빌드 시 build/libs/app.jar 생성 가정
+# - Gradle 멀티모듈 빌드 시 TG-Web/build/libs/app.jar 생성
 # - Java 21 기반 런타임 환경
 #
 # ===================================================================
@@ -21,8 +23,8 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # 빌드된 JAR 파일 복사
-# Gradle 빌드 시 build/libs/app.jar 파일 생성
-COPY build/libs/app.jar app.jar
+# 멀티 모듈 Gradle 빌드: TG-Web 모듈에서 app.jar 생성
+COPY TG-Web/build/libs/app.jar app.jar
 
 # 타임존 설정 (Asia/Seoul)
 RUN apk add --no-cache tzdata && \

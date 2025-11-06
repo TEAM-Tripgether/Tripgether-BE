@@ -69,7 +69,9 @@ public enum ErrorCode {
 
   THUMBNAIL_URL_TOO_LONG(HttpStatus.BAD_REQUEST, "썸네일 URL이 허용된 최대 길이를 초과했습니다."),
 
-  CAPTION_TOO_LONG(HttpStatus.BAD_REQUEST, "캡션이 허용된 최대 길이를 초과했습니다.");
+  CAPTION_TOO_LONG(HttpStatus.BAD_REQUEST, "캡션이 허용된 최대 길이를 초과했습니다."),
+
+  MEMBER_TERMS_REQUIRED_NOT_AGREED(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다.");
 
   private final HttpStatus status;
   private final String message;

@@ -7,7 +7,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -15,10 +14,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContentMedia extends BaseEntity {
@@ -31,8 +32,7 @@ public class ContentMedia extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   private Content content;
 
-  @Lob
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(nullable = false, length = 1000)
   private String url;
 
   @Column(length = 100)

@@ -1,6 +1,7 @@
 package com.tripgether.ai.service;
 
 import com.tripgether.ai.dto.PlaceExtractionRequest;
+import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.ai.dto.PlaceExtractionResponse;
 import com.tripgether.common.properties.AiServerProperties;
 import com.tripgether.common.util.NetworkUtil;
@@ -32,13 +33,13 @@ public class AiServerService {
    * @param snsUrl    분석할 SNS URL
    * @return AI 서버 응답 (202 Accepted)
    */
-  public PlaceExtractionResponse requestPlaceExtraction(UUID contentId, String snsUrl) {
-    String url = aiServerProperties.getBaseUrl() + aiServerProperties.getExtractPlacesUri();
+  public PlaceExtractionResponse sendPlaceExtractionRequest(UUID contentId, String snsUrl) {
+    String aiServerPlaceExtractionUrl = aiServerProperties.getBaseUrl() + aiServerProperties.getExtractPlacesUri();
 
-    PlaceExtractionRequest request = PlaceExtractionRequest.builder()
-        .contentId(contentId)
-        .snsUrl(snsUrl)
-        .build();
+    PlaceExtractionRequest aiContentRequest = PlaceExtractionRequest.builder()
+            .contentId(contentId)
+            .snsUrl(snsUrl)
+            .build();
 
     Map<String, String> headers = new HashMap<>();
     headers.put("X-API-Key", aiServerProperties.getApiKey());
@@ -46,8 +47,8 @@ public class AiServerService {
     log.info("Requesting place extraction to AI server: contentId={}, snsUrl={}", contentId, snsUrl);
 
     PlaceExtractionResponse response = networkUtil.sendPostRequest(
-        url,
-        request,
+        aiServerPlaceExtractionUrl,
+        aiContentRequest,
         headers,
         PlaceExtractionResponse.class
     );

@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import com.tripgether.place.entity.Place;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -34,6 +35,7 @@ import jakarta.persistence.JoinColumn;
 )
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContentPlace extends BaseEntity {
@@ -50,5 +52,6 @@ public class ContentPlace extends BaseEntity {
   private Place place;
 
   @Column(nullable = false)
+  @Builder.Default
   private int position = 0;
 }

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import org.hibernate.annotations.Check;
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Place extends SoftDeletableBaseEntity {
@@ -53,7 +55,6 @@ public class Place extends SoftDeletableBaseEntity {
   @Column(length = 50)
   private String phone;
 
-  @Lob
   @Column(columnDefinition = "TEXT")
   private String description;     //요약 설명
 

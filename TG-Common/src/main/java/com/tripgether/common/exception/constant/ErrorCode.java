@@ -63,7 +63,13 @@ public enum ErrorCode {
   AI_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI 서버 처리 중 오류가 발생했습니다."),
 
   // Content
-  CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "콘텐츠를 찾을 수 없습니다.");
+  CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "콘텐츠를 찾을 수 없습니다."),
+
+  URL_TOO_LONG(HttpStatus.BAD_REQUEST, "URL이 허용된 최대 길이를 초과했습니다."),
+
+  THUMBNAIL_URL_TOO_LONG(HttpStatus.BAD_REQUEST, "썸네일 URL이 허용된 최대 길이를 초과했습니다."),
+
+  CAPTION_TOO_LONG(HttpStatus.BAD_REQUEST, "캡션이 허용된 최대 길이를 초과했습니다.");
 
   private final HttpStatus status;
   private final String message;

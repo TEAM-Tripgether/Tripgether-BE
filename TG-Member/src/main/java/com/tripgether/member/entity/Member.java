@@ -54,6 +54,20 @@ public class Member extends SoftDeletableBaseEntity {
   @Column(length = 500)
   private String profileImageUrl;
 
+  // 필수 약관 동의
+  @Column(nullable = false)
+  @Builder.Default
+  private boolean requiredAgreed = false;
+
+  // 선택(마케팅) 약관 동의
+  @Column(nullable = false)
+  @Builder.Default
+  private boolean marketingAgreed = false;
+
+  // 버전이 있으면 여기에 기록 (예: "v1.0")
+  @Column(length = 20)
+  private String termsVersion;
+
   @PrePersist
   protected void onCreate() {
       if (onboardingStatus == null) {

@@ -251,8 +251,7 @@ public class MemberService {
     List<Interest> interests = interestRepository.findAllById(request.getInterestIds());
     if (interests.size() != request.getInterestIds().size()) {
       log.warn("[Onboarding] 유효하지 않은 관심사 ID 포함 - memberId={}", memberId);
-      throw new CustomException(
-          ErrorCodeBuilder.businessStatus(Subject.INTEREST, BusinessStatus.NOT_FOUND, HttpStatus.BAD_REQUEST));
+      throw new CustomException(ErrorCode.INTEREST_NOT_FOUND);
     }
 
     // 기존 관심사 삭제
@@ -265,8 +264,7 @@ public class MemberService {
             .interest(interests.stream()
                 .filter(i -> i.getId().equals(interestId))
                 .findFirst()
-                .orElseThrow(() -> new CustomException(
-                    ErrorCodeBuilder.businessStatus(Subject.INTEREST, BusinessStatus.NOT_FOUND, HttpStatus.BAD_REQUEST))))
+                .orElseThrow(() -> new CustomException(ErrorCode.INTEREST_NOT_FOUND)))
             .build())
         .collect(Collectors.toList());
 

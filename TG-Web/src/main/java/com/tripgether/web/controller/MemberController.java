@@ -41,7 +41,7 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/terms")
-  @Operation(summary = "약관 동의", description = "서비스 이용약관 및 개인정보처리방침 동의")
+  @Operation(summary = "약관 동의")
   public ResponseEntity<updateServiceAgreementTermsResponse> updateServiceAgreementTerms(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody updateServiceAgreementTermsRequest request
@@ -65,7 +65,7 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/name")
-  @Operation(summary = "이름 설정", description = "온보딩 단계: 이름 설정")
+  @Operation(summary = "이름 설정")
   public ResponseEntity<Void> updateName(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateNameRequest request
@@ -76,7 +76,7 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/birth-date")
-  @Operation(summary = "생년월일 설정", description = "온보딩 단계: 생년월일 설정")
+  @Operation(summary = "생년월일 설정")
   public ResponseEntity<Void> updateBirthDate(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateBirthDateRequest request
@@ -87,7 +87,7 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/gender")
-  @Operation(summary = "성별 설정", description = "온보딩 단계: 성별 설정")
+  @Operation(summary = "성별 설정")
   public ResponseEntity<Void> updateGender(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateGenderRequest request
@@ -98,7 +98,7 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/interests")
-  @Operation(summary = "관심사 설정", description = "온보딩 단계: 관심사 설정 (전체 교체)")
+  @Operation(summary = "관심사 설정")
   public ResponseEntity<Void> updateInterests(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateInterestsRequest request

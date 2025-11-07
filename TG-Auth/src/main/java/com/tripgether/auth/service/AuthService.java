@@ -7,8 +7,10 @@ import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.member.constant.MemberOnboardingStatus;
+import com.tripgether.member.constant.OnboardingStep;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
+import com.tripgether.member.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class AuthService {
   private static final String REFRESH_KEY_PREFIX = "RT:";
 
   private final MemberRepository memberRepository;
+  private final MemberService memberService;
   private final JwtUtil jwtUtil;
   private final RedisTemplate<String, Object> redisTemplate;
 
@@ -80,12 +83,27 @@ public class AuthService {
     //온보딩 필요 여부 확인
     boolean requiresOnboarding = (member.getOnboardingStatus() != MemberOnboardingStatus.COMPLETED);
 
+    // 온보딩 단계 계산 및 저장
+    // COMPLETED 상태면 계산하지 않고 캐시된 값 사용
+    String onboardingStep;
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.COMPLETED) {
+      // COMPLETED 상태면 캐시된 값 사용 (없으면 COMPLETED 반환)
+      onboardingStep = member.getOnboardingStep() != null 
+          ? member.getOnboardingStep().name() 
+          : OnboardingStep.COMPLETED.name();
+    } else {
+      // IN_PROGRESS 또는 NOT_STARTED 상태면 계산 후 저장
+      com.tripgether.member.constant.OnboardingStep step = memberService.calculateAndSaveOnboardingStep(member);
+      onboardingStep = step.name();
+    }
+
     //응답 생성
     return AuthResponse.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .isFirstLogin(isFirstLogin)
         .requiresOnboarding(requiresOnboarding)
+        .onboardingStep(onboardingStep)
         .build();
   }
 

@@ -1,10 +1,15 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
-import com.tripgether.member.constant.MemberOnboardingStatus;
+import com.tripgether.member.constant.OnboardingStep;
 import com.tripgether.member.dto.MemberDto;
-import com.tripgether.member.dto.TermAgreementRequest;
-import com.tripgether.member.dto.TermAgreementResponse;
+import com.tripgether.member.dto.updateServiceAgreementTermsRequest;
+import com.tripgether.member.dto.updateServiceAgreementTermsResponse;
+import com.tripgether.member.dto.onboarding.request.UpdateBirthDateRequest;
+import com.tripgether.member.dto.onboarding.request.UpdateGenderRequest;
+import com.tripgether.member.dto.onboarding.request.UpdateInterestsRequest;
+import com.tripgether.member.dto.onboarding.request.UpdateNameRequest;
+import com.tripgether.member.entity.Member;
 import com.tripgether.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,34 +40,72 @@ public class MemberController implements MemberControllerDocs {
         .body(dto);
   }
 
-  @PostMapping("/terms")
-  @Operation(summary = "약관 동의", description = "필수 약관 동의 시 회원의 온보딩 상태를 COMPLETED로 변경합니다.")
-  public ResponseEntity<TermAgreementResponse> agreeMemberTerms(
-      @AuthenticationPrincipal CustomUserDetails user,
-      @Valid @RequestBody TermAgreementRequest request
+  @PostMapping("/onboarding/terms")
+  @Operation(summary = "약관 동의", description = "서비스 이용약관 및 개인정보처리방침 동의")
+  public ResponseEntity<updateServiceAgreementTermsResponse> updateServiceAgreementTerms(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody updateServiceAgreementTermsRequest request
   ) {
-    log.info("[Onboarding] 약관 동의 요청 - memberId={}", user.getMemberId());
+    request.setMemberId(userDetails.getMemberId());
+    memberService.agreeTerms(request);
 
-    boolean requiredAgreed =
-        Boolean.TRUE.equals(request.getAgreedToTerms()) &&
-            Boolean.TRUE.equals(request.getAgreedToPrivacy());
+    // 업데이트된 Member 엔티티 조회 (onboardingStep이 저장된 상태)
+    Member member = memberService.getMemberEntityById(userDetails.getMemberId());
+    OnboardingStep currentStep = member.getOnboardingStep() != null 
+        ? member.getOnboardingStep() 
+        : OnboardingStep.TERMS;
 
-    MemberDto dto = MemberDto.builder()
-        .id(user.getMemberId())
-        .requiredAgreed(requiredAgreed)
-        .marketingAgreed(Boolean.TRUE.equals(request.getAgreedToMarketing()))
-        .termsVersion(request.getTermsVersion())
-        .build();
-
-    memberService.agreeTerms(dto);
-
-    // 동의 후에는 무조건 COMPLETED
-    TermAgreementResponse response = TermAgreementResponse.builder()
-        .completed(true)
-        .onboardingStatus(MemberOnboardingStatus.COMPLETED)
+    MemberDto memberDto = memberService.getMemberById(userDetails.getMemberId());
+    updateServiceAgreementTermsResponse response = updateServiceAgreementTermsResponse.builder()
+        .currentStep(currentStep)
+        .onboardingStatus(memberDto.getOnboardingStatus())
         .build();
 
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/onboarding/name")
+  @Operation(summary = "이름 설정", description = "온보딩 단계: 이름 설정")
+  public ResponseEntity<Void> updateName(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody UpdateNameRequest request
+  ) {
+    request.setMemberId(userDetails.getMemberId());
+    memberService.updateName(request);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/onboarding/birth-date")
+  @Operation(summary = "생년월일 설정", description = "온보딩 단계: 생년월일 설정")
+  public ResponseEntity<Void> updateBirthDate(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody UpdateBirthDateRequest request
+  ) {
+    request.setMemberId(userDetails.getMemberId());
+    memberService.updateBirthDate(request);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/onboarding/gender")
+  @Operation(summary = "성별 설정", description = "온보딩 단계: 성별 설정")
+  public ResponseEntity<Void> updateGender(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody UpdateGenderRequest request
+  ) {
+    request.setMemberId(userDetails.getMemberId());
+    memberService.updateGender(request);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/onboarding/interests")
+  @Operation(summary = "관심사 설정", description = "온보딩 단계: 관심사 설정 (전체 교체)")
+  public ResponseEntity<Void> updateInterests(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody UpdateInterestsRequest request
+  ) {
+    request.setMemberId(userDetails.getMemberId());
+    memberService.updateInterests(request);
+    return ResponseEntity.ok().build();
   }
 
   @GetMapping

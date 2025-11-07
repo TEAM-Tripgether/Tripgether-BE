@@ -4,6 +4,7 @@ import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.MemberRole;
 import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.constant.MemberGender;
+import com.tripgether.member.constant.OnboardingStep;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -54,19 +55,20 @@ public class Member extends SoftDeletableBaseEntity {
   @Column(length = 500)
   private String profileImageUrl;
 
-  // 필수 약관 동의
+  // 서비스 이용약관 및 개인정보처리방침 동의 (필수)
   @Column(nullable = false)
   @Builder.Default
-  private boolean requiredAgreed = false;
+  private Boolean isServiceTermsAndPrivacyAgreed = false;
 
-  // 선택(마케팅) 약관 동의
+  // 마케팅 수신 동의 (선택)
   @Column(nullable = false)
   @Builder.Default
-  private boolean marketingAgreed = false;
+  private Boolean isMarketingAgreed = false;
 
-  // 버전이 있으면 여기에 기록 (예: "v1.0")
+  // 현재 온보딩 단계 (캐싱용)
+  @Enumerated(EnumType.STRING)
   @Column(length = 20)
-  private String termsVersion;
+  private OnboardingStep onboardingStep;
 
   @PrePersist
   protected void onCreate() {

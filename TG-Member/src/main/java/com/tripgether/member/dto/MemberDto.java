@@ -35,18 +35,13 @@ public class MemberDto {
   @Schema(description = "회원 상태", example = "NOT_STARTED")
   private String onboardingStatus;
 
-  //필수 약관 동의 여부
-  @Schema(description = "필수 약관 동의 여부", example = "true")
-  private boolean requiredAgreed;
+  //서비스 이용약관 및 개인정보처리방침 동의 여부
+  @Schema(description = "서비스 이용약관 및 개인정보처리방침 동의 여부", example = "true")
+  private Boolean isServiceTermsAndPrivacyAgreed;
 
   //마케팅 수신 동의 여부(선택)
   @Schema(description = "마케팅 수신 동의 여부(선택)", example = "false")
-  private boolean marketingAgreed;
-
-  //약관 버전(예: v1.0)
-  @Size(max = 20, message = "약관 버전은 20자를 초과할 수 없습니다.")
-  @Schema(description = "약관 버전", example = "v1.0")
-  private String termsVersion;
+  private Boolean isMarketingAgreed;
 
   public static MemberDto entityToDto(Member entity) {
     return MemberDto.builder()
@@ -54,9 +49,8 @@ public class MemberDto {
         .email(entity.getEmail())
         .name(entity.getName())
         .onboardingStatus(entity.getOnboardingStatus().name())
-        .requiredAgreed(Boolean.TRUE.equals(entity.isRequiredAgreed()))
-        .marketingAgreed(Boolean.TRUE.equals(entity.isMarketingAgreed()))
-        .termsVersion(entity.getTermsVersion())
+        .isServiceTermsAndPrivacyAgreed(entity.getIsServiceTermsAndPrivacyAgreed())
+        .isMarketingAgreed(entity.getIsMarketingAgreed())
         .build();
   }
 }

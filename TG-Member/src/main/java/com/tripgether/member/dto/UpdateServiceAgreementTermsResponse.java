@@ -1,7 +1,6 @@
 package com.tripgether.member.dto;
 
 import com.tripgether.member.constant.OnboardingStep;
-import com.tripgether.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 

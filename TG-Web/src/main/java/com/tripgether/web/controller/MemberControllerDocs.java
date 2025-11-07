@@ -1,5 +1,6 @@
 package com.tripgether.web.controller;
 
+import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.updateServiceAgreementTermsRequest;
@@ -9,9 +10,11 @@ import com.tripgether.member.dto.onboarding.request.UpdateGenderRequest;
 import com.tripgether.member.dto.onboarding.request.UpdateInterestsRequest;
 import com.tripgether.member.dto.onboarding.request.UpdateNameRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +26,6 @@ public interface MemberControllerDocs {
           + " 문서화")
   })
   @Operation(
-      summary = "회원 생성",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -61,7 +63,6 @@ public interface MemberControllerDocs {
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 약관 동의 API 추가")
   })
   @Operation(
-      summary = "약관 동의",
       description =
           """
               ## 인증(JWT): **필요**
@@ -83,13 +84,14 @@ public interface MemberControllerDocs {
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`MEMBER_TERMS_REQUIRED_NOT_AGREED`**: 필수 약관에 동의하지 않았습니다.
               """)
-  ResponseEntity<updateServiceAgreementTermsResponse> agreeMemberTerms(updateServiceAgreementTermsRequest request);
+  ResponseEntity<updateServiceAgreementTermsResponse> agreeMemberTerms(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid updateServiceAgreementTermsRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 이름 설정 API 추가")
   })
   @Operation(
-      summary = "이름 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -107,13 +109,14 @@ public interface MemberControllerDocs {
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
-  ResponseEntity<Void> updateName(UpdateNameRequest request);
+  ResponseEntity<Void> updateName(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid UpdateNameRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 생년월일 설정 API 추가")
   })
   @Operation(
-      summary = "생년월일 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -131,13 +134,14 @@ public interface MemberControllerDocs {
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
-  ResponseEntity<Void> updateBirthDate(UpdateBirthDateRequest request);
+  ResponseEntity<Void> updateBirthDate(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid UpdateBirthDateRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 성별 설정 API 추가")
   })
   @Operation(
-      summary = "성별 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -155,13 +159,14 @@ public interface MemberControllerDocs {
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
-  ResponseEntity<Void> updateGender(UpdateGenderRequest request);
+  ResponseEntity<Void> updateGender(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid UpdateGenderRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 관심사 설정 API 추가")
   })
   @Operation(
-      summary = "관심사 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -181,14 +186,15 @@ public interface MemberControllerDocs {
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               - **`INTEREST_NOT_FOUND`**: 유효하지 않은 관심사 ID가 포함되어 있습니다.
               """)
-  ResponseEntity<Void> updateInterests(UpdateInterestsRequest request);
+  ResponseEntity<Void> updateInterests(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid UpdateInterestsRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
           + " 문서화")
   })
   @Operation(
-      summary = "전체 회원 목록 조회",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -214,7 +220,6 @@ public interface MemberControllerDocs {
           + " 문서화")
   })
   @Operation(
-      summary = "회원 단건 조회 (ID)",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -248,7 +253,6 @@ public interface MemberControllerDocs {
           + " 문서화")
   })
   @Operation(
-      summary = "회원 단건 조회 (Email)",
       description =
           """
               ## 인증(JWT): **불필요**

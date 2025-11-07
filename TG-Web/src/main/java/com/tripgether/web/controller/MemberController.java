@@ -34,6 +34,7 @@ public class MemberController implements MemberControllerDocs {
   private final MemberService memberService;
 
   @PostMapping
+  @Operation(summary = "회원 생성")
   public ResponseEntity<MemberDto> createMember(@Valid @RequestBody MemberDto memberDto) {
     MemberDto dto = memberService.createMember(memberDto);
     return ResponseEntity.status(HttpStatus.CREATED)
@@ -109,18 +110,21 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @GetMapping
+  @Operation(summary = "전체 회원 목록 조회")
   public ResponseEntity<List<MemberDto>> getAllMembers() {
     List<MemberDto> dtos = memberService.getAllMembers();
     return ResponseEntity.ok(dtos);
   }
 
   @GetMapping("/{memberId}")
+  @Operation(summary = "회원 단건 조회 (ID)")
   public ResponseEntity<MemberDto> getMemberById(@PathVariable UUID memberId) {
     MemberDto dto = memberService.getMemberById(memberId);
     return ResponseEntity.ok(dto);
   }
 
   @GetMapping("/email/{email}")
+  @Operation(summary = "회원 단건 조회 (Email)")
   public ResponseEntity<MemberDto> getMemberByEmail(@PathVariable String email) {
     MemberDto dto = memberService.getMemberByEmail(email);
     return ResponseEntity.ok(dto);

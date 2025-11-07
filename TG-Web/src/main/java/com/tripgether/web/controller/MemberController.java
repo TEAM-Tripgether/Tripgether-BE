@@ -43,7 +43,7 @@ public class MemberController implements MemberControllerDocs {
 
   @PostMapping("/onboarding/terms")
   @Operation(summary = "약관 동의")
-  public ResponseEntity<updateServiceAgreementTermsResponse> updateServiceAgreementTerms(
+  public ResponseEntity<updateServiceAgreementTermsResponse> agreeMemberTerms(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody updateServiceAgreementTermsRequest request
   ) {

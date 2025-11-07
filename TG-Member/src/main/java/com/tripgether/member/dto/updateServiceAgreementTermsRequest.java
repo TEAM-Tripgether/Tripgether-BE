@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class updateServiceAgreementTermsRequest {
+public class UpdateServiceAgreementTermsRequest {
   @Schema(hidden = true)
   @JsonIgnore
   private UUID memberId;

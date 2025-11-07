@@ -3,8 +3,9 @@ package com.tripgether.web.controller;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
 import com.tripgether.member.dto.MemberDto;
-import com.tripgether.member.dto.updateServiceAgreementTermsRequest;
-import com.tripgether.member.dto.updateServiceAgreementTermsResponse;
+import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
+import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
+import com.tripgether.member.dto.onboarding.response.OnboardingResponse;
 import com.tripgether.member.dto.onboarding.request.UpdateBirthDateRequest;
 import com.tripgether.member.dto.onboarding.request.UpdateGenderRequest;
 import com.tripgether.member.dto.onboarding.request.UpdateInterestsRequest;
@@ -71,22 +72,23 @@ public interface MemberControllerDocs {
               - **`isServiceTermsAndPrivacyAgreed`**: 서비스 이용약관 및 개인정보처리방침 동의 여부 (필수, true)
               - **`isMarketingAgreed`**: 마케팅 수신 동의 여부 (선택)
               
-              ## 반환값 (TermAgreementResponse)
+              ## 반환값 (UpdateServiceAgreementTermsResponse)
               - **`currentStep`**: 현재 온보딩 단계 (TERMS, NAME, BIRTH_DATE, GENDER, INTERESTS, COMPLETED)
               - **`onboardingStatus`**: 온보딩 상태 (NOT_STARTED, IN_PROGRESS, COMPLETED)
-              
+              - **`member`**: 회원 정보 (디버깅용)
+
               ## 특이사항
               - 서비스 이용약관 및 개인정보처리방침 동의는 필수입니다.
               - 마케팅 수신 동의는 선택 사항입니다.
               - 약관 동의 후 온보딩 상태가 IN_PROGRESS로 변경됩니다.
-              
+
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`MEMBER_TERMS_REQUIRED_NOT_AGREED`**: 필수 약관에 동의하지 않았습니다.
               """)
-  ResponseEntity<updateServiceAgreementTermsResponse> agreeMemberTerms(
+  ResponseEntity<UpdateServiceAgreementTermsResponse> agreeMemberTerms(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @Valid updateServiceAgreementTermsRequest request);
+      @Valid UpdateServiceAgreementTermsRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 이름 설정 API 추가")
@@ -98,18 +100,20 @@ public interface MemberControllerDocs {
               
               ## 요청 파라미터 (UpdateNameRequest)
               - **`name`**: 이름 (필수, 2자 이상 50자 이하)
-              
-              ## 반환값
-              - 성공 시 200 OK
-              
+
+              ## 반환값 (OnboardingResponse)
+              - **`currentStep`**: 현재 온보딩 단계
+              - **`onboardingStatus`**: 온보딩 상태
+              - **`member`**: 회원 정보 (디버깅용)
+
               ## 특이사항
               - 온보딩 단계 중 이름 설정 단계를 완료합니다.
-              
+
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
-  ResponseEntity<Void> updateName(
+  ResponseEntity<OnboardingResponse> updateName(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid UpdateNameRequest request);
 
@@ -123,18 +127,20 @@ public interface MemberControllerDocs {
               
               ## 요청 파라미터 (UpdateBirthDateRequest)
               - **`birthDate`**: 생년월일 (필수, LocalDate 형식)
-              
-              ## 반환값
-              - 성공 시 200 OK
-              
+
+              ## 반환값 (OnboardingResponse)
+              - **`currentStep`**: 현재 온보딩 단계
+              - **`onboardingStatus`**: 온보딩 상태
+              - **`member`**: 회원 정보 (디버깅용)
+
               ## 특이사항
               - 온보딩 단계 중 생년월일 설정 단계를 완료합니다.
-              
+
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
-  ResponseEntity<Void> updateBirthDate(
+  ResponseEntity<OnboardingResponse> updateBirthDate(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid UpdateBirthDateRequest request);
 
@@ -148,18 +154,20 @@ public interface MemberControllerDocs {
               
               ## 요청 파라미터 (UpdateGenderRequest)
               - **`gender`**: 성별 (필수, MALE 또는 FEMALE)
-              
-              ## 반환값
-              - 성공 시 200 OK
-              
+
+              ## 반환값 (OnboardingResponse)
+              - **`currentStep`**: 현재 온보딩 단계
+              - **`onboardingStatus`**: 온보딩 상태
+              - **`member`**: 회원 정보 (디버깅용)
+
               ## 특이사항
               - 온보딩 단계 중 성별 설정 단계를 완료합니다.
-              
+
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
-  ResponseEntity<Void> updateGender(
+  ResponseEntity<OnboardingResponse> updateGender(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid UpdateGenderRequest request);
 
@@ -173,20 +181,22 @@ public interface MemberControllerDocs {
               
               ## 요청 파라미터 (UpdateInterestsRequest)
               - **`interestIds`**: 관심사 ID 목록 (필수, 최소 1개 이상)
-              
-              ## 반환값
-              - 성공 시 200 OK
-              
+
+              ## 반환값 (OnboardingResponse)
+              - **`currentStep`**: 현재 온보딩 단계
+              - **`onboardingStatus`**: 온보딩 상태
+              - **`member`**: 회원 정보 (디버깅용)
+
               ## 특이사항
               - 온보딩 단계 중 관심사 설정 단계를 완료합니다.
               - 기존 관심사는 전체 삭제 후 새로 추가됩니다 (전체 교체).
-              
+
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               - **`INTEREST_NOT_FOUND`**: 유효하지 않은 관심사 ID가 포함되어 있습니다.
               """)
-  ResponseEntity<Void> updateInterests(
+  ResponseEntity<OnboardingResponse> updateInterests(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid UpdateInterestsRequest request);
 

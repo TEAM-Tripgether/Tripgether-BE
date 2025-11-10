@@ -80,9 +80,9 @@ public class MemberService {
     }
 
     // 캐시된 onboardingStep이 있고 유효하면 반환
-    if (member.getOnboardingStep() != null) {
-      return member.getOnboardingStep();
-    }
+//    if (member.getOnboardingStep() != null) {
+//      return member.getOnboardingStep();
+//    }
 
     // 약관 동의 체크
     if (!Boolean.TRUE.equals(member.getIsServiceTermsAndPrivacyAgreed())) {
@@ -124,6 +124,9 @@ public class MemberService {
   public OnboardingStep calculateAndSaveOnboardingStep(Member member) {
     OnboardingStep step = calculateOnboardingStep(member);
     member.setOnboardingStep(step);
+    if(step==OnboardingStep.COMPLETED) {
+      member.setOnboardingStatus(MemberOnboardingStatus.COMPLETED);
+    }
     return step;
   }
 

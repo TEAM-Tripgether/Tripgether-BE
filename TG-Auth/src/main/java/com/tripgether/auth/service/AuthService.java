@@ -93,7 +93,7 @@ public class AuthService {
           : OnboardingStep.COMPLETED.name();
     } else {
       // IN_PROGRESS 또는 NOT_STARTED 상태면 계산 후 저장
-      com.tripgether.member.constant.OnboardingStep step = memberService.calculateAndSaveOnboardingStep(member);
+      OnboardingStep step = memberService.calculateAndSaveOnboardingStep(member);
       onboardingStep = step.name();
     }
 

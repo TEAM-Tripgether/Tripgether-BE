@@ -1,0 +1,29 @@
+package com.tripgether.member.dto.onboarding.request;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UpdateInterestsRequest {
+  @Schema(hidden = true)
+  @JsonIgnore
+  private UUID memberId;
+
+  @NotEmpty(message = "관심사는 최소 1개 이상 선택해야 합니다.")
+  @Schema(description = "관심사 ID 목록", example = "[\"550e8400-e29b-41d4-a716-446655440000\"]", required = true)
+  private List<UUID> interestIds;
+}
+

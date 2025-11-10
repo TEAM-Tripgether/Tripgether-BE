@@ -19,7 +19,6 @@ public interface AuthControllerDocs {
           description = "인증 모듈 추가 및 기본 OAuth 로그인 구현")
   })
   @Operation(
-      summary = "소셜 로그인",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -51,7 +50,6 @@ public interface AuthControllerDocs {
           + " 구현")
   })
   @Operation(
-      summary = "토큰 재발급",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -79,7 +77,6 @@ public interface AuthControllerDocs {
       @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "로그아웃 기능 구현")
   })
   @Operation(
-      summary = "로그아웃",
       description =
           """
               ## 인증(JWT): **필요**

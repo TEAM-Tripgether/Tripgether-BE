@@ -19,4 +19,10 @@ public class AuthResponse {
 
   @Schema(description = "첫 로그인 여부")
   private Boolean isFirstLogin;
+
+  @Schema(description = "약관/온보딩 완료 여부")
+  private boolean requiresOnboarding;
+
+  @Schema(description = "현재 온보딩 단계", example = "TERMS")
+  private String onboardingStep;
 }

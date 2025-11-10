@@ -7,6 +7,7 @@ import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.properties.AiServerProperties;
 import com.tripgether.common.util.CommonUtil;
 import com.tripgether.sns.service.AiCallbackService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class AiController implements AiControllerDocs {
   private final CommonUtil commonUtil;
 
   @PostMapping("/callback")
+  @Operation(summary = "AI 서버 Webhook Callback")
   @Override
   public ResponseEntity<AiCallbackResponse> handleCallback(
       @RequestHeader(value = "X-API-Key", required = true) String apiKey,

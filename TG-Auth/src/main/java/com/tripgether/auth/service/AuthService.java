@@ -6,8 +6,11 @@ import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
+import com.tripgether.member.constant.MemberOnboardingStatus;
+import com.tripgether.member.constant.OnboardingStep;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
+import com.tripgether.member.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,7 @@ public class AuthService {
   private static final String REFRESH_KEY_PREFIX = "RT:";
 
   private final MemberRepository memberRepository;
+  private final MemberService memberService;
   private final JwtUtil jwtUtil;
   private final RedisTemplate<String, Object> redisTemplate;
 
@@ -38,22 +42,28 @@ public class AuthService {
     String email = request.getEmail();
     String name = request.getName();
 
-    // 회원 조회
-    Optional<Member> existMember = memberRepository.findByEmail(email);
-    Member member;
-    boolean isFirstLogin = false;
+    //회원 조회
+    Member member = memberRepository.findByEmail(email)
+        .orElseGet(() -> {
+          // 신규 회원 생성 시 기본값 자동 설정
+          Member newMember = Member.builder()
+              .email(email)
+              .name(name)
+              .build();
+          memberRepository.save(newMember);
+          log.debug("신규 회원 가입: {}", email);
+          return newMember;
+        });
 
-    if (existMember.isPresent()) {
-      member = existMember.get();
-      log.debug("기존 회원 로그인: {}", email);
-    } else { // 신규 회원
-      member = Member.builder()
-          .email(email)
-          .name(name)
-          .build();
+    boolean isFirstLogin = member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED;
+
+    //온보딩 상태 갱신 (NOT_STARTED → IN_PROGRESS)
+    if (isFirstLogin) {
+      member.setOnboardingStatus(MemberOnboardingStatus.IN_PROGRESS);
       memberRepository.save(member);
-      isFirstLogin = true;
-      log.debug("신규 회원 가입: {}", email);
+      log.debug("온보딩 상태 변경: {} → {}", MemberOnboardingStatus.NOT_STARTED, MemberOnboardingStatus.IN_PROGRESS);
+    } else {
+      log.debug("기존 회원 로그인: {}", email);
     }
 
     // JWT 토큰 생성
@@ -70,10 +80,30 @@ public class AuthService {
         jwtUtil.getRefreshExpirationTime(),
         TimeUnit.MILLISECONDS);
 
+    //온보딩 필요 여부 확인
+    boolean requiresOnboarding = (member.getOnboardingStatus() != MemberOnboardingStatus.COMPLETED);
+
+    // 온보딩 단계 계산 및 저장
+    // COMPLETED 상태면 계산하지 않고 캐시된 값 사용
+    String onboardingStep;
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.COMPLETED) {
+      // COMPLETED 상태면 캐시된 값 사용 (없으면 COMPLETED 반환)
+      onboardingStep = member.getOnboardingStep() != null 
+          ? member.getOnboardingStep().name() 
+          : OnboardingStep.COMPLETED.name();
+    } else {
+      // IN_PROGRESS 또는 NOT_STARTED 상태면 계산 후 저장
+      OnboardingStep step = memberService.calculateAndSaveOnboardingStep(member);
+      onboardingStep = step.name();
+    }
+
+    //응답 생성
     return AuthResponse.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .isFirstLogin(isFirstLogin)
+        .requiresOnboarding(requiresOnboarding)
+        .onboardingStep(onboardingStep)
         .build();
   }
 

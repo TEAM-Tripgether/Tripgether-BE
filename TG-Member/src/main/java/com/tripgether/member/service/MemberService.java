@@ -2,10 +2,25 @@ package com.tripgether.member.service;
 
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.ErrorCodeBuilder;
+import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Subject;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.BusinessStatus;
+import com.tripgether.member.constant.MemberGender;
+import com.tripgether.member.constant.MemberOnboardingStatus;
+import com.tripgether.member.constant.OnboardingStep;
 import com.tripgether.member.dto.MemberDto;
+import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
+import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
+import com.tripgether.member.dto.onboarding.request.UpdateBirthDateRequest;
+import com.tripgether.member.dto.onboarding.request.UpdateGenderRequest;
+import com.tripgether.member.dto.onboarding.request.UpdateInterestsRequest;
+import com.tripgether.member.dto.onboarding.request.UpdateNameRequest;
+import com.tripgether.member.dto.onboarding.response.OnboardingResponse;
+import com.tripgether.member.entity.Interest;
 import com.tripgether.member.entity.Member;
+import com.tripgether.member.entity.MemberInterest;
+import com.tripgether.member.repository.InterestRepository;
+import com.tripgether.member.repository.MemberInterestRepository;
 import com.tripgether.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +39,8 @@ import java.util.stream.Collectors;
 public class MemberService {
 
   private final MemberRepository memberRepository;
+  private final MemberInterestRepository memberInterestRepository;
+  private final InterestRepository interestRepository;
 
   /**
    * 회원 생성
@@ -48,6 +65,262 @@ public class MemberService {
 
     Member savedEntity = memberRepository.save(entity);
     return MemberDto.entityToDto(savedEntity);
+  }
+
+  /**
+   * 온보딩 단계 계산
+   *
+   * @param member 회원 엔티티
+   * @return 현재 온보딩 단계
+   */
+  public OnboardingStep calculateOnboardingStep(Member member) {
+    // COMPLETED 상태면 바로 반환 (쿼리 최적화)
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.COMPLETED) {
+      return OnboardingStep.COMPLETED;
+    }
+
+    // 약관 동의 체크
+    if (!Boolean.TRUE.equals(member.getIsServiceTermsAndPrivacyAgreed())) {
+      return OnboardingStep.TERMS;
+    }
+
+    // 이름 체크 (기본값이거나 빈 문자열인 경우)
+    if (member.getName() == null || member.getName().trim().isEmpty()) {
+      return OnboardingStep.NAME;
+    }
+
+    // 생년월일 체크
+    if (member.getBirthDate() == null) {
+      return OnboardingStep.BIRTH_DATE;
+    }
+
+    // 성별 체크
+    if (member.getGender() == null) {
+      return OnboardingStep.GENDER;
+    }
+
+    // 관심사 체크
+    List<MemberInterest> interests = memberInterestRepository.findByMemberId(member.getId());
+    if (interests == null || interests.isEmpty()) {
+      return OnboardingStep.INTERESTS;
+    }
+
+    // 모든 단계 완료
+    return OnboardingStep.COMPLETED;
+  }
+
+  /**
+   * 온보딩 단계 계산 및 저장
+   *
+   * @param member 회원 엔티티
+   * @return 계산된 온보딩 단계
+   */
+  @Transactional
+  public OnboardingStep calculateAndSaveOnboardingStep(Member member) {
+    OnboardingStep step = calculateOnboardingStep(member);
+    member.setOnboardingStep(calculateOnboardingStep(member));
+
+    if(step==OnboardingStep.COMPLETED) {
+      member.setOnboardingStatus(MemberOnboardingStatus.COMPLETED);
+    }
+
+    memberRepository.save(member);
+    return step;
+  }
+
+  /**
+   * 약관 동의 처리
+   *
+   * @param request 약관 동의 요청
+   * @return 온보딩 응답 (현재 단계, 상태, 회원 정보)
+   */
+  @Transactional
+  public UpdateServiceAgreementTermsResponse agreeTerms(UpdateServiceAgreementTermsRequest request) {
+    UUID memberId = request.getMemberId();
+
+    // 회원 조회
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 필수 약관 검증
+    if (!Boolean.TRUE.equals(request.getIsServiceTermsAndPrivacyAgreed())) {
+      log.warn("[Onboarding] 필수 약관에 동의하지 않음 - memberId={}", memberId);
+      throw new CustomException(ErrorCode.MEMBER_TERMS_REQUIRED_NOT_AGREED);
+    }
+
+    // 동의 정보 반영
+    member.setIsServiceTermsAndPrivacyAgreed(true);
+    member.setIsMarketingAgreed(Boolean.TRUE.equals(request.getIsMarketingAgreed()));
+
+    // 온보딩 상태를 IN_PROGRESS로 변경
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
+      member.setOnboardingStatus(MemberOnboardingStatus.IN_PROGRESS);
+    }
+
+    // 온보딩 단계 계산 및 저장
+    OnboardingStep currentStep = calculateAndSaveOnboardingStep(member);
+
+    log.info("[Onboarding] 약관 동의 완료 - memberId={}, currentStep={}", memberId, currentStep);
+
+    // Response 생성 및 반환
+    return UpdateServiceAgreementTermsResponse.builder()
+        .currentStep(currentStep)
+        .onboardingStatus(member.getOnboardingStatus().name())
+        .member(MemberDto.entityToDto(member))
+        .build();
+  }
+
+  /**
+   * 이름 업데이트
+   *
+   * @param request 이름 업데이트 요청
+   * @return 온보딩 응답 (현재 단계, 상태, 회원 정보)
+   */
+  @Transactional
+  public OnboardingResponse updateName(UpdateNameRequest request) {
+    UUID memberId = request.getMemberId();
+
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    member.setName(request.getName());
+
+    // 온보딩 상태를 IN_PROGRESS로 변경
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
+      member.setOnboardingStatus(MemberOnboardingStatus.IN_PROGRESS);
+    }
+
+    // 온보딩 단계 계산 및 저장
+    OnboardingStep currentStep = calculateAndSaveOnboardingStep(member);
+
+    log.info("[Onboarding] 이름 업데이트 완료 - memberId={}, name={}, currentStep={}",
+        memberId, request.getName(), currentStep);
+
+    return OnboardingResponse.builder()
+        .currentStep(currentStep)
+        .onboardingStatus(member.getOnboardingStatus().name())
+        .member(MemberDto.entityToDto(member))
+        .build();
+  }
+
+  /**
+   * 생년월일 업데이트
+   *
+   * @param request 생년월일 업데이트 요청
+   * @return 온보딩 응답 (현재 단계, 상태, 회원 정보)
+   */
+  @Transactional
+  public OnboardingResponse updateBirthDate(UpdateBirthDateRequest request) {
+    UUID memberId = request.getMemberId();
+
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    member.setBirthDate(request.getBirthDate());
+
+    // 온보딩 상태를 IN_PROGRESS로 변경
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
+      member.setOnboardingStatus(MemberOnboardingStatus.IN_PROGRESS);
+    }
+
+    // 온보딩 단계 계산 및 저장
+    OnboardingStep currentStep = calculateAndSaveOnboardingStep(member);
+
+    log.info("[Onboarding] 생년월일 업데이트 완료 - memberId={}, birthDate={}, currentStep={}",
+        memberId, request.getBirthDate(), currentStep);
+
+    return OnboardingResponse.builder()
+        .currentStep(currentStep)
+        .onboardingStatus(member.getOnboardingStatus().name())
+        .member(MemberDto.entityToDto(member))
+        .build();
+  }
+
+  /**
+   * 성별 업데이트
+   *
+   * @param request 성별 업데이트 요청
+   * @return 온보딩 응답 (현재 단계, 상태, 회원 정보)
+   */
+  @Transactional
+  public OnboardingResponse updateGender(UpdateGenderRequest request) {
+    UUID memberId = request.getMemberId();
+
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    member.setGender(request.getGender());
+
+    // 온보딩 상태를 IN_PROGRESS로 변경
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
+      member.setOnboardingStatus(MemberOnboardingStatus.IN_PROGRESS);
+    }
+
+    // 온보딩 단계 계산 및 저장
+    OnboardingStep currentStep = calculateAndSaveOnboardingStep(member);
+
+    log.info("[Onboarding] 성별 업데이트 완료 - memberId={}, gender={}, currentStep={}",
+        memberId, request.getGender(), currentStep);
+
+    return OnboardingResponse.builder()
+        .currentStep(currentStep)
+        .onboardingStatus(member.getOnboardingStatus().name())
+        .member(MemberDto.entityToDto(member))
+        .build();
+  }
+
+  /**
+   * 관심사 업데이트 (전체 교체)
+   *
+   * @param request 관심사 업데이트 요청
+   * @return 온보딩 응답 (현재 단계, 상태, 회원 정보)
+   */
+  @Transactional
+  public OnboardingResponse updateInterests(UpdateInterestsRequest request) {
+    UUID memberId = request.getMemberId();
+
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 관심사 ID 유효성 검증
+    List<Interest> interests = interestRepository.findAllById(request.getInterestIds());
+    if (interests.size() != request.getInterestIds().size()) {
+      log.warn("[Onboarding] 유효하지 않은 관심사 ID 포함 - memberId={}", memberId);
+      throw new CustomException(ErrorCode.INTEREST_NOT_FOUND);
+    }
+
+    // 기존 관심사 삭제
+    memberInterestRepository.deleteByMemberId(memberId);
+
+    // 새 관심사 추가
+    List<MemberInterest> memberInterests = request.getInterestIds().stream()
+        .map(interestId -> MemberInterest.builder()
+            .member(member)
+            .interest(interests.stream()
+                .filter(i -> i.getId().equals(interestId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.INTEREST_NOT_FOUND)))
+            .build())
+        .collect(Collectors.toList());
+
+    memberInterestRepository.saveAll(memberInterests);
+
+    // 온보딩 상태를 IN_PROGRESS로 변경
+    if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
+      member.setOnboardingStatus(MemberOnboardingStatus.IN_PROGRESS);
+    }
+
+    // 온보딩 단계 계산 및 저장
+    OnboardingStep currentStep = calculateAndSaveOnboardingStep(member);
+
+    log.info("[Onboarding] 관심사 업데이트 완료 - memberId={}, interestCount={}, currentStep={}",
+        memberId, memberInterests.size(), currentStep);
+
+    return OnboardingResponse.builder()
+        .currentStep(currentStep)
+        .onboardingStatus(member.getOnboardingStatus().name())
+        .member(MemberDto.entityToDto(member))
+        .build();
   }
 
   /**

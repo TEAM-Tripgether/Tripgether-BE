@@ -17,7 +17,6 @@ public interface ContentControllerDocs {
           description = "콘텐츠 Docs 추가 및 리팩토링")
   )
   @Operation(
-      summary = "콘텐츠 생성 후 장소 추출 요청",
       description =
           """
               ## 인증(JWT): **필요**

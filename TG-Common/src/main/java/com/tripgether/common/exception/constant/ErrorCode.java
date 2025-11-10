@@ -53,6 +53,8 @@ public enum ErrorCode {
 
   EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다."),
 
+  INTEREST_NOT_FOUND(HttpStatus.BAD_REQUEST, "유효하지 않은 관심사 ID가 포함되어 있습니다."),
+
   // AI Server / Network
   EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "외부 API 호출 중 오류가 발생했습니다."),
 
@@ -69,7 +71,9 @@ public enum ErrorCode {
 
   THUMBNAIL_URL_TOO_LONG(HttpStatus.BAD_REQUEST, "썸네일 URL이 허용된 최대 길이를 초과했습니다."),
 
-  CAPTION_TOO_LONG(HttpStatus.BAD_REQUEST, "캡션이 허용된 최대 길이를 초과했습니다.");
+  CAPTION_TOO_LONG(HttpStatus.BAD_REQUEST, "캡션이 허용된 최대 길이를 초과했습니다."),
+
+  MEMBER_TERMS_REQUIRED_NOT_AGREED(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다.");
 
   private final HttpStatus status;
   private final String message;

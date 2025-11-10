@@ -5,6 +5,7 @@ import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.ai.service.AiServerService;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.sns.service.ContentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class ContentController implements ContentControllerDocs {
    * - 비즈니스 처리는 AiServerService로 위임
    */
   @PostMapping("/analyze")
+  @Operation(summary = "콘텐츠 생성 후 장소 추출 요청")
   @Override
   public ResponseEntity<RequestPlaceExtractionResponse> createContent(
       //@AuthenticationPrincipal CustomUserDetails userDetails, // JWT 인증

@@ -96,8 +96,8 @@ public class AiCallbackService {
       for (int i = 0; i < places.size(); i++) {
         AiCallbackRequest.PlaceInfo placeInfo = places.get(i);
 
-        // Place 조회 또는 생성 (이름+좌표로 중복 체크)
-        Place place = findOrCreatePlace(placeInfo);
+        // Place 생성
+        Place place = createPlace(placeInfo);
 
         // Content와 Place 연결 생성 (position 포함)
         createContentPlace(content, place, i);
@@ -132,28 +132,19 @@ public class AiCallbackService {
    * @param placeInfo Place 정보
    * @return 조회 또는 생성된 Place
    */
-  private Place findOrCreatePlace(AiCallbackRequest.PlaceInfo placeInfo) {
-    // 이름과 좌표가 동일한 Place 조회
-    return placeRepository.findByNameAndLatitudeAndLongitude(
-            placeInfo.getName(),
-            placeInfo.getLatitude(),
-            placeInfo.getLongitude())
-        .orElseGet(() -> {
-          // 기존 Place가 없으면 신규 생성
-          Place newPlace = Place.builder()
-              .name(placeInfo.getName())
-              .address(placeInfo.getAddress())
-              .country(placeInfo.getCountry())
-              .latitude(placeInfo.getLatitude())
-              .longitude(placeInfo.getLongitude())
-              .description(placeInfo.getDescription())
-              .build();
+  private Place createPlace(AiCallbackRequest.PlaceInfo placeInfo) {
+    Place place = Place.builder()
+        .name(placeInfo.getName())
+        .address(placeInfo.getAddress())
+        .country(placeInfo.getCountry())
+        .latitude(placeInfo.getLatitude())
+        .longitude(placeInfo.getLongitude())
+        .description(placeInfo.getDescription())
+        .build();
 
-          // Place 저장 후 반환
-          Place savedPlace = placeRepository.save(newPlace);
-          log.debug("Created new place: id={}, name={}", savedPlace.getId(), savedPlace.getName());
-          return savedPlace;
-        });
+    Place savedPlace = placeRepository.save(place);
+    log.debug("Created new place: id={}, name={}", savedPlace.getId(), savedPlace.getName());
+    return savedPlace;
   }
 
   /**

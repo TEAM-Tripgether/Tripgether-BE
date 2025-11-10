@@ -35,14 +35,22 @@ public class MemberDto {
   @Schema(description = "회원 상태", example = "NOT_STARTED")
   private String onboardingStatus;
 
+  //서비스 이용약관 및 개인정보처리방침 동의 여부
+  @Schema(description = "서비스 이용약관 및 개인정보처리방침 동의 여부", example = "true")
+  private Boolean isServiceTermsAndPrivacyAgreed;
+
+  //마케팅 수신 동의 여부(선택)
+  @Schema(description = "마케팅 수신 동의 여부(선택)", example = "false")
+  private Boolean isMarketingAgreed;
+
   public static MemberDto entityToDto(Member entity) {
     return MemberDto.builder()
         .id(entity.getId())
         .email(entity.getEmail())
         .name(entity.getName())
-        .onboardingStatus(
-            entity.getOnboardingStatus()
-                .name())
+        .onboardingStatus(entity.getOnboardingStatus().name())
+        .isServiceTermsAndPrivacyAgreed(entity.getIsServiceTermsAndPrivacyAgreed())
+        .isMarketingAgreed(entity.getIsMarketingAgreed())
         .build();
   }
 }

@@ -23,7 +23,6 @@ public interface AiControllerDocs {
           description = "AI 서버 Webhook Callback 처리 API 구현")
   })
   @Operation(
-      summary = "AI 서버 Webhook Callback",
       description =
           """
               ## 인증(API Key): **필요** (Header: X-API-Key)

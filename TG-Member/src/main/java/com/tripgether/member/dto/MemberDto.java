@@ -3,6 +3,7 @@ package com.tripgether.member.dto;
 import com.tripgether.member.constant.MemberGender;
 import com.tripgether.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,7 +46,7 @@ public class MemberDto {
   @Schema(description = "마케팅 수신 동의 여부(선택)", example = "false")
   private Boolean isMarketingAgreed;
 
-  @NotBlank(message = "생년월일은 필수입니다.")
+  @NotNull(message = "생년월일은 필수입니다.")
   @Schema(description = "생년월일", example = "1990-01-01", required = true)
   private LocalDate birthDate;
 
@@ -60,6 +61,8 @@ public class MemberDto {
         .onboardingStatus(entity.getOnboardingStatus().name())
         .isServiceTermsAndPrivacyAgreed(entity.getIsServiceTermsAndPrivacyAgreed())
         .isMarketingAgreed(entity.getIsMarketingAgreed())
+        .birthDate(entity.getBirthDate())
+        .gender(entity.getGender())
         .build();
   }
 

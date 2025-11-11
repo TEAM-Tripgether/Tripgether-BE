@@ -23,7 +23,6 @@ import com.tripgether.member.entity.MemberInterest;
 import com.tripgether.member.repository.InterestRepository;
 import com.tripgether.member.repository.MemberInterestRepository;
 import com.tripgether.member.repository.MemberRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -76,10 +76,9 @@ public class InterestService {
   /**
    * 관심사 name으로 조회
    */
+  @Cacheable(value = "interests", key = "'name:' + #interestName")
   public GetInterestByIdResponse getInterestByName(String interestName) {
-    Interest interest = interestRepository.findAll().stream()
-        .filter(i -> i.getName().equals(interestName))
-        .findFirst()
+    Interest interest = interestRepository.findByName(interestName)
         .orElseThrow(() -> new CustomException(
             ErrorCodeBuilder.businessStatus(Subject.INTEREST, BusinessStatus.NOT_FOUND, HttpStatus.NOT_FOUND)
         ));

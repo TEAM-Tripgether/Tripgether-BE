@@ -2,6 +2,7 @@ package com.tripgether.member.repository;
 
 import com.tripgether.member.constant.InterestCategory;
 import com.tripgether.member.entity.Interest;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -25,4 +26,9 @@ public interface InterestRepository extends JpaRepository<Interest, UUID> {
    * 카테고리와 이름으로 존재 여부 확인
    */
   boolean existsByCategoryAndName(InterestCategory category, String name);
+
+  /**
+   * 이름으로 관심사 조회
+   */
+  Optional<Interest> findByName(String name);
 }

@@ -325,22 +325,25 @@ public class MemberService {
         .build();
   }
 
+  @Transactional
   public MemberDto updateProfile(UUID memberId, ProfileUpdateRequest request) {
     // 회원 존재 여부 확인
-    Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("Member not found"));
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    log.warn("Updating profile for memberId: {}, memberName: {}", memberId, member.getName());
 
     // 프로필 정보 업데이트
     member.setName(request.getName());
     member.setGender(request.getGender());
     member.setBirthDate(request.getBirthDate());
+    memberRepository.save(member);
 
     // 관심사 업데이트
-    UpdateInterestsRequest interestsRequest = new UpdateInterestsRequest();
-    interestsRequest.setMemberId(memberId);
-    interestsRequest.setInterestIds(request.getInterestIds());
+    UpdateInterestsRequest interestsRequest = UpdateInterestsRequest.builder()
+        .memberId(memberId)
+        .interestIds(request.getInterestIds())
+        .build();
     updateInterests(interestsRequest);
-
-    memberRepository.save(member);
 
     return MemberDto.builder()
         .id(member.getId())
@@ -398,7 +401,8 @@ public class MemberService {
    */
   public List<InterestDto> getInterestsByMemberId(UUID memberId) {
     // 멤버가 존재하는지 확인
-    memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("Member not found"));
+    memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     // 멤버의 관심사 리스트 반환
     List<MemberInterest> memberInterests = memberInterestRepository.findByMemberId(memberId);

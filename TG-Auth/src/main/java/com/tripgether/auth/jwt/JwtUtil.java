@@ -55,12 +55,16 @@ public class JwtUtil {
 
   // 토큰에서 memberId 파싱
   public UUID getMemberId(String token) {
-    return Jwts.parser()
+    // JWT 토큰에서 member_id를 String으로 추출
+    String memberIdString = Jwts.parser()
         .verifyWith(getSignKey())
         .build()
         .parseSignedClaims(token)
         .getPayload()
-        .get("member_id", UUID.class);
+        .get("member_id", String.class);  // member_id를 String으로 추출
+
+    // String을 UUID로 변환하여 반환
+    return UUID.fromString(memberIdString);  // String을 UUID로 변환
   }
 
   // 토큰에서 username 파싱
@@ -128,6 +132,7 @@ public class JwtUtil {
         .subject(customUserDetails.getUsername())
         .claim("category", category)
         .claim("username", customUserDetails.getUsername())
+        .claim("member_id", customUserDetails.getMemberId())
         .claim("role", customUserDetails.getMember().getMemberRole())
         .issuer(issuer)
         .issuedAt(new Date(System.currentTimeMillis()))

@@ -15,6 +15,7 @@ import com.tripgether.member.dto.onboarding.request.UpdateNameRequest;
 import com.tripgether.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -101,11 +102,13 @@ public class MemberController implements MemberControllerDocs {
 
   @PostMapping("/profile")
   @Operation(summary = "회원 프로필 설정")
-  public ResponseEntity<MemberDto> updateprofile(
-      @RequestBody ProfileUpdateRequest request,
-      @RequestHeader("Authorization") String token
+  public ResponseEntity<MemberDto> updateProfile(
+      @Valid @RequestBody ProfileUpdateRequest request,
+      HttpServletRequest httpRequest
   ) {
+
     // JWT 토큰에서 member_id 추출
+    String token = jwtUtil.extractAccessToken(httpRequest);
     UUID memberId = jwtUtil.getMemberId(token);
     log.warn("Extracted memberId from token: {}", memberId);
 

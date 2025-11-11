@@ -5,10 +5,11 @@ import com.tripgether.common.exception.ErrorCodeBuilder;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Subject;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.BusinessStatus;
-import com.tripgether.member.constant.MemberGender;
 import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.constant.OnboardingStep;
+import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
+import com.tripgether.member.dto.ProfileUpdateRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
 import com.tripgether.member.dto.onboarding.request.UpdateBirthDateRequest;
@@ -22,6 +23,7 @@ import com.tripgether.member.entity.MemberInterest;
 import com.tripgether.member.repository.InterestRepository;
 import com.tripgether.member.repository.MemberInterestRepository;
 import com.tripgether.member.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -320,6 +322,33 @@ public class MemberService {
         .currentStep(currentStep)
         .onboardingStatus(member.getOnboardingStatus().name())
         .member(MemberDto.entityToDto(member))
+        .build();
+  }
+
+  public MemberDto updateProfile(UUID memberId, ProfileUpdateRequest request) {
+    // 회원 존재 여부 확인
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+    // 프로필 정보 업데이트
+    member.setName(request.getName());
+    member.setGender(request.getGender());
+    member.setBirthDate(request.getBirthDate());
+
+    // 관심사 업데이트
+    UpdateInterestsRequest interestsRequest = new UpdateInterestsRequest();
+    interestsRequest.setMemberId(memberId);
+    interestsRequest.setInterestIds(request.getInterestIds());
+    updateInterests(interestsRequest);
+
+    memberRepository.save(member);
+
+    return MemberDto.builder()
+        .id(member.getId())
+        .email(member.getEmail())
+        .name(member.getName())
+        .gender(member.getGender())
+        .birthDate(member.getBirthDate())
+        .onboardingStatus(member.getOnboardingStatus().name())
         .build();
   }
 

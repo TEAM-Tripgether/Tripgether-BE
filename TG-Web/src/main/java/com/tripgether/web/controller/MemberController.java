@@ -1,7 +1,10 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.auth.jwt.JwtUtil;
+import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
+import com.tripgether.member.dto.ProfileUpdateRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
 import com.tripgether.member.dto.onboarding.response.OnboardingResponse;
@@ -31,6 +34,7 @@ import java.util.List;
 public class MemberController implements MemberControllerDocs {
 
   private final MemberService memberService;
+  private final JwtUtil jwtUtil;
 
   @PostMapping
   @Operation(summary = "회원 생성")
@@ -93,6 +97,22 @@ public class MemberController implements MemberControllerDocs {
     request.setMemberId(userDetails.getMemberId());
     OnboardingResponse response = memberService.updateInterests(request);
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/profile")
+  @Operation(summary = "회원 프로필 설정")
+  public ResponseEntity<MemberDto> updateprofile(
+      @RequestBody ProfileUpdateRequest request,
+      @RequestHeader("Authorization") String token
+  ) {
+    // JWT 토큰에서 member_id 추출
+    UUID memberId = jwtUtil.getMemberId(token);
+    log.warn("Extracted memberId from token: {}", memberId);
+
+    // 프로필 업데이트
+    MemberDto updatedMember = memberService.updateProfile(memberId, request);
+
+    return ResponseEntity.ok(updatedMember);
   }
 
   @GetMapping

@@ -72,4 +72,18 @@ public class InterestService {
 
     return GetInterestByIdResponse.from(interest);
   }
+
+  /**
+   * 관심사 name으로 조회
+   */
+  public GetInterestByIdResponse getInterestByName(String interestName) {
+    Interest interest = interestRepository.findAll().stream()
+        .filter(i -> i.getName().equals(interestName))
+        .findFirst()
+        .orElseThrow(() -> new CustomException(
+            ErrorCodeBuilder.businessStatus(Subject.INTEREST, BusinessStatus.NOT_FOUND, HttpStatus.NOT_FOUND)
+        ));
+
+    return GetInterestByIdResponse.from(interest);
+  }
 }

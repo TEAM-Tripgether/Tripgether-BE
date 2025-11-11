@@ -4,6 +4,7 @@ import com.tripgether.common.entity.SoftDeletableBaseEntity;
 import com.tripgether.member.constant.MemberRole;
 import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.constant.MemberGender;
+import com.tripgether.member.constant.OnboardingStep;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends SoftDeletableBaseEntity {
@@ -50,9 +52,23 @@ public class Member extends SoftDeletableBaseEntity {
   @Builder.Default
   private MemberRole memberRole = MemberRole.ROLE_USER;
 
-  @Lob
-  @Column(columnDefinition = "TEXT")
+  @Column(length = 500)
   private String profileImageUrl;
+
+  // 서비스 이용약관 및 개인정보처리방침 동의 (필수)
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean isServiceTermsAndPrivacyAgreed = false;
+
+  // 마케팅 수신 동의 (선택)
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean isMarketingAgreed = false;
+
+  // 현재 온보딩 단계 (캐싱용)
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private OnboardingStep onboardingStep;
 
   @PrePersist
   protected void onCreate() {
@@ -62,10 +78,6 @@ public class Member extends SoftDeletableBaseEntity {
       if (memberRole == null) {
           memberRole = MemberRole.ROLE_USER;    //기본값
       }
-  }
-
-  public void updateProfileImage(String profileImageUrl) {
-    this.profileImageUrl = profileImageUrl;
   }
 
 }

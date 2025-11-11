@@ -6,10 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-/**
- * ContentPlace 연결 테이블에 대한 Repository
- */
 @Repository
 public interface ContentPlaceRepository extends JpaRepository<ContentPlace, UUID> {
 
+  // Content의 모든 ContentPlace 삭제
+  void deleteByContentId(UUID contentId);
 }

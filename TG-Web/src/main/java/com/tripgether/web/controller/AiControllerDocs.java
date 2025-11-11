@@ -12,13 +12,17 @@ public interface AiControllerDocs {
 
   @ApiChangeLogs({
       @ApiChangeLog(
+          date = "2025.11.02",
+          author = Author.KANGJIYUN,
+          issueNumber = 48,
+          description = "AI 서버 Webhook Callback 리팩터링"),
+      @ApiChangeLog(
           date = "2025.10.31",
           author = Author.SUHSAECHAN,
           issueNumber = 48,
           description = "AI 서버 Webhook Callback 처리 API 구현")
   })
   @Operation(
-      summary = "AI 서버 Webhook Callback",
       description =
           """
               ## 인증(API Key): **필요** (Header: X-API-Key)

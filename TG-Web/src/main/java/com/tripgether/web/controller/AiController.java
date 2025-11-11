@@ -5,7 +5,9 @@ import com.tripgether.ai.dto.AiCallbackResponse;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.properties.AiServerProperties;
+import com.tripgether.common.util.CommonUtil;
 import com.tripgether.sns.service.AiCallbackService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,10 @@ public class AiController implements AiControllerDocs {
 
   private final AiCallbackService aiCallbackService;
   private final AiServerProperties aiServerProperties;
+  private final CommonUtil commonUtil;
 
   @PostMapping("/callback")
+  @Operation(summary = "AI 서버 Webhook Callback")
   @Override
   public ResponseEntity<AiCallbackResponse> handleCallback(
       @RequestHeader(value = "X-API-Key", required = true) String apiKey,
@@ -38,8 +42,8 @@ public class AiController implements AiControllerDocs {
     // API Key 검증
     if (!aiServerProperties.getCallbackApiKey().equals(apiKey)) {
       log.error("Invalid API Key from AI server. Expected: {}, Received: {}",
-          maskApiKey(aiServerProperties.getCallbackApiKey()),
-          maskApiKey(apiKey));
+              commonUtil.maskSecureString(aiServerProperties.getCallbackApiKey()),
+              commonUtil.maskSecureString(apiKey));
       throw new CustomException(ErrorCode.INVALID_API_KEY);
     }
 
@@ -55,18 +59,5 @@ public class AiController implements AiControllerDocs {
     log.info("AI callback processed successfully: contentId={}", request.getContentId());
 
     return ResponseEntity.ok(response);
-  }
-
-  /**
-   * API Key를 마스킹하여 로그에 출력합니다 (보안)
-   *
-   * @param apiKey API Key
-   * @return 마스킹된 API Key (앞 4자리만 표시)
-   */
-  private String maskApiKey(String apiKey) {
-    if (apiKey == null || apiKey.length() < 8) {
-      return "****";
-    }
-    return apiKey.substring(0, 4) + "****";
   }
 }

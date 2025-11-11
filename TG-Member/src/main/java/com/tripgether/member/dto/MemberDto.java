@@ -1,7 +1,12 @@
 package com.tripgether.member.dto;
 
+import com.tripgether.member.constant.MemberGender;
 import com.tripgether.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,6 +48,13 @@ public class MemberDto {
   @Schema(description = "마케팅 수신 동의 여부(선택)", example = "false")
   private Boolean isMarketingAgreed;
 
+  @Column
+  private LocalDate birthDate;
+
+  @Enumerated(EnumType.STRING)
+  @Column(length = 10)
+  private MemberGender gender;
+
   public static MemberDto entityToDto(Member entity) {
     return MemberDto.builder()
         .id(entity.getId())
@@ -53,4 +65,5 @@ public class MemberDto {
         .isMarketingAgreed(entity.getIsMarketingAgreed())
         .build();
   }
+
 }

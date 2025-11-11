@@ -115,4 +115,12 @@ public class MemberController implements MemberControllerDocs {
     MemberDto dto = memberService.getMemberByEmail(email);
     return ResponseEntity.ok(dto);
   }
+
+  @GetMapping("/{memberId}/interests")
+  @Operation(summary = "회원 관심사 조회 (ID)")
+  public ResponseEntity<List<InterestDto>> getInterestsByMemberId(@PathVariable UUID memberId) {
+    List<InterestDto> interestDtos = memberService.getInterestsByMemberId(memberId);
+    return ResponseEntity.ok(interestDtos);
+  }
+
 }

@@ -360,4 +360,27 @@ public class MemberService {
 
     return MemberDto.entityToDto(entity);
   }
+
+  /**
+   * 회원 ID로 관심사 조회
+   *
+   *  @param memberId 회원 ID
+   * @return 회원 관심사 목록
+   */
+  public List<InterestDto> getInterestsByMemberId(UUID memberId) {
+    // 멤버가 존재하는지 확인
+    memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+    // 멤버의 관심사 리스트 반환
+    List<MemberInterest> memberInterests = memberInterestRepository.findByMemberId(memberId);
+
+    // 관심사 ID를 통해 관심사 리스트 반환
+    List<InterestDto> interests = memberInterests.stream()
+        .map(memberInterest -> new InterestDto(
+            memberInterest.getInterest().getId(),
+            memberInterest.getInterest().getName()))
+        .collect(Collectors.toList());
+
+    return interests;
+  }
 }

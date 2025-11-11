@@ -8,6 +8,10 @@
 -- 제약조건 추가 (안전한 방식)
 -- ============================================
 
+SELECT conname
+FROM pg_constraint
+WHERE conname = 'interest_category_name_unique';
+
 -- 1) UNIQUE 제약조건 추가 (ON CONFLICT를 위해 필수)
 -- 이미 존재하는 경우 에러를 방지하기 위해 DO $$ 블록 사용
 DO $$

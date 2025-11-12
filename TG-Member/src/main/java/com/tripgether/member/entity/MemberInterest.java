@@ -23,4 +23,8 @@ public class MemberInterest extends SoftDeletableBaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   private Interest interest;
+
+  public UUID getInterestId() {
+    return this.interest != null ? this.interest.getId() : null;  // interest가 null이 아닐 경우 interest의 ID 반환
+  }
 }

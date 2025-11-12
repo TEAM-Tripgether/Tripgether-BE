@@ -1,7 +1,10 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.auth.jwt.JwtUtil;
+import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
+import com.tripgether.member.dto.ProfileUpdateRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
 import com.tripgether.member.dto.onboarding.response.OnboardingResponse;
@@ -12,6 +15,7 @@ import com.tripgether.member.dto.onboarding.request.UpdateNameRequest;
 import com.tripgether.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,7 @@ import java.util.List;
 public class MemberController implements MemberControllerDocs {
 
   private final MemberService memberService;
+  private final JwtUtil jwtUtil;
 
   @PostMapping
   @Operation(summary = "회원 생성")
@@ -95,6 +100,22 @@ public class MemberController implements MemberControllerDocs {
     return ResponseEntity.ok(response);
   }
 
+  @PostMapping("/profile")
+  @Operation(summary = "회원 프로필 설정(수정)")
+  public ResponseEntity<MemberDto> updateProfile(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody ProfileUpdateRequest request
+  ) {
+
+    // 로그인한 사용자 정보에서 memberId 추출
+    UUID memberId = userDetails.getMemberId();
+
+    // 프로필 업데이트
+    MemberDto updatedMember = memberService.updateProfile(memberId, request);
+
+    return ResponseEntity.ok(updatedMember);
+  }
+
   @GetMapping
   @Operation(summary = "전체 회원 목록 조회")
   public ResponseEntity<List<MemberDto>> getAllMembers() {
@@ -115,4 +136,12 @@ public class MemberController implements MemberControllerDocs {
     MemberDto dto = memberService.getMemberByEmail(email);
     return ResponseEntity.ok(dto);
   }
+
+  @GetMapping("/{memberId}/interests")
+  @Operation(summary = "회원 관심사 조회 (ID)")
+  public ResponseEntity<List<InterestDto>> getInterestsByMemberId(@PathVariable UUID memberId) {
+    List<InterestDto> interestDtos = memberService.getInterestsByMemberId(memberId);
+    return ResponseEntity.ok(interestDtos);
+  }
+
 }

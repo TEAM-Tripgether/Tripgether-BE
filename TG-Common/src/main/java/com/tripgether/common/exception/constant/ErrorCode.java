@@ -51,6 +51,8 @@ public enum ErrorCode {
   // Member
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
 
+  NAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
+
   EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다."),
 
   INTEREST_NOT_FOUND(HttpStatus.BAD_REQUEST, "유효하지 않은 관심사 ID가 포함되어 있습니다."),

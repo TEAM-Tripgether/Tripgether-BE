@@ -331,6 +331,11 @@ public class MemberService {
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     log.warn("Updating profile for memberId: {}, memberName: {}", memberId, member.getName());
 
+    boolean isDuplicateName = memberRepository.existsByNameAndIdNot(request.getName(), memberId);
+    if (isDuplicateName) {
+      throw new CustomException(ErrorCode.NAME_ALREADY_EXISTS);
+    }
+
     // 프로필 정보 업데이트
     member.setName(request.getName());
     member.setGender(request.getGender());

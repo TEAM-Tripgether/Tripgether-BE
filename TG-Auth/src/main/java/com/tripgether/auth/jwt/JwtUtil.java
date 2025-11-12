@@ -6,7 +6,6 @@ import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -14,6 +13,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +51,20 @@ public class JwtUtil {
   private static final String BLACKLIST_PREFIX = "BL:";
   private static final String BLACKLIST_VALUE = "blacklisted";
   public static final String REFRESH_KEY_PREFIX = "RT:";
+
+  // 토큰에서 memberId 파싱
+  public UUID getMemberId(String token) {
+    // JWT 토큰에서 member_id를 String으로 추출
+    String memberIdString = Jwts.parser()
+        .verifyWith(getSignKey())
+        .build()
+        .parseSignedClaims(token)
+        .getPayload()
+        .get("member_id", String.class);  // member_id를 String으로 추출
+
+    // String을 UUID로 변환하여 반환
+    return UUID.fromString(memberIdString);  // String을 UUID로 변환
+  }
 
   // 토큰에서 username 파싱
   public String getUsername(String token) {
@@ -117,6 +131,7 @@ public class JwtUtil {
         .subject(customUserDetails.getUsername())
         .claim("category", category)
         .claim("username", customUserDetails.getUsername())
+        .claim("member_id", customUserDetails.getMemberId())
         .claim("role", customUserDetails.getMember().getMemberRole())
         .issuer(issuer)
         .issuedAt(new Date(System.currentTimeMillis()))

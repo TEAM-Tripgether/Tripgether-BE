@@ -10,7 +10,7 @@ import com.tripgether.place.entity.Place;
 import com.tripgether.place.entity.PlacePlatformReference;
 import com.tripgether.place.repository.PlacePlatformReferenceRepository;
 import com.tripgether.place.repository.PlaceRepository;
-import com.tripgether.place.service.GooglePlaceSearcher;
+import com.tripgether.place.service.PlaceSearchService;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.entity.ContentPlace;
 import com.tripgether.sns.repository.ContentPlaceRepository;
@@ -33,7 +33,7 @@ public class AiCallbackService {
   private final PlaceRepository placeRepository;
   private final ContentPlaceRepository contentPlaceRepository;
   private final PlacePlatformReferenceRepository placePlatformReferenceRepository;
-  private final GooglePlaceSearcher googlePlaceSearcher;
+  private final PlaceSearchService placeSearchService;
 
   /**
    * AI 서버로부터 받은 Callback 처리
@@ -106,7 +106,7 @@ public class AiCallbackService {
         AiCallbackRequest.PlaceInfo placeInfo = places.get(i);
 
         // 1. Google Places API 호출
-        GooglePlaceSearchDto.PlaceDetail googlePlace = googlePlaceSearcher.searchPlaceDetail(
+        GooglePlaceSearchDto.PlaceDetail googlePlace = placeSearchService.searchGooglePlace(
             placeInfo.getName(),
             placeInfo.getAddress(),
             placeInfo.getLanguage()
@@ -170,7 +170,14 @@ public class AiCallbackService {
       Place place = existing.get();
       place.setAddress(googlePlace.getAddress());
       place.setCountry(googlePlace.getCountry());
-      log.debug("Updated existing place: id={}, name={}", place.getId(), place.getName());
+      place.setTypes(googlePlace.getTypes());
+      place.setBusinessStatus(googlePlace.getBusinessStatus());
+      place.setIconUrl(googlePlace.getIconUrl());
+      place.setRating(googlePlace.getRating());
+      place.setUserRatingsTotal(googlePlace.getUserRatingsTotal());
+      place.setPhotoUrls(googlePlace.getPhotoUrls());
+      log.debug("Updated existing place: id={}, name={}, rating={}",
+          place.getId(), place.getName(), place.getRating());
       return placeRepository.save(place);
     } else {
       // 새로 생성
@@ -180,10 +187,17 @@ public class AiCallbackService {
           .country(googlePlace.getCountry())
           .latitude(googlePlace.getLatitude())
           .longitude(googlePlace.getLongitude())
+          .types(googlePlace.getTypes())
+          .businessStatus(googlePlace.getBusinessStatus())
+          .iconUrl(googlePlace.getIconUrl())
+          .rating(googlePlace.getRating())
+          .userRatingsTotal(googlePlace.getUserRatingsTotal())
+          .photoUrls(googlePlace.getPhotoUrls())
           .build();
 
       Place savedPlace = placeRepository.save(newPlace);
-      log.debug("Created new place: id={}, name={}", savedPlace.getId(), savedPlace.getName());
+      log.debug("Created new place: id={}, name={}, rating={}",
+          savedPlace.getId(), savedPlace.getName(), savedPlace.getRating());
       return savedPlace;
     }
   }

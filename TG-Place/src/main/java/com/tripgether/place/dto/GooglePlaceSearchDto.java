@@ -35,6 +35,20 @@ public class GooglePlaceSearchDto {
     private String formattedAddress;
 
     private Geometry geometry;
+
+    private List<String> types;
+
+    @JsonProperty("business_status")
+    private String businessStatus;
+
+    private String icon;
+
+    private List<Photo> photos;
+
+    private BigDecimal rating;
+
+    @JsonProperty("user_ratings_total")
+    private Integer userRatingsTotal;
   }
 
   /**
@@ -57,6 +71,22 @@ public class GooglePlaceSearchDto {
   }
 
   /**
+   * 사진 정보
+   */
+  @Getter
+  @NoArgsConstructor
+  public static class Photo {
+    @JsonProperty("photo_reference")
+    private String photoReference;
+
+    private Integer height;
+    private Integer width;
+
+    @JsonProperty("html_attributions")
+    private List<String> htmlAttributions;
+  }
+
+  /**
    * Service 레이어에서 사용할 장소 상세 정보
    */
   @Getter
@@ -70,5 +100,13 @@ public class GooglePlaceSearchDto {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private String country;
+
+    // 추가 정보
+    private List<String> types;
+    private String businessStatus;
+    private String iconUrl;
+    private BigDecimal rating;
+    private Integer userRatingsTotal;
+    private List<String> photoUrls;
   }
 }

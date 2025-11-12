@@ -2,6 +2,7 @@ package com.tripgether.place.service;
 
 import com.tripgether.common.properties.PlaceProperties;
 import com.tripgether.common.util.NetworkUtil;
+import com.tripgether.place.constant.PlacePlatform;
 import com.tripgether.place.dto.GooglePlaceSearchDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Google Places API를 통한 장소 검색 서비스
@@ -16,13 +19,18 @@ import java.nio.charset.StandardCharsets;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GooglePlaceSearcher {
+public class GooglePlaceSearcher implements PlacePlatformSearcher {
 
   private final NetworkUtil networkUtil;
   private final PlaceProperties placeProperties;
 
   private static final String GOOGLE_PLACES_BASE_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json";
-  private static final String SEARCH_FIELDS = "place_id,name,formatted_address,geometry";
+  private static final String SEARCH_FIELDS = "place_id,name,formatted_address,geometry,types,business_status,icon,photos,rating,user_ratings_total";
+
+  @Override
+  public PlacePlatform getSupportedPlatform() {
+    return PlacePlatform.GOOGLE;
+  }
 
   /**
    * 상호명으로 Google Place 검색
@@ -32,6 +40,7 @@ public class GooglePlaceSearcher {
    * @param language  언어 코드 (ko, en, ja, zh)
    * @return Google Place 상세 정보 (place_id, 좌표 등)
    */
+  @Override
   public GooglePlaceSearchDto.PlaceDetail searchPlaceDetail(String placeName, String address, String language) {
     String googleApiKey = placeProperties.getGoogleApiKey();
 
@@ -67,9 +76,16 @@ public class GooglePlaceSearcher {
             .latitude(candidate.getGeometry().getLocation().getLat())
             .longitude(candidate.getGeometry().getLocation().getLng())
             .country(extractCountryCode(candidate.getFormattedAddress()))
+            .types(candidate.getTypes())
+            .businessStatus(candidate.getBusinessStatus())
+            .iconUrl(candidate.getIcon())
+            .rating(candidate.getRating())
+            .userRatingsTotal(candidate.getUserRatingsTotal())
+            .photoUrls(buildPhotoUrls(candidate.getPhotos(), googleApiKey))
             .build();
 
-        log.info("Google Place found: placeId={}, name={}", placeDetail.getPlaceId(), placeDetail.getName());
+        log.info("Google Place found: placeId={}, name={}, rating={}",
+            placeDetail.getPlaceId(), placeDetail.getName(), placeDetail.getRating());
         return placeDetail;
 
       } else {
@@ -101,6 +117,30 @@ public class GooglePlaceSearcher {
         language,
         googleApiKey
     );
+  }
+
+  /**
+   * 사진 URL 배열 생성
+   * <p>
+   * photo_reference를 실제 Google Photos API URL로 변환
+   *
+   * @param photos       사진 정보 리스트
+   * @param googleApiKey API 키
+   * @return 사진 URL 배열 (최대 10개)
+   */
+  private List<String> buildPhotoUrls(List<GooglePlaceSearchDto.Photo> photos, String googleApiKey) {
+    if (photos == null || photos.isEmpty()) {
+      return null;
+    }
+
+    return photos.stream()
+        .limit(10)  // 최대 10개
+        .map(photo -> String.format(
+            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s",
+            photo.getPhotoReference(),
+            googleApiKey
+        ))
+        .collect(Collectors.toList());
   }
 
   /**

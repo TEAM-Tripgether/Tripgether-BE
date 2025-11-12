@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,24 +87,11 @@ public class AiCallbackRequest {
     @NotNull(message = "address는 필수입니다.")
     private String address;
 
-    @Schema(description = "국가 코드 (ISO 3166-1 alpha-2)", example = "KR")
-    @NotNull(message = "country는 필수입니다.")
-    private String country;
-
-    @Schema(description = "위도", example = "37.563512")
-    @NotNull(message = "latitude는 필수입니다.")
-    private BigDecimal latitude;
-
-    @Schema(description = "경도", example = "126.985012")
-    @NotNull(message = "longitude는 필수입니다.")
-    private BigDecimal longitude;
-
-    @Schema(description = "장소 설명", example = "칼국수와 만두로 유명한 맛집")
-    @NotNull(message = "description은 필수입니다.")
-    private String description;
+    @Schema(description = "언어 코드 (ISO 639-1)", example = "ko", allowableValues = {"ko", "en", "ja", "zh"})
+    @NotNull(message = "language는 필수입니다.")
+    private String language;
 
     @Schema(description = "AI 추출 원본 데이터", example = "명동 교자에서 칼국수 먹었어요 (caption, confidence: 0.95)")
-    @NotNull(message = "rawData는 필수입니다.")
     private String rawData;
   }
 }

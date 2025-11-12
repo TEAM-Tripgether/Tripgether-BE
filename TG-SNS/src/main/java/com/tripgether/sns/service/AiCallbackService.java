@@ -1,11 +1,16 @@
 package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.AiCallbackRequest;
+import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
+import com.tripgether.place.constant.PlacePlatform;
+import com.tripgether.place.dto.GooglePlaceSearchDto;
 import com.tripgether.place.entity.Place;
+import com.tripgether.place.entity.PlacePlatformReference;
+import com.tripgether.place.repository.PlacePlatformReferenceRepository;
 import com.tripgether.place.repository.PlaceRepository;
-import com.tripgether.common.constant.ContentStatus;
+import com.tripgether.place.service.GooglePlaceSearcher;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.entity.ContentPlace;
 import com.tripgether.sns.repository.ContentPlaceRepository;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 // AI 서버 Webhook Callback 처리
 @Service
@@ -26,6 +32,8 @@ public class AiCallbackService {
   private final ContentRepository contentRepository;
   private final PlaceRepository placeRepository;
   private final ContentPlaceRepository contentPlaceRepository;
+  private final PlacePlatformReferenceRepository placePlatformReferenceRepository;
+  private final GooglePlaceSearcher googlePlaceSearcher;
 
   /**
    * AI 서버로부터 받은 Callback 처리
@@ -65,6 +73,7 @@ public class AiCallbackService {
    *
    * - Content가 COMPLETED 상태: 기존 ContentPlace 삭제 후 재생성 (업데이트 모드)
    * - Content가 PENDING/FAILED 상태: 신규 ContentPlace 생성
+   * - Google Places API 호출하여 place_id 및 상세 정보 획득
    *
    * @param content 대상 Content
    * @param request AI Callback 요청
@@ -96,10 +105,26 @@ public class AiCallbackService {
       for (int i = 0; i < places.size(); i++) {
         AiCallbackRequest.PlaceInfo placeInfo = places.get(i);
 
-        // Place 생성
-        Place place = createPlace(placeInfo);
+        // 1. Google Places API 호출
+        GooglePlaceSearchDto.PlaceDetail googlePlace = googlePlaceSearcher.searchPlaceDetail(
+            placeInfo.getName(),
+            placeInfo.getAddress(),
+            placeInfo.getLanguage()
+        );
 
-        // Content와 Place 연결 생성 (position 포함)
+        if (googlePlace == null) {
+          log.warn("Google Place not found: name={}, skipping", placeInfo.getName());
+          // fallback 로직은 추후 구현
+          continue;
+        }
+
+        // 2. Google 응답으로 Place 생성/업데이트
+        Place place = createOrUpdatePlace(googlePlace);
+
+        // 3. PlacePlatformReference 저장 (Google place_id)
+        savePlacePlatformReference(place, googlePlace.getPlaceId());
+
+        // 4. Content와 Place 연결 생성 (position 포함)
         createContentPlace(content, place, i);
       }
     } else {
@@ -125,26 +150,68 @@ public class AiCallbackService {
   }
 
   /**
-   * Place 조회 또는 생성
+   * Google Places API 응답으로 Place 생성 또는 업데이트
    * <p>
    * 이름+좌표로 중복 체크 후 없으면 신규 생성
    *
-   * @param placeInfo Place 정보
+   * @param googlePlace Google Places API 응답
    * @return 조회 또는 생성된 Place
    */
-  private Place createPlace(AiCallbackRequest.PlaceInfo placeInfo) {
-    Place place = Place.builder()
-        .name(placeInfo.getName())
-        .address(placeInfo.getAddress())
-        .country(placeInfo.getCountry())
-        .latitude(placeInfo.getLatitude())
-        .longitude(placeInfo.getLongitude())
-        .description(placeInfo.getDescription())
-        .build();
+  private Place createOrUpdatePlace(GooglePlaceSearchDto.PlaceDetail googlePlace) {
+    // 이름+좌표로 중복 체크
+    Optional<Place> existing = placeRepository.findByNameAndLatitudeAndLongitude(
+        googlePlace.getName(),
+        googlePlace.getLatitude(),
+        googlePlace.getLongitude()
+    );
 
-    Place savedPlace = placeRepository.save(place);
-    log.debug("Created new place: id={}, name={}", savedPlace.getId(), savedPlace.getName());
-    return savedPlace;
+    if (existing.isPresent()) {
+      // 기존 Place 업데이트
+      Place place = existing.get();
+      place.setAddress(googlePlace.getAddress());
+      place.setCountry(googlePlace.getCountry());
+      log.debug("Updated existing place: id={}, name={}", place.getId(), place.getName());
+      return placeRepository.save(place);
+    } else {
+      // 새로 생성
+      Place newPlace = Place.builder()
+          .name(googlePlace.getName())
+          .address(googlePlace.getAddress())
+          .country(googlePlace.getCountry())
+          .latitude(googlePlace.getLatitude())
+          .longitude(googlePlace.getLongitude())
+          .build();
+
+      Place savedPlace = placeRepository.save(newPlace);
+      log.debug("Created new place: id={}, name={}", savedPlace.getId(), savedPlace.getName());
+      return savedPlace;
+    }
+  }
+
+  /**
+   * PlacePlatformReference 저장
+   * <p>
+   * Google place_id를 PlacePlatformReference에 저장 (중복 체크)
+   *
+   * @param place         장소
+   * @param googlePlaceId Google place_id
+   */
+  private void savePlacePlatformReference(Place place, String googlePlaceId) {
+    Optional<PlacePlatformReference> existing =
+        placePlatformReferenceRepository.findByPlaceAndPlacePlatform(place, PlacePlatform.GOOGLE);
+
+    if (existing.isEmpty()) {
+      PlacePlatformReference ref = PlacePlatformReference.builder()
+          .place(place)
+          .placePlatform(PlacePlatform.GOOGLE)
+          .placePlatformId(googlePlaceId)
+          .build();
+      placePlatformReferenceRepository.save(ref);
+      log.debug("Saved PlacePlatformReference: placeId={}, googlePlaceId={}", place.getId(), googlePlaceId);
+    } else {
+      log.debug("PlacePlatformReference already exists: placeId={}, googlePlaceId={}",
+          place.getId(), existing.get().getPlacePlatformId());
+    }
   }
 
   /**

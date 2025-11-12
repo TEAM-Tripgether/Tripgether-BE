@@ -18,6 +18,7 @@ public class ErrorMessageTemplate {
     MEMBER("회원"),
     USER("사용자"),
     AUTH("인증"),
+    INTEREST("관심사"),
     ;
 
     private final String value;

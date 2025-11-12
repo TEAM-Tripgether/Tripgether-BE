@@ -1,7 +1,10 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.auth.jwt.JwtUtil;
+import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
+import com.tripgether.member.dto.ProfileUpdateRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
 import com.tripgether.member.dto.onboarding.response.OnboardingResponse;
@@ -10,7 +13,6 @@ import com.tripgether.member.dto.onboarding.request.UpdateGenderRequest;
 import com.tripgether.member.dto.onboarding.request.UpdateInterestsRequest;
 import com.tripgether.member.dto.onboarding.request.UpdateNameRequest;
 import com.tripgether.member.service.MemberService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -31,9 +33,9 @@ import java.util.List;
 public class MemberController implements MemberControllerDocs {
 
   private final MemberService memberService;
+  private final JwtUtil jwtUtil;
 
   @PostMapping
-  @Operation(summary = "회원 생성")
   public ResponseEntity<MemberDto> createMember(@Valid @RequestBody MemberDto memberDto) {
     MemberDto dto = memberService.createMember(memberDto);
     return ResponseEntity.status(HttpStatus.CREATED)
@@ -41,7 +43,6 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/terms")
-  @Operation(summary = "약관 동의")
   public ResponseEntity<UpdateServiceAgreementTermsResponse> agreeMemberTerms(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateServiceAgreementTermsRequest request
@@ -52,7 +53,6 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/name")
-  @Operation(summary = "이름 설정")
   public ResponseEntity<OnboardingResponse> updateName(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateNameRequest request
@@ -63,7 +63,6 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/birth-date")
-  @Operation(summary = "생년월일 설정")
   public ResponseEntity<OnboardingResponse> updateBirthDate(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateBirthDateRequest request
@@ -74,7 +73,6 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/gender")
-  @Operation(summary = "성별 설정")
   public ResponseEntity<OnboardingResponse> updateGender(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateGenderRequest request
@@ -85,7 +83,6 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/onboarding/interests")
-  @Operation(summary = "관심사 설정")
   public ResponseEntity<OnboardingResponse> updateInterests(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody UpdateInterestsRequest request
@@ -95,24 +92,48 @@ public class MemberController implements MemberControllerDocs {
     return ResponseEntity.ok(response);
   }
 
+  @PostMapping("/profile")
+  @Override
+  public ResponseEntity<MemberDto> updateProfile(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody ProfileUpdateRequest request
+  ) {
+
+    // 로그인한 사용자 정보에서 memberId 추출
+    UUID memberId = userDetails.getMemberId();
+
+    // 프로필 업데이트
+    MemberDto updatedMember = memberService.updateProfile(memberId, request);
+
+    return ResponseEntity.ok(updatedMember);
+  }
+
   @GetMapping
-  @Operation(summary = "전체 회원 목록 조회")
+  @Override
   public ResponseEntity<List<MemberDto>> getAllMembers() {
     List<MemberDto> dtos = memberService.getAllMembers();
     return ResponseEntity.ok(dtos);
   }
 
   @GetMapping("/{memberId}")
-  @Operation(summary = "회원 단건 조회 (ID)")
+  @Override
   public ResponseEntity<MemberDto> getMemberById(@PathVariable UUID memberId) {
     MemberDto dto = memberService.getMemberById(memberId);
     return ResponseEntity.ok(dto);
   }
 
   @GetMapping("/email/{email}")
-  @Operation(summary = "회원 단건 조회 (Email)")
+  @Override
   public ResponseEntity<MemberDto> getMemberByEmail(@PathVariable String email) {
     MemberDto dto = memberService.getMemberByEmail(email);
     return ResponseEntity.ok(dto);
   }
+
+  @GetMapping("/{memberId}/interests")
+  @Override
+  public ResponseEntity<List<InterestDto>> getInterestsByMemberId(@PathVariable UUID memberId) {
+    List<InterestDto> interestDtos = memberService.getInterestsByMemberId(memberId);
+    return ResponseEntity.ok(interestDtos);
+  }
+
 }

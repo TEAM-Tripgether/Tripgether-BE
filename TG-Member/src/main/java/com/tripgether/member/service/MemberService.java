@@ -5,10 +5,11 @@ import com.tripgether.common.exception.ErrorCodeBuilder;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.Subject;
 import com.tripgether.common.exception.constant.ErrorMessageTemplate.BusinessStatus;
-import com.tripgether.member.constant.MemberGender;
 import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.constant.OnboardingStep;
+import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
+import com.tripgether.member.dto.ProfileUpdateRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
 import com.tripgether.member.dto.onboarding.request.UpdateBirthDateRequest;
@@ -323,6 +324,47 @@ public class MemberService {
         .build();
   }
 
+  @Transactional
+  public MemberDto updateProfile(UUID memberId, ProfileUpdateRequest request) {
+    // 회원 존재 여부 확인
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    log.info("[Onboarding] 프로필 업데이트 진행(jwt 토큰으로 id 파싱 완료) - memberId={}, memberName={}", memberId, member.getName());
+
+    boolean isDuplicateName = memberRepository.existsByNameAndIdNot(request.getName(), memberId);
+    if (isDuplicateName) {
+      log.warn("[Onboarding] 이미 사용 중인 이름 - memberName={}", request.getName());
+      throw new CustomException(ErrorCode.NAME_ALREADY_EXISTS);
+    }
+
+    // 프로필 정보 업데이트
+    member.setName(request.getName());
+    member.setGender(request.getGender());
+    member.setBirthDate(request.getBirthDate());
+
+    // 관심사 업데이트
+    UpdateInterestsRequest interestsRequest = UpdateInterestsRequest.builder()
+        .memberId(memberId)
+        .interestIds(request.getInterestIds())
+        .build();
+    updateInterests(interestsRequest);
+
+    // updateInterests가 이미 member를 저장하므로, 최신 상태를 다시 조회하여 반환
+    member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    log.info("[Onboarding] 프로필 업데이트 완료 - memberId={}, name={}, gender={}, birthDate={}",
+        memberId, member.getName(), member.getGender(), member.getBirthDate());
+    return MemberDto.builder()
+        .id(member.getId())
+        .email(member.getEmail())
+        .name(member.getName())
+        .gender(member.getGender())
+        .birthDate(member.getBirthDate())
+        .onboardingStatus(member.getOnboardingStatus().name())
+        .build();
+  }
+
   /**
    * 모든 회원 조회
    *
@@ -359,5 +401,29 @@ public class MemberService {
         .orElseThrow(() -> new CustomException(ErrorCodeBuilder.businessStatus(Subject.MEMBER, BusinessStatus.NOT_FOUND, HttpStatus.NOT_FOUND)));
 
     return MemberDto.entityToDto(entity);
+  }
+
+  /**
+   * 회원 ID로 관심사 조회
+   *
+   *  @param memberId 회원 ID
+   * @return 회원 관심사 목록
+   */
+  public List<InterestDto> getInterestsByMemberId(UUID memberId) {
+    // 멤버가 존재하는지 확인
+    memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 멤버의 관심사 리스트 반환
+    List<MemberInterest> memberInterests = memberInterestRepository.findByMemberId(memberId);
+
+    // 관심사 ID를 통해 관심사 리스트 반환
+    List<InterestDto> interests = memberInterests.stream()
+        .map(memberInterest -> new InterestDto(
+            memberInterest.getInterest().getId(),
+            memberInterest.getInterest().getName()))
+        .collect(Collectors.toList());
+
+    return interests;
   }
 }

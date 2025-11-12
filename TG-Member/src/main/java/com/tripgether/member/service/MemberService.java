@@ -341,7 +341,6 @@ public class MemberService {
     member.setName(request.getName());
     member.setGender(request.getGender());
     member.setBirthDate(request.getBirthDate());
-    memberRepository.save(member);
 
     // 관심사 업데이트
     UpdateInterestsRequest interestsRequest = UpdateInterestsRequest.builder()
@@ -350,7 +349,11 @@ public class MemberService {
         .build();
     updateInterests(interestsRequest);
 
-    log.info("[Onboarding] 프로필 업데이트 완료 - memberId={}, name={}, gender={}, birthDate={},",
+    // updateInterests가 이미 member를 저장하므로, 최신 상태를 다시 조회하여 반환
+    member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    log.info("[Onboarding] 프로필 업데이트 완료 - memberId={}, name={}, gender={}, birthDate={}",
         memberId, member.getName(), member.getGender(), member.getBirthDate());
     return MemberDto.builder()
         .id(member.getId())

@@ -103,13 +103,12 @@ public class MemberController implements MemberControllerDocs {
   @PostMapping("/profile")
   @Operation(summary = "회원 프로필 설정(수정)")
   public ResponseEntity<MemberDto> updateProfile(
-      @Valid @RequestBody ProfileUpdateRequest request,
-      HttpServletRequest httpRequest
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody ProfileUpdateRequest request
   ) {
 
-    // JWT 토큰에서 member_id 추출
-    String token = jwtUtil.extractAccessToken(httpRequest);
-    UUID memberId = jwtUtil.getMemberId(token);
+    // 로그인한 사용자 정보에서 memberId 추출
+    UUID memberId = userDetails.getMemberId();
 
     // 프로필 업데이트
     MemberDto updatedMember = memberService.updateProfile(memberId, request);

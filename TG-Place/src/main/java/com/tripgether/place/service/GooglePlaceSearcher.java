@@ -1,5 +1,7 @@
 package com.tripgether.place.service;
 
+import com.tripgether.common.exception.CustomException;
+import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.properties.PlaceProperties;
 import com.tripgether.common.util.NetworkUtil;
 import com.tripgether.place.dto.GooglePlaceSearchDto;
@@ -33,14 +35,15 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
    * @param address   주소 (fallback용, 현재 미사용)
    * @param language  언어 코드 (ko, en, ja, zh)
    * @return Google Place 상세 정보 (place_id, 좌표 등)
+   * @throws CustomException Google Places API 호출 실패 또는 장소를 찾을 수 없을 때
    */
   @Override
   public GooglePlaceSearchDto.PlaceDetail searchPlaceDetail(String placeName, String address, String language) {
     String googleApiKey = placeProperties.getGoogleApiKey();
 
     if (googleApiKey == null || googleApiKey.isEmpty()) {
-      log.warn("Google Places API key not configured");
-      return null;
+      log.error("Google Places API key not configured: placeName={}", placeName);
+      throw new CustomException(ErrorCode.INVALID_API_KEY);
     }
 
     try {
@@ -57,7 +60,9 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
       );
 
       // 결과 파싱
-      if ("OK".equals(response.getStatus())
+      String status = response.getStatus();
+      
+      if ("OK".equals(status)
           && response.getCandidates() != null
           && !response.getCandidates().isEmpty()) {
 
@@ -83,13 +88,30 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
         return placeDetail;
 
       } else {
-        log.warn("No place found from Google: placeName={}, status={}", placeName, response.getStatus());
-        return null;
+        // Google Places API 상태 코드별 에러 처리
+        log.error("Google Places API error: placeName={}, status={}", placeName, status);
+        
+        if ("REQUEST_DENIED".equals(status)) {
+          throw new CustomException(ErrorCode.INVALID_API_KEY);
+        } else if ("INVALID_REQUEST".equals(status)) {
+          throw new CustomException(ErrorCode.INVALID_REQUEST);
+        } else if ("OVER_QUERY_LIMIT".equals(status)) {
+          throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+        } else if ("ZERO_RESULTS".equals(status)) {
+          throw new CustomException(ErrorCode.GOOGLE_PLACE_NOT_FOUND);
+        } else {
+          throw new CustomException(ErrorCode.GOOGLE_PLACE_API_ERROR);
+        }
       }
 
+    } catch (CustomException e) {
+      // NetworkUtil에서 발생한 CustomException은 그대로 전파
+      log.error("Google Places API error: placeName={}, error={}", placeName, e.getMessage());
+      throw e;
     } catch (Exception e) {
-      log.error("Google Places API error: placeName={}", placeName, e);
-      return null;
+      // 예상치 못한 예외
+      log.error("Unexpected error during Google Places API call: placeName={}", placeName, e);
+      throw new CustomException(ErrorCode.GOOGLE_PLACE_API_ERROR);
     }
   }
 

@@ -106,18 +106,12 @@ public class AiCallbackService {
       for (int i = 0; i < places.size(); i++) {
         PlaceInfo placeInfo = places.get(i);
 
-        // 1. Google Places API 호출
+        // 1. Google Places API 호출 (실패 시 CustomException 발생)
         GooglePlaceSearchDto.PlaceDetail googlePlace = placeSearchService.searchGooglePlace(
             placeInfo.getName(),
             placeInfo.getAddress(),
             placeInfo.getLanguage()
         );
-
-        if (googlePlace == null) {
-          log.warn("Google Place not found: name={}, skipping", placeInfo.getName());
-          // fallback 로직은 추후 구현
-          continue;
-        }
 
         // 2. Google 응답으로 Place 생성/업데이트
         Place place = createOrUpdatePlace(googlePlace);

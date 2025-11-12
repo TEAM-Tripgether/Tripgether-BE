@@ -5,7 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum PlatformSource {
-  Naver,
-  Google
+public enum PlacePlatform {
+  NAVER,
+  GOOGLE,
+  KAKAO
 }
+

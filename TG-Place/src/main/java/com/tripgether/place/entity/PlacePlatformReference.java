@@ -1,7 +1,7 @@
 package com.tripgether.place.entity;
 
 import com.tripgether.common.entity.BaseEntity;
-import com.tripgether.place.constant.PlatformSource;
+import com.tripgether.place.constant.PlacePlatform;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PlaceExternal extends BaseEntity {
+public class PlacePlatformReference extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,9 +35,10 @@ public class PlaceExternal extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private PlatformSource platformSource;
+  private PlacePlatform placePlatform;
 
-  @Column(nullable = false, length = 255)
-  private String externalId;
+  @Column(nullable = false, length = 300)
+  private String placePlatformId;
 
 }
+

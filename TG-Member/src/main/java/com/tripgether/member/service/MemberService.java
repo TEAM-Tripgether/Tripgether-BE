@@ -329,10 +329,11 @@ public class MemberService {
     // 회원 존재 여부 확인
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-    log.warn("Updating profile for memberId: {}, memberName: {}", memberId, member.getName());
+    log.info("[Onboarding] 프로필 업데이트 진행(jwt 토큰으로 id 파싱 완료) - memberId={}, memberName={}", memberId, member.getName());
 
     boolean isDuplicateName = memberRepository.existsByNameAndIdNot(request.getName(), memberId);
     if (isDuplicateName) {
+      log.warn("[Onboarding] 이미 사용 중인 이름 - memberName={}", request.getName());
       throw new CustomException(ErrorCode.NAME_ALREADY_EXISTS);
     }
 
@@ -349,6 +350,8 @@ public class MemberService {
         .build();
     updateInterests(interestsRequest);
 
+    log.info("[Onboarding] 프로필 업데이트 완료 - memberId={}, name={}, gender={}, birthDate={},",
+        memberId, member.getName(), member.getGender(), member.getBirthDate());
     return MemberDto.builder()
         .id(member.getId())
         .email(member.getEmail())

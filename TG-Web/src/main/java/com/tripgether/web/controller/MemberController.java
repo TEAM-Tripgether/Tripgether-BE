@@ -101,7 +101,7 @@ public class MemberController implements MemberControllerDocs {
   }
 
   @PostMapping("/profile")
-  @Operation(summary = "회원 프로필 설정")
+  @Operation(summary = "회원 프로필 설정(수정)")
   public ResponseEntity<MemberDto> updateProfile(
       @Valid @RequestBody ProfileUpdateRequest request,
       HttpServletRequest httpRequest
@@ -110,7 +110,6 @@ public class MemberController implements MemberControllerDocs {
     // JWT 토큰에서 member_id 추출
     String token = jwtUtil.extractAccessToken(httpRequest);
     UUID memberId = jwtUtil.getMemberId(token);
-    log.warn("Extracted memberId from token: {}", memberId);
 
     // 프로필 업데이트
     MemberDto updatedMember = memberService.updateProfile(memberId, request);

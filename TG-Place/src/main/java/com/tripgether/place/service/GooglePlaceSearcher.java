@@ -2,7 +2,6 @@ package com.tripgether.place.service;
 
 import com.tripgether.common.properties.PlaceProperties;
 import com.tripgether.common.util.NetworkUtil;
-import com.tripgether.place.constant.PlacePlatform;
 import com.tripgether.place.dto.GooglePlaceSearchDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +25,6 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
 
   private static final String GOOGLE_PLACES_BASE_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json";
   private static final String SEARCH_FIELDS = "place_id,name,formatted_address,geometry,types,business_status,icon,photos,rating,user_ratings_total";
-
-  @Override
-  public PlacePlatform getSupportedPlatform() {
-    return PlacePlatform.GOOGLE;
-  }
 
   /**
    * 상호명으로 Google Place 검색

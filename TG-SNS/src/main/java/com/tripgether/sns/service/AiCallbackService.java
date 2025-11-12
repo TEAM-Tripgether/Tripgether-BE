@@ -1,6 +1,7 @@
 package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.AiCallbackRequest;
+import com.tripgether.ai.dto.PlaceInfo;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -97,13 +98,13 @@ public class AiCallbackService {
 
     // AI 서버에서 받은 Place 정보로 ContentPlace 생성
     if (request.getPlaces() != null && !request.getPlaces().isEmpty()) {
-      List<AiCallbackRequest.PlaceInfo> places = request.getPlaces();
+      List<PlaceInfo> places = request.getPlaces();
       log.info("Processing {} places for contentId={} (update mode: {})",
           places.size(), content.getId(), isContentAlreadyCompleted);
 
       // 각 Place 정보를 순회하며 저장
       for (int i = 0; i < places.size(); i++) {
-        AiCallbackRequest.PlaceInfo placeInfo = places.get(i);
+        PlaceInfo placeInfo = places.get(i);
 
         // 1. Google Places API 호출
         GooglePlaceSearchDto.PlaceDetail googlePlace = placeSearchService.searchGooglePlace(

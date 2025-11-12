@@ -1,21 +1,13 @@
 package com.tripgether.place.service;
 
-import com.tripgether.place.constant.PlacePlatform;
 import com.tripgether.place.dto.GooglePlaceSearchDto;
 
 /**
  * 플랫폼별 장소 검색 인터페이스
  * <p>
- * Google, Kakao, Naver 등 여러 플랫폼의 장소 검색 API를 통합하기 위한 인터페이스
+ * Google Places API를 통한 장소 검색 기능을 제공
  */
 public interface PlacePlatformSearcher {
-
-  /**
-   * 지원하는 플랫폼 반환
-   *
-   * @return 플랫폼 (GOOGLE, KAKAO, NAVER)
-   */
-  PlacePlatform getSupportedPlatform();
 
   /**
    * 상호명으로 장소 상세 정보 검색

@@ -198,9 +198,9 @@ public class MemberService {
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
     }
 
-    if (request.getName().length() > 30) {
-      log.warn("[Onboarding] 닉네임이 너무 김 - memberName={}", request.getName());
-      throw new CustomException(ErrorCode.NAME_TOO_LONG);  // 이름이 너무 긴 경우
+    if (request.getName().length() < 2 || request.getName().length() > 50) {
+      log.warn("[Onboarding] 닉네임은 2자 이상 50자 이하 - memberName={}", request.getName());
+      throw new CustomException(ErrorCode.INVALID_NAME_LENGTH);
     }
 
     boolean isDuplicateName = memberRepository.existsByNameAndIdNot(request.getName(), memberId);

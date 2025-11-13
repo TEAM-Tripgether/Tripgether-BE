@@ -55,7 +55,7 @@ public enum ErrorCode {
 
   NAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
 
-  NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "닉네임이 허용된 최대 길이를 초과했습니다."),
+  INVALID_NAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 2자 이상 50자 이하여야 합니다."),
 
   INVALID_BIRTH_DATE(HttpStatus.BAD_REQUEST, "유효하지 않은 생년월일 형식입니다."),
 

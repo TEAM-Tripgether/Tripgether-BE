@@ -145,7 +145,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.TERMS && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
+    if(member.getOnboardingStep() != OnboardingStep.TERMS) {
       log.warn("[Onboarding] 현재 온보딩 단계가 약관 동의가 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -192,7 +192,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.NAME && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
+    if(member.getOnboardingStep() != OnboardingStep.NAME) {
       log.warn("[Onboarding] 현재 온보딩 단계가 이름 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -210,18 +210,6 @@ public class MemberService {
     }
 
     member.setName(request.getName());
-
-    if(member.getOnboardingStatus() == MemberOnboardingStatus.COMPLETED) {
-      // 이미 완료된 상태라면 이름만 업데이트하고 종료
-      memberRepository.save(member);
-      log.info("[Onboarding] 이름 업데이트 완료(수정) - memberId={}, name={}",
-          memberId, request.getName());
-      return OnboardingResponse.builder()
-          .currentStep(OnboardingStep.COMPLETED)
-          .onboardingStatus(member.getOnboardingStatus().name())
-          .member(MemberDto.entityToDto(member))
-          .build();
-    }
 
     // 온보딩 상태를 IN_PROGRESS로 변경
     if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
@@ -254,7 +242,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.BIRTH_DATE && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
+    if(member.getOnboardingStep() != OnboardingStep.BIRTH_DATE) {
       log.warn("[Onboarding] 현재 온보딩 단계가 생일 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -267,18 +255,6 @@ public class MemberService {
     }
 
     member.setBirthDate(request.getBirthDate());
-
-    if(member.getOnboardingStatus() == MemberOnboardingStatus.COMPLETED) {
-      // 이미 완료된 상태라면 생년월일만 업데이트하고 종료
-      memberRepository.save(member);
-      log.info("[Onboarding] 생년월일 업데이트 완료(수정) - memberId={}, birthDate={}",
-          memberId, request.getBirthDate());
-      return OnboardingResponse.builder()
-          .currentStep(OnboardingStep.COMPLETED)
-          .onboardingStatus(member.getOnboardingStatus().name())
-          .member(MemberDto.entityToDto(member))
-          .build();
-    }
 
     // 온보딩 상태를 IN_PROGRESS로 변경
     if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
@@ -311,7 +287,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.GENDER && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
+    if(member.getOnboardingStep() != OnboardingStep.GENDER) {
       log.warn("[Onboarding] 현재 온보딩 단계가 성별 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -324,18 +300,6 @@ public class MemberService {
     }
 
     member.setGender(request.getGender());
-
-    if(member.getOnboardingStatus() == MemberOnboardingStatus.COMPLETED) {
-      // 이미 완료된 상태라면 성별만 업데이트하고 종료
-      memberRepository.save(member);
-      log.info("[Onboarding] 성별 업데이트 완료(수정) - memberId={}, gender={}",
-          memberId, request.getGender());
-      return OnboardingResponse.builder()
-          .currentStep(OnboardingStep.COMPLETED)
-          .onboardingStatus(member.getOnboardingStatus().name())
-          .member(MemberDto.entityToDto(member))
-          .build();
-    }
 
     // 온보딩 상태를 IN_PROGRESS로 변경
     if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
@@ -368,7 +332,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.INTERESTS && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
+    if(member.getOnboardingStep() != OnboardingStep.INTERESTS) {
       log.warn("[Onboarding] 현재 온보딩 단계가 관심사 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -396,18 +360,6 @@ public class MemberService {
         .collect(Collectors.toList());
 
     memberInterestRepository.saveAll(memberInterests);
-
-    if(member.getOnboardingStatus() == MemberOnboardingStatus.COMPLETED) {
-      // 이미 완료된 상태라면 관심사만 업데이트하고 종료
-      memberRepository.save(member);
-      log.info("[Onboarding] 관심사 업데이트 완료(수정) - memberId={}, interestCount={}",
-          memberId, memberInterests.size());
-      return OnboardingResponse.builder()
-          .currentStep(OnboardingStep.COMPLETED)
-          .onboardingStatus(member.getOnboardingStatus().name())
-          .member(MemberDto.entityToDto(member))
-          .build();
-    }
 
     // 온보딩 상태를 IN_PROGRESS로 변경
     if (member.getOnboardingStatus() == MemberOnboardingStatus.NOT_STARTED) {
@@ -440,25 +392,30 @@ public class MemberService {
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
     }
 
-    // 프로필 정보 업데이트
-    updateName(
-        UpdateNameRequest.builder()
-            .memberId(memberId)
-            .name(request.getName())
-            .build()
-    );
-    updateGender(
-        UpdateGenderRequest.builder()
-            .memberId(memberId)
-            .gender(request.getGender())
-            .build()
-    );
-    updateBirthDate(
-        UpdateBirthDateRequest.builder()
-            .memberId(memberId)
-            .birthDate(request.getBirthDate())
-            .build()
-    );
+    // 유효한 정보들인지 확인
+    if (request.getName().length() < 2 || request.getName().length() > 50) {
+      log.warn("[Onboarding] 닉네임은 2자 이상 50자 이하 - memberName={}", request.getName());
+      throw new CustomException(ErrorCode.INVALID_NAME_LENGTH);
+    }
+    boolean isDuplicateName = memberRepository.existsByNameAndIdNot(request.getName(), memberId);
+    if (isDuplicateName) {
+      log.warn("[Onboarding] 이미 사용 중인 닉네임 - memberName={}", request.getName());
+      throw new CustomException(ErrorCode.NAME_ALREADY_EXISTS);
+    }
+    if (request.getBirthDate() == null || request.getBirthDate().isAfter(LocalDate.now())) {
+      log.warn("[Onboarding] 유효하지 않은 생년월일 형식 - memberBirthDate={}", request.getBirthDate());
+      throw new CustomException(ErrorCode.INVALID_BIRTH_DATE);  // 유효하지 않은 생년월일 에러 처리
+    }
+    if (request.getGender() != MemberGender.MALE && request.getGender() != MemberGender.FEMALE && request.getGender() != MemberGender.NOT_SELECTED) {
+      log.warn("[Onboarding] 유효하지 않은 성별 값 - memberGender={}", request.getGender());
+      throw new CustomException(ErrorCode.INVALID_GENDER);  // 유효하지 않은 성별 오류 처리
+    }
+
+    // 정보 업데이트
+    member.setName(request.getName());
+    member.setGender(request.getGender());
+    member.setBirthDate(request.getBirthDate());
+
     updateInterests(
         UpdateInterestsRequest.builder()
             .memberId(memberId)
@@ -530,9 +487,6 @@ public class MemberService {
    */
   public List<InterestDto> getInterestsByMemberId(UUID memberId) {
     // 멤버가 존재하는지 확인
-    memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 

@@ -467,8 +467,8 @@ public class MemberService {
     );
 
     // updateInterests가 이미 member를 저장하므로, 최신 상태를 다시 조회하여 반환
-    /*member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));*/
+    member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     log.info("[Onboarding] 프로필 업데이트 완료 - memberId={}, name={}, gender={}, birthDate={}",
         memberId, member.getName(), member.getGender(), member.getBirthDate());

@@ -1,7 +1,7 @@
 -- ============================================
 -- Tripgether Interest Data Migration
 -- Version: 0.2.1
--- Description: 13개 대분류, 123개 소분류 관심사 초기화
+-- Description: 14개 대분류, 123개 소분류 관심사 초기화
 -- ============================================
 
 -- ============================================
@@ -11,6 +11,15 @@
 SELECT conname
 FROM pg_constraint
 WHERE conname = 'interest_category_name_unique';
+
+-- interest 테이블 생성
+CREATE TABLE IF NOT EXISTS interest (
+    id UUID PRIMARY KEY,                -- UUID로 기본 키 설정
+    category VARCHAR(50) NOT NULL,       -- 카테고리 (예: FOOD, CAFE_DESSERT 등)
+    name VARCHAR(100) NOT NULL,          -- 관심사 이름
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 생성 시간
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- 업데이트 시간
+);
 
 -- 1) UNIQUE 제약조건 추가 (ON CONFLICT를 위해 필수)
 -- 이미 존재하는 경우 에러를 방지하기 위해 DO $$ 블록 사용

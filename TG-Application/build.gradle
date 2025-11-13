@@ -21,4 +21,7 @@ dependencies {
     api project(':TG-Place')
     api project(':TG-SNS')
     api project(':TG-AI')
+
+    // 테스트
+    testImplementation project(':TG-Web')
 }

@@ -193,7 +193,7 @@ public class MemberService {
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     if(member.getOnboardingStep() != OnboardingStep.NAME) {
-      log.warn("[Onboarding] 현재 온보딩 단계가 이름 설정이 아님 - memberId={}, currentStep={}",
+      log.warn("[Onboarding] 현재 온보딩 단계가 닉네임 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
     }

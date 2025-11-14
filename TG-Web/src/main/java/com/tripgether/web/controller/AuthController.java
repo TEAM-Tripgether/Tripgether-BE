@@ -4,7 +4,6 @@ import com.tripgether.auth.dto.AuthRequest;
 import com.tripgether.auth.dto.AuthResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.auth.service.AuthService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,21 +21,18 @@ public class AuthController implements AuthControllerDocs {
   private final AuthService authService;
 
   @PostMapping("/sign-in")
-  @Operation(summary = "소셜 로그인")
   public ResponseEntity<AuthResponse> signIn(@RequestBody AuthRequest request) {
     log.debug("소셜 로그인 요청: {}", request);
     return ResponseEntity.ok(authService.signIn(request));
   }
 
   @PostMapping("/reissue")
-  @Operation(summary = "토큰 재발급")
   public ResponseEntity<AuthResponse> reissue(@RequestBody AuthRequest request) {
     log.debug("토큰 재발급 요청");
     return ResponseEntity.ok(authService.reissue(request));
   }
 
   @PostMapping("/logout")
-  @Operation(summary = "로그아웃")
   public ResponseEntity<Void> logout(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
       @RequestHeader(value = "Authorization", required = false) String authorization,

@@ -1,11 +1,71 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-02T08:31:30Z",
-    "currentVersion": "0.2.2",
+    "lastUpdated": "2025-11-12T16:05:48Z",
+    "currentVersion": "0.2.9",
     "projectType": "spring",
-    "totalReleases": 14
+    "totalReleases": 16
   },
   "releases": [
+    {
+      "version": "0.2.9",
+      "project_type": "spring",
+      "date": "2025-11-12",
+      "pr_number": 74,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\n새 기능\n\n프로필 업데이트 기능 추가 (이름, 성별, 생년월일 설정 가능)\n관심사 관리 및 조회 기능 추가\n카테고리별 관심사 검색 및 상세 조회 지원\n\n\n\nChores\n\n버전 업그레이드 (0.2.5 → 0.2.9)",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "프로필 업데이트 기능 추가 (이름, 성별, 생년월일 설정 가능)",
+            "관심사 관리 및 조회 기능 추가",
+            "카테고리별 관심사 검색 및 상세 조회 지원"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전 업그레이드 (0.2.5 → 0.2.9)"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.2.5",
+      "project_type": "spring",
+      "date": "2025-11-11",
+      "pr_number": 69,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nNew Features\n\n회원 온보딩 플로우 및 이용약관 동의 기능 추가\nAI 기반 콘텐츠 분석 및 장소 추출 요청 시스템 구현\n회원 프로필 정보(이름, 생년월일, 성별, 관심사) 업데이트 API 추가\n콘텐츠 분석 엔드포인트 구현\n\n\n\nBug Fixes\n\nURL 및 콘텐츠 길이 검증 강화\n관심사 및 약관 관련 오류 처리 개선\n\n\n\nDocumentation\n\n프로젝트 관리용 CLI 명령어 가이드 문서 다수 추가\n\n\n\nChores\n\n프로젝트 버전 업데이트 (0.2.2 → 0.2.5)",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "회원 온보딩 플로우 및 이용약관 동의 기능 추가",
+            "AI 기반 콘텐츠 분석 및 장소 추출 요청 시스템 구현",
+            "회원 프로필 정보(이름, 생년월일, 성별, 관심사) 업데이트 API 추가",
+            "콘텐츠 분석 엔드포인트 구현"
+          ]
+        },
+        "bug_fixes": {
+          "title": "Bug Fixes",
+          "items": [
+            "URL 및 콘텐츠 길이 검증 강화",
+            "관심사 및 약관 관련 오류 처리 개선"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "프로젝트 관리용 CLI 명령어 가이드 문서 다수 추가"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "프로젝트 버전 업데이트 (0.2.2 → 0.2.5)"
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.2",
       "project_type": "spring",

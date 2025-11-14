@@ -2,7 +2,9 @@ package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
+import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
+import com.tripgether.member.dto.ProfileUpdateRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsRequest;
 import com.tripgether.member.dto.UpdateServiceAgreementTermsResponse;
 import com.tripgether.member.dto.onboarding.response.OnboardingResponse;
@@ -27,6 +29,7 @@ public interface MemberControllerDocs {
           + " 문서화")
   })
   @Operation(
+      summary = "회원 생성",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -64,6 +67,7 @@ public interface MemberControllerDocs {
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 약관 동의 API 추가")
   })
   @Operation(
+      summary = "약관 동의",
       description =
           """
               ## 인증(JWT): **필요**
@@ -94,6 +98,7 @@ public interface MemberControllerDocs {
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 이름 설정 API 추가")
   })
   @Operation(
+      summary = "이름 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -121,6 +126,7 @@ public interface MemberControllerDocs {
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 생년월일 설정 API 추가")
   })
   @Operation(
+      summary = "생년월일 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -148,6 +154,7 @@ public interface MemberControllerDocs {
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 성별 설정 API 추가")
   })
   @Operation(
+      summary = "성별 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -175,6 +182,7 @@ public interface MemberControllerDocs {
       @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 관심사 설정 API 추가")
   })
   @Operation(
+      summary = "관심사 설정",
       description =
           """
               ## 인증(JWT): **필요**
@@ -205,6 +213,7 @@ public interface MemberControllerDocs {
           + " 문서화")
   })
   @Operation(
+      summary = "전체 회원 목록 조회",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -230,6 +239,7 @@ public interface MemberControllerDocs {
           + " 문서화")
   })
   @Operation(
+      summary = "회원 단건 조회 (ID)",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -263,6 +273,7 @@ public interface MemberControllerDocs {
           + " 문서화")
   })
   @Operation(
+      summary = "회원 단건 조회 (Email)",
       description =
           """
               ## 인증(JWT): **불필요**
@@ -290,4 +301,68 @@ public interface MemberControllerDocs {
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
   ResponseEntity<MemberDto> getMemberByEmail(String email);
+
+  @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
+          + " 문서화")
+  })
+  @Operation(
+      summary = "회원 프로필 설정(수정)",
+      description =
+          """
+              ## 인증(JWT): **필요**
+              
+              ## 요청 파라미터 (ProfileUpdateRequest)
+              - **`name`**: 이름 (필수)
+              - **`gender`**: 성별 (MALE, FEMALE, NONE)
+              - **`birthDate`**: 생년월일 (LocalDate 형식)
+              - **`interestIds`**: 관심사 ID 목록
+              
+              ## 반환값 (MemberDto)
+              - **`memberId`**: 회원 ID
+              - **`email`**: 회원 이메일
+              - **`name`**: 회원 이름
+              - **`gender`**: 성별
+              - **`birthDate`**: 생년월일
+              - **`onboardingStatus`**: 온보딩 상태
+              
+              ## 특이사항
+              - 회원 프로필 정보를 업데이트합니다.
+              - 이름 중복 검사가 수행됩니다.
+              - 관심사도 함께 업데이트됩니다.
+              
+              ## 에러코드
+              - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
+              - **`NAME_ALREADY_EXISTS`**: 이미 사용 중인 이름입니다.
+              - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
+              """)
+  ResponseEntity<MemberDto> updateProfile(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid ProfileUpdateRequest request);
+
+  @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
+          + " 문서화")
+  })
+  @Operation(
+      summary = "회원 관심사 조회 (ID)",
+      description =
+          """
+              ## 인증(JWT): **불필요**
+              
+              ## 요청 파라미터
+              - **`memberId`**: 회원 ID (Path Variable)
+              
+              ## 반환값 (List<InterestDto>)
+              - **`id`**: 관심사 ID
+              - **`name`**: 관심사 이름
+              
+              ## 특이사항
+              - 회원 ID로 해당 회원의 관심사 목록을 조회합니다.
+              
+              ## 에러코드
+              - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
+              - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
+              """)
+  ResponseEntity<List<InterestDto>> getInterestsByMemberId(UUID memberId);
 }

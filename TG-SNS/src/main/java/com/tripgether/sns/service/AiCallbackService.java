@@ -106,21 +106,39 @@ public class AiCallbackService {
       for (int i = 0; i < places.size(); i++) {
         PlaceInfo placeInfo = places.get(i);
 
-        // 1. Google Places API 호출 (실패 시 CustomException 발생)
-        GooglePlaceSearchDto.PlaceDetail googlePlace = placeSearchService.searchGooglePlace(
-            placeInfo.getName(),
-            placeInfo.getAddress(),
-            placeInfo.getLanguage()
-        );
+        log.info("Processing place {}/{}", i + 1, places.size());
+        log.info("Place Name: {}", placeInfo.getName());
+        log.info("Address: {}", placeInfo.getAddress());
+        log.info("Language: {}", placeInfo.getLanguage());
 
-        // 2. Google 응답으로 Place 생성/업데이트
-        Place place = createOrUpdatePlace(googlePlace);
+        try {
+          // 1. Google Places API 호출 (실패 시 CustomException 발생)
+          GooglePlaceSearchDto.PlaceDetail googlePlace = placeSearchService.searchGooglePlace(
+              placeInfo.getName(),
+              placeInfo.getAddress(),
+              placeInfo.getLanguage()
+          );
 
-        // 3. PlacePlatformReference 저장 (Google place_id)
-        savePlacePlatformReference(place, googlePlace.getPlaceId());
+          // 2. Google 응답으로 Place 생성/업데이트
+          Place place = createOrUpdatePlace(googlePlace);
 
-        // 4. Content와 Place 연결 생성 (position 포함)
-        createContentPlace(content, place, i);
+          // 3. PlacePlatformReference 저장 (Google place_id)
+          savePlacePlatformReference(place, googlePlace.getPlaceId());
+
+          // 4. Content와 Place 연결 생성 (position 포함)
+          createContentPlace(content, place, i);
+
+          log.info("Place processed successfully: DB ID={}", place.getId());
+
+        } catch (CustomException e) {
+          log.error("Failed to process place {}/{}", i + 1, places.size());
+          log.error("Place Name: {}", placeInfo.getName());
+          log.error("HTTP Status: {}", e.getStatus());
+          log.error("Error Message: {}", e.getMessage());
+
+          // 예외 재발생으로 전체 트랜잭션 롤백
+          throw e;
+        }
       }
     } else {
       // Place 데이터가 없는 경우 경고 로그

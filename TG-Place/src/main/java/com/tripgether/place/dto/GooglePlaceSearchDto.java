@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.ToString;
 
 /**
  * Google Places API 응답 DTO
  */
 @Getter
+@ToString
 @NoArgsConstructor
 public class GooglePlaceSearchDto {
 

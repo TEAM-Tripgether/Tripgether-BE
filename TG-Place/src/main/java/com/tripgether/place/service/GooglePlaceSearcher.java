@@ -47,10 +47,17 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
     }
 
     try {
+      log.info("Google Places API Search Start");
+      log.info("Place Name: {}", placeName);
+      log.info("Address: {}", address);
+      log.info("Language: {}", language);
+
       // URL 생성
       String url = buildSearchUrl(placeName, language, googleApiKey);
 
-      log.debug("Google Places API request: placeName={}, language={}", placeName, language);
+      // 생성된 URL 로깅 (API Key 마스킹)
+      String maskedUrl = url.replace(googleApiKey, "***MASKED***");
+      log.info("Request URL: {}", maskedUrl);
 
       // API 호출
       GooglePlaceSearchDto response = networkUtil.sendGetRequest(
@@ -61,12 +68,20 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
 
       // 결과 파싱
       String status = response.getStatus();
-      
+      log.info("API Response Status: {}", status);
+      log.info("Candidates Count: {}",
+          response.getCandidates() != null ? response.getCandidates().size() : 0);
+
       if ("OK".equals(status)
           && response.getCandidates() != null
           && !response.getCandidates().isEmpty()) {
 
         GooglePlaceSearchDto.Candidate candidate = response.getCandidates().get(0);
+
+        log.info("Selected Candidate:");
+        log.info("  Place ID: {}", candidate.getPlaceId());
+        log.info("  Name: {}", candidate.getName());
+        log.info("  Address: {}", candidate.getFormattedAddress());
 
         GooglePlaceSearchDto.PlaceDetail placeDetail = GooglePlaceSearchDto.PlaceDetail.builder()
             .placeId(candidate.getPlaceId())
@@ -83,14 +98,17 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
             .photoUrls(buildPhotoUrls(candidate.getPhotos(), googleApiKey))
             .build();
 
-        log.info("Google Place found: placeId={}, name={}, rating={}",
+        log.info("Google Places API Search Success");
+        log.info("Final Result: placeId={}, name={}, rating={}",
             placeDetail.getPlaceId(), placeDetail.getName(), placeDetail.getRating());
         return placeDetail;
 
       } else {
         // Google Places API 상태 코드별 에러 처리
-        log.error("Google Places API error: placeName={}, status={}", placeName, status);
-        
+        log.error("Google Places API Search Failed");
+        log.error("Place Name: {}", placeName);
+        log.error("Status: {}", status);
+
         if ("REQUEST_DENIED".equals(status)) {
           throw new CustomException(ErrorCode.INVALID_API_KEY);
         } else if ("INVALID_REQUEST".equals(status)) {
@@ -117,22 +135,21 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
 
   /**
    * Google Places API 검색 URL 생성
-   *
-   * @param placeName    장소명
-   * @param language     언어 코드
-   * @param googleApiKey API 키
-   * @return 검색 URL
    */
   private String buildSearchUrl(String placeName, String language, String googleApiKey) {
+    log.debug("Building search URL for: {}", placeName);
+
     String encodedPlaceName = URLEncoder.encode(placeName, StandardCharsets.UTF_8);
 
-    return String.format("%s?input=%s&inputtype=textquery&fields=%s&language=%s&key=%s",
+    String url = String.format("%s?input=%s&inputtype=textquery&fields=%s&language=%s&key=%s",
         GOOGLE_PLACES_BASE_URL,
         encodedPlaceName,
         SEARCH_FIELDS,
         language,
         googleApiKey
     );
+
+    return url;
   }
 
   /**

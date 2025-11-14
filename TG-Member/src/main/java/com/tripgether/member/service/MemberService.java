@@ -145,7 +145,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.TERMS) {
+    if(member.getOnboardingStep() != OnboardingStep.TERMS && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
       log.warn("[Onboarding] 현재 온보딩 단계가 약관 동의가 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -192,7 +192,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.NAME) {
+    if(member.getOnboardingStep() != OnboardingStep.NAME && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
       log.warn("[Onboarding] 현재 온보딩 단계가 닉네임 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -242,7 +242,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.BIRTH_DATE) {
+    if(member.getOnboardingStep() != OnboardingStep.BIRTH_DATE && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
       log.warn("[Onboarding] 현재 온보딩 단계가 생일 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -287,7 +287,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.GENDER) {
+    if(member.getOnboardingStep() != OnboardingStep.GENDER && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
       log.warn("[Onboarding] 현재 온보딩 단계가 성별 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -332,7 +332,7 @@ public class MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-    if(member.getOnboardingStep() != OnboardingStep.INTERESTS) {
+    if(member.getOnboardingStep() != OnboardingStep.INTERESTS && member.getOnboardingStep() != OnboardingStep.COMPLETED) {
       log.warn("[Onboarding] 현재 온보딩 단계가 관심사 설정이 아님 - memberId={}, currentStep={}",
           memberId, member.getOnboardingStep());
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
@@ -393,6 +393,7 @@ public class MemberService {
     }
 
     // 유효한 정보들인지 확인
+    // 이름 검증 (2자 이상 50자 이하, 중복 체크)
     if (request.getName().length() < 2 || request.getName().length() > 50) {
       log.warn("[Onboarding] 닉네임은 2자 이상 50자 이하 - memberName={}", request.getName());
       throw new CustomException(ErrorCode.INVALID_NAME_LENGTH);
@@ -402,10 +403,12 @@ public class MemberService {
       log.warn("[Onboarding] 이미 사용 중인 닉네임 - memberName={}", request.getName());
       throw new CustomException(ErrorCode.NAME_ALREADY_EXISTS);
     }
+    // 생년월일 검증
     if (request.getBirthDate() == null || request.getBirthDate().isAfter(LocalDate.now())) {
       log.warn("[Onboarding] 유효하지 않은 생년월일 형식 - memberBirthDate={}", request.getBirthDate());
       throw new CustomException(ErrorCode.INVALID_BIRTH_DATE);  // 유효하지 않은 생년월일 에러 처리
     }
+    // 성별 검증 (MALE, FEMALE, NOT_SELECTED만 허용)
     if (request.getGender() != MemberGender.MALE && request.getGender() != MemberGender.FEMALE && request.getGender() != MemberGender.NOT_SELECTED) {
       log.warn("[Onboarding] 유효하지 않은 성별 값 - memberGender={}", request.getGender());
       throw new CustomException(ErrorCode.INVALID_GENDER);  // 유효하지 않은 성별 오류 처리

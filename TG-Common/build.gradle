@@ -61,5 +61,8 @@ dependencies {
 
     // Development tools
     api 'org.springframework.boot:spring-boot-devtools'
+
+    // 테스트
+    testImplementation project(':TG-Web')
 }
 

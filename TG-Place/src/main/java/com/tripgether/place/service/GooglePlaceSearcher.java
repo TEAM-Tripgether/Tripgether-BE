@@ -4,7 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.properties.PlaceProperties;
+import com.tripgether.place.constant.PlacePlatform;
 import com.tripgether.place.dto.GooglePlaceSearchDto;
+import com.tripgether.place.entity.Place;
+import com.tripgether.place.entity.PlacePlatformReference;
+import com.tripgether.place.repository.PlacePlatformReferenceRepository;
+import com.tripgether.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -12,9 +17,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -28,12 +35,18 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
   private final OkHttpClient okHttpClient;
   private final ObjectMapper objectMapper;
   private final PlaceProperties placeProperties;
+  private final PlaceRepository placeRepository;
+  private final PlacePlatformReferenceRepository placePlatformReferenceRepository;
 
   private static final String GOOGLE_PLACES_BASE_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json";
   private static final String SEARCH_FIELDS = "place_id,name,formatted_address,geometry,types,business_status,icon,photos,rating,user_ratings_total";
 
   /**
    * 상호명으로 Google Place 검색
+   * <p>
+   * 1차: DB에서 캐싱된 Place 검색 (name + address 기반)
+   * 2차: DB에 없으면 Google API 호출
+   * 3차: Google API 결과를 DB에 저장하여 캐싱
    *
    * @param placeName 장소명
    * @param address   주소 (fallback용, 현재 미사용)
@@ -43,6 +56,56 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
    */
   @Override
   public GooglePlaceSearchDto.PlaceDetail searchPlaceDetail(String placeName, String address, String language) {
+    log.info("Place Search Start: name={}, address={}, language={}", placeName, address, language);
+
+    // 1️⃣ DB에서 먼저 검색 (정규화된 키워드로 캐싱 조회)
+    String normalizedName = (placeName != null) ? placeName.trim() : null;
+    String normalizedAddress = (address != null && !address.isEmpty()) ? address.trim() : null;
+
+    if (normalizedName != null && !normalizedName.isEmpty()) {
+      Optional<Place> cachedPlace = placeRepository.findByNormalizedNameAndAddress(
+          normalizedName, normalizedAddress);
+
+      if (cachedPlace.isPresent()) {
+        Place existing = cachedPlace.get();
+        log.info("Place found in DB (cache hit): placeId={}, name={}", existing.getId(), existing.getName());
+
+        // 좌표 변경 검증 (Google API 재호출 필요 여부)
+        if (shouldUpdateCoordinates(existing)) {
+          log.info("Coordinates may have changed, refreshing from Google API");
+          return searchGooglePlaceApi(placeName, address, language);
+        }
+
+        // PlaceId 검증 및 재호출 처리
+        String googlePlaceId = getGooglePlaceId(existing);
+        if (googlePlaceId == null) {
+          log.warn("PlacePlatformReference not found for Place: {}, refreshing from Google API", existing.getId());
+          return searchGooglePlaceApi(placeName, address, language);
+        }
+
+        // DB 캐시 히트 - PlaceDetail 변환하여 반환
+        return convertPlaceToPlaceDetail(existing, googlePlaceId);
+      }
+
+      log.info("Place not found in DB (cache miss), calling Google Places API");
+    }
+
+    // 2️⃣ DB에 없으면 Google API 호출
+    return searchGooglePlaceApi(placeName, address, language);
+  }
+
+  /**
+   * Google Places API 호출
+   * <p>
+   * DB 캐시에 없을 때만 호출됨
+   *
+   * @param placeName 장소명
+   * @param address   주소
+   * @param language  언어 코드
+   * @return Google Place 상세 정보
+   * @throws CustomException API 호출 실패 시
+   */
+  private GooglePlaceSearchDto.PlaceDetail searchGooglePlaceApi(String placeName, String address, String language) {
     String googleApiKey = placeProperties.getGoogleApiKey();
 
     if (googleApiKey == null || googleApiKey.isEmpty()) {
@@ -51,7 +114,7 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
     }
 
     try {
-      log.info("Google Places API Search Start");
+      log.info("Calling Google Places API");
       log.info("Place Name: {}", placeName);
       log.info("Address: {}", address);
       log.info("Language: {}", language);
@@ -59,11 +122,9 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
       // URL 생성
       String url = buildSearchUrl(placeName, language, googleApiKey);
 
-      // 생성된 URL 로깅 (API Key 마스킹)
-      String maskedUrl = url.replace(googleApiKey, "***MASKED***");
-      log.info("Request URL: {}", maskedUrl);
+      log.info("Request URL: {}", url);
 
-      // OkHttp로 API 호출 (브라우저 헤더 포함)
+      // OkHttp로 API 호출
       Request request = new Request.Builder()
           .url(url)
           .addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -232,5 +293,67 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
     // 기본값
     log.debug("Could not extract country code from address: {}", address);
     return "XX";
+  }
+
+  /**
+   * Place 엔티티를 PlaceDetail DTO로 변환
+   * <p>
+   * DB 캐시된 Place를 API 응답 형식으로 변환
+   *
+   * @param place         Place 엔티티
+   * @param googlePlaceId Google place_id
+   * @return PlaceDetail DTO
+   */
+  private GooglePlaceSearchDto.PlaceDetail convertPlaceToPlaceDetail(Place place, String googlePlaceId) {
+    return GooglePlaceSearchDto.PlaceDetail.builder()
+        .placeId(googlePlaceId)
+        .name(place.getName())
+        .address(place.getAddress())
+        .latitude(place.getLatitude())
+        .longitude(place.getLongitude())
+        .country(place.getCountry())
+        .types(place.getTypes())
+        .businessStatus(place.getBusinessStatus())
+        .iconUrl(place.getIconUrl())
+        .rating(place.getRating())
+        .userRatingsTotal(place.getUserRatingsTotal())
+        .photoUrls(place.getPhotoUrls())
+        .build();
+  }
+
+  /**
+   * Place의 Google PlaceId 조회
+   * <p>
+   * PlacePlatformReference 테이블에서 Google platform의 placeId를 조회
+   *
+   * @param place Place 엔티티
+   * @return Google placeId (없으면 null)
+   */
+  private String getGooglePlaceId(Place place) {
+    return placePlatformReferenceRepository
+        .findByPlaceAndPlacePlatform(place, PlacePlatform.GOOGLE)
+        .map(PlacePlatformReference::getPlacePlatformId)
+        .orElse(null);
+  }
+
+  /**
+   * 좌표 변경 검증
+   * <p>
+   * Place가 오래되었거나 좌표 정확도가 낮으면 Google API 재호출 필요
+   * 현재는 단순 구현 (항상 false 반환)
+   * <p>
+   * 향후 개선 방향:
+   * - createdAt이 1년 이상 지났으면 재조회
+   * - 좌표 정확도가 낮으면 (소수점 자리수 부족) 재조회
+   *
+   * @param place Place 엔티티
+   * @return true: 재조회 필요, false: 캐시 사용
+   */
+  private boolean shouldUpdateCoordinates(Place place) {
+    // 현재는 항상 캐시 사용 (좌표 변경 감지 미구현)
+    // 필요시 아래 로직 활성화:
+    // LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+    // return place.getCreatedAt().isBefore(oneYearAgo);
+    return false;
   }
 }

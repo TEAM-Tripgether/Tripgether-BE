@@ -30,7 +30,7 @@ public class PlaceInfo {
 
   @Schema(description = "언어 코드 (ISO 639-1)", example = "ko", allowableValues = {"ko", "en", "ja", "zh"})
   @NotNull(message = "language는 필수입니다.")
-  private String language;
+  private String language = "ko";
 
   @Schema(description = "AI 추출 원본 데이터", example = "명동 교자에서 칼국수 먹었어요 (caption, confidence: 0.95)")
   private String rawData;

@@ -88,7 +88,7 @@ public class AiCallbackService {
     if (isContentAlreadyCompleted) {
       // 업데이트 모드 - 기존 ContentPlace 모두 삭제
       log.info("Content already COMPLETED. Updating existing data: contentId={}", content.getId());
-      contentPlaceRepository.deleteByContentId(content.getId());
+      contentPlaceRepository.deleteByContentIdWithFlush(content.getId());
       log.debug("Deleted existing ContentPlaces for contentId={}", content.getId());
     }
 
@@ -224,6 +224,8 @@ public class AiCallbackService {
    * @param googlePlaceId Google place_id
    */
   private void savePlacePlatformReference(Place place, String googlePlaceId) {
+    log.info("Saving PlacePlatformReference: placeId={}, googlePlaceId={}", place.getId(), googlePlaceId);
+
     Optional<PlacePlatformReference> existing =
         placePlatformReferenceRepository.findByPlaceAndPlacePlatform(place, PlacePlatform.GOOGLE);
 
@@ -234,10 +236,11 @@ public class AiCallbackService {
           .placePlatformId(googlePlaceId)
           .build();
       placePlatformReferenceRepository.save(ref);
-      log.debug("Saved PlacePlatformReference: placeId={}, googlePlaceId={}", place.getId(), googlePlaceId);
+      log.info("Successfully saved NEW PlacePlatformReference: refId={}, placeId={}, googlePlaceId={}",
+          ref.getId(), place.getId(), googlePlaceId);
     } else {
-      log.debug("PlacePlatformReference already exists: placeId={}, googlePlaceId={}",
-          place.getId(), existing.get().getPlacePlatformId());
+      log.info("PlacePlatformReference already exists (skipping save): refId={}, placeId={}, existingPlaceId={}, newPlaceId={}",
+          existing.get().getId(), place.getId(), existing.get().getPlacePlatformId(), googlePlaceId);
     }
   }
 

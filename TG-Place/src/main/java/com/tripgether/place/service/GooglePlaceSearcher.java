@@ -1,12 +1,15 @@
 package com.tripgether.place.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.properties.PlaceProperties;
-import com.tripgether.common.util.NetworkUtil;
 import com.tripgether.place.dto.GooglePlaceSearchDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -22,7 +25,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GooglePlaceSearcher implements PlacePlatformSearcher {
 
-  private final NetworkUtil networkUtil;
+  private final OkHttpClient okHttpClient;
+  private final ObjectMapper objectMapper;
   private final PlaceProperties placeProperties;
 
   private static final String GOOGLE_PLACES_BASE_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json";
@@ -59,12 +63,30 @@ public class GooglePlaceSearcher implements PlacePlatformSearcher {
       String maskedUrl = url.replace(googleApiKey, "***MASKED***");
       log.info("Request URL: {}", maskedUrl);
 
-      // API 호출
-      GooglePlaceSearchDto response = networkUtil.sendGetRequest(
-          url,
-          null,  // headers 없음 (URL에 key 포함)
-          GooglePlaceSearchDto.class
-      );
+      // OkHttp로 API 호출 (브라우저 헤더 포함)
+      Request request = new Request.Builder()
+          .url(url)
+          .addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+          .addHeader("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
+          .addHeader("Accept", "application/json")
+          .get()
+          .build();
+
+      GooglePlaceSearchDto response;
+      try (Response httpResponse = okHttpClient.newCall(request).execute()) {
+        if (!httpResponse.isSuccessful()) {
+          log.error("Google Places API HTTP error: code={}", httpResponse.code());
+          throw new CustomException(ErrorCode.GOOGLE_PLACE_API_ERROR);
+        }
+
+        if (httpResponse.body() == null) {
+          log.error("Google Places API response body is null");
+          throw new CustomException(ErrorCode.GOOGLE_PLACE_API_ERROR);
+        }
+
+        String responseBody = httpResponse.body().string();
+        response = objectMapper.readValue(responseBody, GooglePlaceSearchDto.class);
+      }
 
       // 결과 파싱
       String status = response.getStatus();

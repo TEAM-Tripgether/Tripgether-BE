@@ -1,16 +1,21 @@
 package com.tripgether.ai.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripgether.ai.dto.PlaceExtractionRequest;
 import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.ai.dto.PlaceExtractionResponse;
+import com.tripgether.common.exception.CustomException;
+import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.properties.AiServerProperties;
-import com.tripgether.common.util.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -21,7 +26,8 @@ import java.util.UUID;
 @Slf4j
 public class AiServerService {
 
-  private final NetworkUtil networkUtil;
+  private final OkHttpClient okHttpClient;
+  private final ObjectMapper objectMapper;
   private final AiServerProperties aiServerProperties;
 
   /**
@@ -41,20 +47,48 @@ public class AiServerService {
             .snsUrl(snsUrl)
             .build();
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put("X-API-Key", aiServerProperties.getApiKey());
-
     log.info("Requesting place extraction to AI server: contentId={}, snsUrl={}", contentId, snsUrl);
 
-    PlaceExtractionResponse response = networkUtil.sendPostRequest(
-        aiServerPlaceExtractionUrl,
-        aiContentRequest,
-        headers,
-        PlaceExtractionResponse.class
-    );
+    try {
+      // JSON 직렬화
+      String jsonBody = objectMapper.writeValueAsString(aiContentRequest);
+      RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
 
-    log.info("AI server accepted the request: contentId={}, status={}", contentId, response.getStatus());
+      // OkHttp 요청 생성
+      Request request = new Request.Builder()
+          .url(aiServerPlaceExtractionUrl)
+          .addHeader("X-API-Key", aiServerProperties.getApiKey())
+          .addHeader("Content-Type", "application/json")
+          .addHeader("Accept", "application/json")
+          .post(body)
+          .build();
 
-    return response;
+      // OkHttp로 POST 요청 실행
+      try (Response httpResponse = okHttpClient.newCall(request).execute()) {
+        if (!httpResponse.isSuccessful()) {
+          log.error("AI server HTTP error: code={}", httpResponse.code());
+          throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+        }
+
+        if (httpResponse.body() == null) {
+          log.error("AI server response body is null");
+          throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+        }
+
+        String responseBody = httpResponse.body().string();
+        PlaceExtractionResponse response = objectMapper.readValue(responseBody, PlaceExtractionResponse.class);
+
+        log.info("AI server accepted the request: contentId={}, status={}", contentId, response.getStatus());
+
+        return response;
+      }
+
+    } catch (CustomException e) {
+      log.error("AI server error: contentId={}, error={}", contentId, e.getMessage());
+      throw e;
+    } catch (Exception e) {
+      log.error("Unexpected error during AI server call: contentId={}", contentId, e);
+      throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+    }
   }
 }

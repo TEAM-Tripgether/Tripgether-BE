@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+import org.apache.tomcat.util.http.parser.ContentRange;
 
 /**
  * AI 서버 Webhook Callback에 대한 응답 DTO

@@ -75,7 +75,12 @@ public enum ErrorCode {
 
   CAPTION_TOO_LONG(HttpStatus.BAD_REQUEST, "캡션이 허용된 최대 길이를 초과했습니다."),
 
-  MEMBER_TERMS_REQUIRED_NOT_AGREED(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다.");
+  MEMBER_TERMS_REQUIRED_NOT_AGREED(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다."),
+
+  // Place
+  GOOGLE_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "Google Places API에서 장소를 찾을 수 없습니다."),
+
+  GOOGLE_PLACE_API_ERROR(HttpStatus.BAD_GATEWAY, "Google Places API 호출 중 오류가 발생했습니다.");
 
   private final HttpStatus status;
   private final String message;

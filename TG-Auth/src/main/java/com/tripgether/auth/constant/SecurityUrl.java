@@ -17,9 +17,9 @@ public class SecurityUrl {
           "/api/auth/reissue", // 토큰 재발급
 
           // Swagger
-          "/swagger-ui/**", // Swagger UI
+          "/docs/swagger-ui/**", // Swagger UI
           "/v3/api-docs/**", // Swagger API 문서
-          "/swagger-ui.html", // Swagger UI HTML
+          "/docs/swagger", // Swagger UI HTML
 
           // Actuator (선택사항)
           "/actuator/**",

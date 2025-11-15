@@ -17,4 +17,7 @@ dependencies {
     // TG-Common 의존
     api project(':TG-Common')
     api project(':TG-Member')
+
+    // 테스트
+    testImplementation project(':TG-Web')
 }

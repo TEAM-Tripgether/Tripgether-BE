@@ -16,4 +16,7 @@ jar {
 dependencies {
     // TG-Common 의존
     api project(':TG-Common')
+
+    // 테스트
+    testImplementation project(':TG-Web')
 }

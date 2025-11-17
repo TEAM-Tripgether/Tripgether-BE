@@ -1,9 +1,13 @@
 package com.tripgether.common.util;
 
+import static me.suhsaechan.suhlogger.util.SuhLogger.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.suhsaechan.suhlogger.util.SuhLogger;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -23,6 +27,7 @@ import java.util.Map;
 public class NetworkUtil {
 
   private final WebClient webClient;
+  private final ObjectMapper objectMapper;
 
   /**
    * POST 요청을 전송합니다.
@@ -76,6 +81,7 @@ public class NetworkUtil {
 
   /**
    * GET 요청을 전송합니다.
+   * RAW JSON 응답을 먼저 로깅한 후 파싱합니다.
    *
    * @param url          요청 URL
    * @param headers      HTTP 헤더 (nullable)
@@ -87,9 +93,15 @@ public class NetworkUtil {
   public <T> T sendGetRequest(String url, Map<String, String> headers,
                                Class<T> responseType) {
     try {
-      log.debug("Sending GET request to: {}", url);
+      lineLog(null);
+      log.info("WebClient GET Request Start");
+      log.info("URL: {}", url);
+      log.info("Headers: {}", headers != null ? headers : "none");
+      log.info("Response Type: {}", responseType.getSimpleName());
+      lineLog(null);
 
-      return webClient.get()
+      // 1단계: RAW JSON String으로 먼저 받기
+      String rawJsonResponse = webClient.get()
           .uri(url)
           .headers(httpHeaders -> {
             if (headers != null) {
@@ -97,24 +109,70 @@ public class NetworkUtil {
             }
           })
           .retrieve()
-          .onStatus(HttpStatusCode::is4xxClientError, response -> {
-            log.error("Client error occurred: status={}", response.statusCode());
-            return Mono.error(new CustomException(ErrorCode.EXTERNAL_API_ERROR));
-          })
-          .onStatus(HttpStatusCode::is5xxServerError, response -> {
-            log.error("Server error occurred: status={}", response.statusCode());
-            return Mono.error(new CustomException(ErrorCode.AI_SERVER_ERROR));
-          })
-          .bodyToMono(responseType)
+          .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
+              clientResponse.bodyToMono(String.class)
+                  .flatMap(errorBody -> {
+                    lineLog(null);
+                    log.error("Client Error (4xx) Occurred");
+                    log.error("Status Code: {}", clientResponse.statusCode());
+                    log.error("RAW Error Body: {}", errorBody);
+                    lineLog(null);
+                    return Mono.error(new CustomException(ErrorCode.EXTERNAL_API_ERROR));
+                  })
+          )
+          .onStatus(HttpStatusCode::is5xxServerError, serverResponse ->
+              serverResponse.bodyToMono(String.class)
+                  .flatMap(errorBody -> {
+                    lineLog(null);
+                    log.error("Server Error (5xx) Occurred");
+                    log.error("Status Code: {}", serverResponse.statusCode());
+                    log.error("RAW Error Body: {}", errorBody);
+                    lineLog(null);
+                    return Mono.error(new CustomException(ErrorCode.AI_SERVER_ERROR));
+                  })
+          )
+          .bodyToMono(String.class)  // 먼저 String으로 받기
           .block();
 
+      // 2단계: RAW JSON 로깅
+      lineLog(null);
+      log.info("RAW JSON Response Received:");
+      log.info("{}", rawJsonResponse);
+      lineLog(null);
+
+      // 3단계: ObjectMapper로 수동 파싱
+      T parsedResponse;
+      try {
+        log.info("Parsing RAW JSON to {}", responseType.getSimpleName());
+        parsedResponse = objectMapper.readValue(rawJsonResponse, responseType);
+        log.info("Parsing Successful");
+        log.info("Parsed Response:");
+        lineLogDebug("PARSED_RESPONSE");
+        superLogDebug(parsedResponse);
+      } catch (Exception parseException) {
+        log.error("JSON Parsing Failed!");
+        log.error("Exception: {}", parseException.getMessage(), parseException);
+        log.error("RAW JSON that failed to parse:");
+        log.error("{}", rawJsonResponse);
+        throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+      }
+
+      log.info("WebClient GET Request End - Success");
+      return parsedResponse;
+
     } catch (WebClientException e) {
-      log.error("WebClient error: {}", e.getMessage(), e);
+      lineLog(null);
+      log.error("WebClient Exception");
+      log.error("Message: {}", e.getMessage(), e);
+      lineLog(null);
       throw new CustomException(ErrorCode.NETWORK_ERROR);
     } catch (CustomException e) {
       throw e;
     } catch (Exception e) {
-      log.error("Unexpected error during HTTP request: {}", e.getMessage(), e);
+      lineLog(null);
+      log.error("Unexpected Exception");
+      log.error("Message: {}", e.getMessage(), e);
+      lineLog(null);
       throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }

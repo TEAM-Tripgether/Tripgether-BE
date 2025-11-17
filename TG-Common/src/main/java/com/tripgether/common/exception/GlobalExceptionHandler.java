@@ -1,8 +1,10 @@
 package com.tripgether.common.exception;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,6 +14,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.stream.Collectors;
 
 /**
  * 전역 예외 처리 핸들러 애플리케이션에서 발생하는 다양한 예외를 처리하고 일관된 응답 형식으로 변환
@@ -56,6 +60,33 @@ public class GlobalExceptionHandler {
         ErrorResponse.builder()
             .message(e.getMessage())
             .build();
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+  }
+
+  /**
+   * MethodArgumentNotValidException 처리 (Validation 오류)
+   * @Valid 어노테이션으로 검증 실패 시 발생하는 예외를 처리
+   *
+   * @param e 발생한 MethodArgumentNotValidException
+   * @return 400 Bad Request 상태 코드와 에러 응답
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleValidationException(
+      MethodArgumentNotValidException e, HttpServletRequest request) {
+
+    String errorMessage = e.getBindingResult()
+        .getFieldErrors()
+        .stream()
+        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+        .collect(Collectors.joining(", "));
+
+    log.error("[예외 처리] Validation 실패: message={}, path={}, method={}",
+        errorMessage, request.getRequestURI(), request.getMethod());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+        .message(errorMessage)
+        .build();
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
   }

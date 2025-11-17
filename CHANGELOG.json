@@ -1,11 +1,41 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-12T16:05:48Z",
-    "currentVersion": "0.2.9",
+    "lastUpdated": "2025-11-17T05:31:47Z",
+    "currentVersion": "0.2.10",
     "projectType": "spring",
-    "totalReleases": 16
+    "totalReleases": 17
   },
   "releases": [
+    {
+      "version": "0.2.10",
+      "project_type": "spring",
+      "date": "2025-11-17",
+      "pr_number": 82,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nNew Features\n\nGoogle Places 검색 기능 통합 - 장소 정보 검색 및 상세 데이터 조회 가능\n테스트용 모의 콘텐츠 생성 API 추가\n\n\n\nDocumentation\n\nAPI 문서 경로 변경: /docs/swagger 및 /docs/swagger-ui/**로 업데이트\n버전 0.2.10 업데이트\n\n\n\nChores\n\n네트워크 통신 라이브러리 최적화\n테스트 프레임워크 통합",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "Google Places 검색 기능 통합 - 장소 정보 검색 및 상세 데이터 조회 가능",
+            "테스트용 모의 콘텐츠 생성 API 추가"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "API 문서 경로 변경: /docs/swagger 및 /docs/swagger-ui/**로 업데이트",
+            "버전 0.2.10 업데이트"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "네트워크 통신 라이브러리 최적화",
+            "테스트 프레임워크 통합"
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.9",
       "project_type": "spring",

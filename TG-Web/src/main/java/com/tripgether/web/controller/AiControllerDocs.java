@@ -11,6 +11,11 @@ import org.springframework.http.ResponseEntity;
 public interface AiControllerDocs {
 
   @ApiChangeLogs({
+          @ApiChangeLog(
+                  date = "2025.11.12",
+                  author = Author.SUHSAECHAN,
+                  issueNumber = 70,
+                  description = "명세 변경, 기존 전체정보 > 상호명으로만 받음"),
       @ApiChangeLog(
           date = "2025.11.02",
           author = Author.KANGJIYUN,

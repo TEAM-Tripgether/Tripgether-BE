@@ -53,7 +53,7 @@ public class AiCallbackRequest {
     @NotNull(message = "thumbnailUrl은 필수입니다.")
     private String thumbnailUrl;
 
-    @Schema(description = "SNS 플랫폼", example = "YOUTUBE", allowableValues = {"INSTAGRAM", "YOUTUBE", "TIKTOK"})
+    @Schema(description = "SNS 플랫폼", example = "YOUTUBE", allowableValues = {"INSTAGRAM", "YOUTUBE", "YOUTUBE_SHORTS"})
     @NotNull(message = "platform은 필수입니다.")
     private String platform;
 

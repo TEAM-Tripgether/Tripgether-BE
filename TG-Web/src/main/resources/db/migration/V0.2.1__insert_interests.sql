@@ -5,6 +5,18 @@
 -- ============================================
 
 -- ============================================
+-- interest 테이블 생성 (없을 시 자동 생성)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS interest (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    category VARCHAR(50) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================
 -- 제약조건 추가 (안전한 방식)
 -- ============================================
 

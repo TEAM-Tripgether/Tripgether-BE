@@ -94,6 +94,10 @@ public class AiCallbackService {
 
     // Content 상태를 COMPLETED로 변경 (신규 또는 재처리 모두)
     content.setStatus(ContentStatus.COMPLETED);
+
+    // ContentInfo로 Content 메타데이터 업데이트
+    updateContentWithContentInfo(content, request);
+
     contentRepository.save(content);
 
     // AI 서버에서 받은 Place 정보로 ContentPlace 생성
@@ -144,6 +148,66 @@ public class AiCallbackService {
       // Place 데이터가 없는 경우 경고 로그
       log.warn("No places found in callback for contentId={}", content.getId());
     }
+  }
+
+  /**
+   * ContentInfo로 Content 메타데이터 업데이트
+   *
+   * null이 아닌 필드만 업데이트하여 기존 데이터 보존
+   *
+   * @param content 대상 Content
+   * @param request AI Callback 요청
+   */
+  private void updateContentWithContentInfo(Content content, AiCallbackRequest request) {
+    AiCallbackRequest.ContentInfo contentInfo = request.getContentInfo();
+
+    if (contentInfo == null) {
+      log.warn("ContentInfo is null for contentId={}. Skipping metadata update.", content.getId());
+      return;
+    }
+
+    // title 업데이트 (null이 아닐 때만)
+    if (contentInfo.getTitle() != null) {
+      content.setTitle(contentInfo.getTitle());
+    }
+
+    // thumbnailUrl 업데이트 (null이 아닐 때만)
+    if (contentInfo.getThumbnailUrl() != null) {
+      content.setThumbnailUrl(contentInfo.getThumbnailUrl());
+    }
+
+    // platformUploader 업데이트 (null이 아닐 때만)
+    if (contentInfo.getPlatformUploader() != null) {
+      content.setPlatformUploader(contentInfo.getPlatformUploader());
+    }
+
+    // summary 업데이트 (null이 아닐 때만)
+    if (contentInfo.getSummary() != null) {
+      content.setSummary(contentInfo.getSummary());
+    }
+
+    // contentUrl은 originalUrl과 일치 여부 확인 후 업데이트
+    if (contentInfo.getContentUrl() != null && !contentInfo.getContentUrl().equals(content.getOriginalUrl())) {
+      log.warn("ContentInfo.contentUrl differs from existing originalUrl. " +
+              "contentId={}, existing={}, new={}",
+          content.getId(), content.getOriginalUrl(), contentInfo.getContentUrl());
+      // 기존 값 보존 (충돌 방지)
+    }
+
+    // snsPlatform으로 platform 동기화
+    if (request.getSnsPlatform() != null) {
+      try {
+        content.setPlatform(com.tripgether.sns.constant.ContentPlatform.valueOf(request.getSnsPlatform()));
+      } catch (IllegalArgumentException e) {
+        log.error("Invalid snsPlatform value: {}. Keeping existing platform for contentId={}",
+            request.getSnsPlatform(), content.getId());
+      }
+    }
+
+    log.debug("Updated Content with ContentInfo: contentId={}, title={}, summary={}",
+        content.getId(),
+        contentInfo.getTitle() != null ? contentInfo.getTitle() : "(unchanged)",
+        contentInfo.getSummary() != null ? contentInfo.getSummary().substring(0, Math.min(30, contentInfo.getSummary().length())) + "..." : "(unchanged)");
   }
 
   /**

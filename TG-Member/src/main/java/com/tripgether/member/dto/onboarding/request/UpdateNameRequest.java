@@ -23,7 +23,6 @@ public class UpdateNameRequest {
   private UUID memberId;
 
   @NotBlank(message = "이름은 필수입니다.")
-  @Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하여야 합니다.")
   @Schema(description = "이름", example = "홍길동", required = true)
   private String name;
 }

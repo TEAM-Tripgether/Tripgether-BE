@@ -34,8 +34,8 @@ public class Member extends SoftDeletableBaseEntity {
   private LocalDate birthDate;
 
   @Enumerated(EnumType.STRING)
-  @Column(length = 10)
-  private MemberGender gender;      //null 허용
+  @Column(length = 15)
+  private MemberGender gender;
 
   //
   @Enumerated(EnumType.STRING)

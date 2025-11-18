@@ -48,7 +48,7 @@ public class AuthService {
           // 신규 회원 생성 시 기본값 자동 설정
           Member newMember = Member.builder()
               .email(email)
-              .name(name)
+              .name("name")
               .build();
           memberRepository.save(newMember);
           log.debug("신규 회원 가입: {}", email);

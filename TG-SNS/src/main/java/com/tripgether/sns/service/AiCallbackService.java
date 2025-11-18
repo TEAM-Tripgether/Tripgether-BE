@@ -1,6 +1,7 @@
 package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.AiCallbackRequest;
+import com.tripgether.ai.dto.AiCallbackResponse;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 // AI 서버 Webhook Callback 처리
 @Service
@@ -42,9 +44,10 @@ public class AiCallbackService {
    * - FAILED면 상태만 변경
    *
    * @param request AI Callback 요청
+   * @return AI Callback 응답
    */
   @Transactional
-  public void processAiServerCallback(AiCallbackRequest request) {
+  public AiCallbackResponse processAiServerCallback(AiCallbackRequest request) {
     // ContentInfo에서 contentId 추출
     UUID contentId = request.getContentInfo() != null && request.getContentInfo().getContentId() != null
         ? request.getContentInfo().getContentId()
@@ -76,6 +79,11 @@ public class AiCallbackService {
     }
 
     log.info("AI callback processed successfully: contentId={}", contentId);
+
+    return AiCallbackResponse.builder()
+        .received(true)
+        .contentId(contentId)
+        .build();
   }
 
   /**
@@ -122,14 +130,17 @@ public class AiCallbackService {
         log.info("Processing place {}/{}", i + 1, places.size());
         log.info("Place Name: {}", placeInfo.getName());
         log.info("Address: {}", placeInfo.getAddress());
-        log.info("Language: {}", placeInfo.getLanguage());
+        
+        // language 필드가 null이면 기본값 "ko" 사용
+        String language = placeInfo.getLanguage() != null ? placeInfo.getLanguage() : "ko";
+        log.info("Language: {}", language);
 
         try {
           // 1. Google Places API 호출 (실패 시 CustomException 발생)
           GooglePlaceSearchDto.PlaceDetail googlePlace = placeSearchService.searchGooglePlace(
               placeInfo.getName(),
               placeInfo.getAddress(),
-              placeInfo.getLanguage()
+              language
           );
 
           // 2. Google 응답으로 Place 생성/업데이트

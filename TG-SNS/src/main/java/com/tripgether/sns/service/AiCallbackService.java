@@ -1,7 +1,6 @@
 package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.AiCallbackRequest;
-import com.tripgether.ai.dto.PlaceInfo;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -46,11 +45,21 @@ public class AiCallbackService {
    */
   @Transactional
   public void processAiServerCallback(AiCallbackRequest request) {
+    // ContentInfo에서 contentId 추출
+    UUID contentId = request.getContentInfo() != null && request.getContentInfo().getContentId() != null
+        ? request.getContentInfo().getContentId()
+        : null;
+
+    if (contentId == null) {
+      log.error("ContentInfo or contentId is null in callback request");
+      throw new CustomException(ErrorCode.INVALID_REQUEST);
+    }
+
     log.info("Processing AI callback: contentId={}, resultStatus={}",
-        request.getContentId(), request.getResultStatus());
+        contentId, request.getResultStatus());
 
     // Content 조회 - 없으면 예외 발생
-    Content content = contentRepository.findById(request.getContentId())
+    Content content = contentRepository.findById(contentId)
         .orElseThrow(() -> new CustomException(ErrorCode.CONTENT_NOT_FOUND));
 
     // 결과 상태에 따라 분기 처리
@@ -66,7 +75,7 @@ public class AiCallbackService {
       throw new CustomException(ErrorCode.INVALID_REQUEST);
     }
 
-    log.info("AI callback processed successfully: contentId={}", request.getContentId());
+    log.info("AI callback processed successfully: contentId={}", contentId);
   }
 
   /**
@@ -102,13 +111,13 @@ public class AiCallbackService {
 
     // AI 서버에서 받은 Place 정보로 ContentPlace 생성
     if (request.getPlaces() != null && !request.getPlaces().isEmpty()) {
-      List<PlaceInfo> places = request.getPlaces();
+      List<AiCallbackRequest.PlaceInfo> places = request.getPlaces();
       log.info("Processing {} places for contentId={} (update mode: {})",
           places.size(), content.getId(), isContentAlreadyCompleted);
 
       // 각 Place 정보를 순회하며 저장
       for (int i = 0; i < places.size(); i++) {
-        PlaceInfo placeInfo = places.get(i);
+        AiCallbackRequest.PlaceInfo placeInfo = places.get(i);
 
         log.info("Processing place {}/{}", i + 1, places.size());
         log.info("Place Name: {}", placeInfo.getName());
@@ -186,21 +195,13 @@ public class AiCallbackService {
       content.setSummary(contentInfo.getSummary());
     }
 
-    // contentUrl은 originalUrl과 일치 여부 확인 후 업데이트
-    if (contentInfo.getContentUrl() != null && !contentInfo.getContentUrl().equals(content.getOriginalUrl())) {
-      log.warn("ContentInfo.contentUrl differs from existing originalUrl. " +
-              "contentId={}, existing={}, new={}",
-          content.getId(), content.getOriginalUrl(), contentInfo.getContentUrl());
-      // 기존 값 보존 (충돌 방지)
-    }
-
-    // snsPlatform으로 platform 동기화
-    if (request.getSnsPlatform() != null) {
+    // platform 업데이트 (null이 아닐 때만)
+    if (contentInfo.getPlatform() != null) {
       try {
-        content.setPlatform(com.tripgether.sns.constant.ContentPlatform.valueOf(request.getSnsPlatform()));
+        content.setPlatform(com.tripgether.sns.constant.ContentPlatform.valueOf(contentInfo.getPlatform()));
       } catch (IllegalArgumentException e) {
-        log.error("Invalid snsPlatform value: {}. Keeping existing platform for contentId={}",
-            request.getSnsPlatform(), content.getId());
+        log.error("Invalid platform value: {}. Keeping existing platform for contentId={}",
+            contentInfo.getPlatform(), content.getId());
       }
     }
 

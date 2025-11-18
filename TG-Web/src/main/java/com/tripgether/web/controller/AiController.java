@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 /**
  * AI 서버 Webhook Callback을 처리하는 컨트롤러
  */
@@ -34,8 +36,13 @@ public class AiController implements AiControllerDocs {
       @RequestHeader(value = "X-API-Key", required = true) String apiKey,
       @Valid @RequestBody AiCallbackRequest request) {
 
+    // ContentInfo에서 contentId 추출
+    UUID contentId = request.getContentInfo() != null && request.getContentInfo().getContentId() != null
+        ? request.getContentInfo().getContentId()
+        : null;
+
     log.debug("AI callback received: contentId={}, resultStatus={}",
-        request.getContentId(), request.getResultStatus());
+        contentId, request.getResultStatus());
 
     // API Key 검증
     if (!aiServerProperties.getCallbackApiKey().equals(apiKey)) {
@@ -51,10 +58,10 @@ public class AiController implements AiControllerDocs {
     // 응답 생성
     AiCallbackResponse response = AiCallbackResponse.builder()
         .received(true)
-        .contentId(request.getContentId())
+        .contentId(contentId)
         .build();
 
-    log.info("AI callback processed successfully: contentId={}", request.getContentId());
+    log.info("AI callback processed successfully: contentId={}", contentId);
 
     return ResponseEntity.ok(response);
   }

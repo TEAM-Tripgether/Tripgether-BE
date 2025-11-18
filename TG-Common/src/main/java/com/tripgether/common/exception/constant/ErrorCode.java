@@ -51,7 +51,15 @@ public enum ErrorCode {
   // Member
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
 
+  INVALID_ONBOARDING_STEP(HttpStatus.BAD_REQUEST, "유효하지 않은 온보딩 단계입니다."),
+
   NAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
+
+  INVALID_NAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 2자 이상 50자 이하여야 합니다."),
+
+  INVALID_BIRTH_DATE(HttpStatus.BAD_REQUEST, "유효하지 않은 생년월일 형식입니다."),
+
+  INVALID_GENDER(HttpStatus.BAD_REQUEST, "유효하지 않은 성별 값입니다."),
 
   EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다."),
 

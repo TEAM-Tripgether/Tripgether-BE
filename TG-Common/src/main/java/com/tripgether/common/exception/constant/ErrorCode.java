@@ -59,6 +59,8 @@ public enum ErrorCode {
 
   INVALID_BIRTH_DATE(HttpStatus.BAD_REQUEST, "유효하지 않은 생년월일 형식입니다."),
 
+  AGE_RESTRICTION_UNDER_14(HttpStatus.BAD_REQUEST, "만 14세 미만은 회원가입이 불가능합니다."),
+
   INVALID_GENDER(HttpStatus.BAD_REQUEST, "유효하지 않은 성별 값입니다."),
 
   EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다."),

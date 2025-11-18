@@ -45,6 +45,9 @@ public class MemberService {
   private final MemberInterestRepository memberInterestRepository;
   private final InterestRepository interestRepository;
 
+  // 만 14세 이상만 가입 가능
+  LocalDate today = LocalDate.now();
+
   /**
    * 회원 생성
    *
@@ -88,7 +91,7 @@ public class MemberService {
     }
 
     // 이름 체크 (기본값이거나 빈 문자열인 경우)
-    if (member.getName() == null || member.getName().trim().isEmpty()) {
+    if (member.getName() == null || member.getName().trim().isEmpty() || member.getName().equals("name")) {
       return OnboardingStep.NAME;
     }
 
@@ -253,6 +256,12 @@ public class MemberService {
       log.warn("[Onboarding] 유효하지 않은 생년월일 형식 - memberBirthDate={}", request.getBirthDate());
       throw new CustomException(ErrorCode.INVALID_BIRTH_DATE);  // 유효하지 않은 생년월일 에러 처리
     }
+    // 만 14세 이상부터 가능
+    LocalDate minAllowedBirthDate = today.minusYears(14);
+    if (request.getBirthDate().isAfter(minAllowedBirthDate)) {
+      log.warn("[Onboarding] 만 14세 미만 가입 불가 - memberBirthDate={}", request.getBirthDate());
+      throw new CustomException(ErrorCode.AGE_RESTRICTION_UNDER_14);
+    }
 
     member.setBirthDate(request.getBirthDate());
 
@@ -412,6 +421,12 @@ public class MemberService {
     if (request.getGender() != MemberGender.MALE && request.getGender() != MemberGender.FEMALE && request.getGender() != MemberGender.NOT_SELECTED) {
       log.warn("[Onboarding] 유효하지 않은 성별 값 - memberGender={}", request.getGender());
       throw new CustomException(ErrorCode.INVALID_GENDER);  // 유효하지 않은 성별 오류 처리
+    }
+    // 만 14세 이상부터 가능
+    LocalDate minAllowedBirthDate = today.minusYears(14);
+    if (request.getBirthDate().isAfter(minAllowedBirthDate)) {
+      log.warn("[Onboarding] 만 14세 미만 가입 불가 - memberBirthDate={}", request.getBirthDate());
+      throw new CustomException(ErrorCode.AGE_RESTRICTION_UNDER_14);
     }
 
     // 정보 업데이트

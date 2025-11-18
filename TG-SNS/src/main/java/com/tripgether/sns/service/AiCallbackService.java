@@ -196,11 +196,6 @@ public class AiCallbackService {
       content.setThumbnailUrl(contentInfo.getThumbnailUrl());
     }
 
-    // platformUploader 업데이트 (null이 아닐 때만)
-    if (contentInfo.getPlatformUploader() != null) {
-      content.setPlatformUploader(contentInfo.getPlatformUploader());
-    }
-
     // summary 업데이트 (null이 아닐 때만)
     if (contentInfo.getSummary() != null) {
       content.setSummary(contentInfo.getSummary());

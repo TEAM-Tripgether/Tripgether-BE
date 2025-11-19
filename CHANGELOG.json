@@ -1,11 +1,27 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-18T09:52:52Z",
-    "currentVersion": "0.2.12",
+    "lastUpdated": "2025-11-19T06:07:43Z",
+    "currentVersion": "0.2.15",
     "projectType": "spring",
-    "totalReleases": 18
+    "totalReleases": 19
   },
   "releases": [
+    {
+      "version": "0.2.15",
+      "project_type": "spring",
+      "date": "2025-11-19",
+      "pr_number": 90,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\nChores\n\n애플리케이션 버전이 0.2.15로 업데이트되었습니다.\n빌드 번호가 41로 증가했습니다.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전이 0.2.15로 업데이트되었습니다.",
+            "빌드 번호가 41로 증가했습니다."
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.12",
       "project_type": "spring",

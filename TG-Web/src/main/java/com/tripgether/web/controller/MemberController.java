@@ -136,4 +136,16 @@ public class MemberController implements MemberControllerDocs {
     return ResponseEntity.ok(interestDtos);
   }
 
+  @DeleteMapping("/me")
+  @Override
+  public ResponseEntity<Void> withdrawMember(
+      @AuthenticationPrincipal CustomUserDetails userDetails
+  ) {
+    UUID memberId = userDetails.getMemberId();
+    memberService.withdrawMember(memberId);
+
+    log.info("[Member] 회원 탈퇴 완료 - memberId={}", memberId);
+    return ResponseEntity.noContent().build();
+  }
+
 }

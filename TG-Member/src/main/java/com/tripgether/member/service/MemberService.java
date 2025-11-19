@@ -526,4 +526,33 @@ public class MemberService {
 
     return interests;
   }
+
+  /**
+   * 회원 탈퇴
+   *
+   * @param memberId 탈퇴할 회원 ID
+   */
+  @Transactional
+  public void withdrawMember(UUID memberId) {
+    // 회원 조회
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 이미 탈퇴한 회원인지 확인
+    if (member.isDeleted()) {
+      log.warn("[Member] 이미 탈퇴한 회원 - memberId={}", memberId);
+      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+    }
+
+    // 탈퇴 처리 (email, name에 타임스탬프 자동 추가)
+    String timestamp = member.withdraw(memberId.toString());
+
+    // 회원 관심사 소프트삭제
+    List<MemberInterest> memberInterests = memberInterestRepository.findByMemberId(memberId);
+    memberInterests.forEach(interest -> interest.softDelete(memberId.toString()));
+
+    memberRepository.save(member);
+
+    log.info("[Member] 회원 탈퇴 완료 - memberId={}, timestamp={}", memberId, timestamp);
+  }
 }

@@ -365,4 +365,32 @@ public interface MemberControllerDocs {
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
   ResponseEntity<List<InterestDto>> getInterestsByMemberId(UUID memberId);
+
+  @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.01.19", author = Author.SUHSAECHAN, issueNumber = 0, description = "회원 탈퇴 API 추가")
+  })
+  @Operation(
+      summary = "회원 탈퇴",
+      description =
+          """
+              ## 인증(JWT): **필요**
+
+              ## 요청 파라미터
+              - 없음 (JWT 토큰에서 회원 ID 추출)
+
+              ## 반환값
+              - **`204 No Content`**: 탈퇴 성공
+
+              ## 특이사항
+              - 현재 로그인한 회원을 탈퇴 처리합니다. (소프트삭제)
+              - 탈퇴 시 이메일과 닉네임에 타임스탬프가 추가됩니다. (예: email_2025_01_19_143022)
+              - 이를 통해 동일한 이메일/닉네임으로 재가입이 가능합니다.
+              - 회원의 관심사도 함께 소프트삭제 됩니다.
+
+              ## 에러코드
+              - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
+              - **`MEMBER_ALREADY_WITHDRAWN`**: 이미 탈퇴한 회원입니다.
+              - **`UNAUTHORIZED`**: 인증이 필요합니다.
+              """)
+  ResponseEntity<Void> withdrawMember(CustomUserDetails userDetails);
 }

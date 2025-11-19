@@ -367,7 +367,7 @@ public interface MemberControllerDocs {
   ResponseEntity<List<InterestDto>> getInterestsByMemberId(UUID memberId);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.01.19", author = Author.SUHSAECHAN, issueNumber = 91, description = "회원 탈퇴 API 추가")
+      @ApiChangeLog(date = "2025.11.19", author = Author.SUHSAECHAN, issueNumber = 91, description = "회원 탈퇴 API 추가")
   })
   @Operation(
       summary = "회원 탈퇴",

@@ -152,9 +152,15 @@ public class AuthService {
 
     String newAccessToken = jwtUtil.createAccessToken(customUserDetails);
 
-    // 회원 존재 여부 검증
-    memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
+    // 회원 존재 여부 및 탈퇴 여부 검증
+    Member memberForValidation = memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 탈퇴한 회원은 토큰 재발급 불가
+    if (memberForValidation.isDeleted()) {
+      log.error("탈퇴한 회원의 토큰 재발급 시도 - memberId={}", memberForValidation.getId());
+      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+    }
 
     return AuthResponse.builder()
         .accessToken(newAccessToken)

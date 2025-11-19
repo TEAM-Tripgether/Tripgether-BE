@@ -2,11 +2,13 @@ package com.tripgether.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripgether.auth.constant.SecurityUrl;
+import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.auth.service.CustomUserDetailsService;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.ErrorResponse;
 import com.tripgether.common.exception.constant.ErrorCode;
+import com.tripgether.member.entity.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -71,6 +73,19 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
       // 토큰 검증: 토큰이 유효하면 인증 설정
       if (token != null && jwtUtil.validateToken(token)) {
         Authentication authentication = jwtUtil.getAuthentication(token);
+
+        // 탈퇴한 회원 체크
+        if (authentication.getPrincipal() instanceof CustomUserDetails) {
+          CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+          Member member = userDetails.getMember();
+
+          if (member != null && member.isDeleted()) {
+            log.error("탈퇴한 회원의 API 접근 시도 - memberId={}", member.getId());
+            sendErrorResponse(response, ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+            return;
+          }
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 인증 성공

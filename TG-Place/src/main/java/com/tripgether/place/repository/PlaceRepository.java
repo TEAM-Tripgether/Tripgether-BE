@@ -1,6 +1,7 @@
 package com.tripgether.place.repository;
 
 import com.tripgether.place.entity.Place;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +26,9 @@ public interface PlaceRepository extends JpaRepository<Place, UUID> {
    * @return Optional<Place>
    */
   Optional<Place> findByNameAndLatitudeAndLongitude(String name, BigDecimal latitude, BigDecimal longitude);
+
+  // 한 회원이 저장한 장소 중, 최신순 상위 10개
+  List<Place> findTop10ByMember_IdOrderByCreatedAtDesc(UUID memberId);
 
   /**
    * 이름과 주소로 Place 검색 (DB 캐싱용, Google API 호출 최소화)

@@ -1,6 +1,7 @@
 package com.tripgether.place.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
+import com.tripgether.member.entity.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -32,6 +33,9 @@ public class Place extends SoftDeletableBaseEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(updatable = false, nullable = false)
   private UUID id;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Member member;
 
   @Column(nullable = false, length = 255)
   private String name;

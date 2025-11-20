@@ -14,6 +14,6 @@ public interface ContentRepository extends JpaRepository<Content, UUID> {
   // SNS URL로 Content 조회
   Optional<Content> findByOriginalUrl(String originalUrl);
 
-  List<Content> findTop10ByMemberIdOrderByCreatedAtDesc(UUID id);
+  List<Content> findTop10ByMember_IdOrderByCreatedAtDesc(UUID id);
 
 }

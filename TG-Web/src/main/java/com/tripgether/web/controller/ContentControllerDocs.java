@@ -30,8 +30,11 @@ public interface ContentControllerDocs {
               
               ## 반환값 (RequestPlaceExtractionResponse)
               - **`contentId`**: 콘텐츠 UUID
-              - **`platform`**: 콘텐츠 플랫폼 (INSTAGRAM, YOUTUBE, TIKTOK 등)
+              - **'memberId'**: 회원 UUID
               - **`status`**: 장소 추출 요청 상태 (PENDING, ANALYZING, COMPLETED, FAILED, DELETED)
+              
+              ## 콘텐츠 필드
+              - **`platform`**: 콘텐츠 플랫폼 (INSTAGRAM, YOUTUBE, TIKTOK 등)
               - **`platformUploader`**: 콘텐츠 업로더 계정 이름
               - **`caption`**: 게시글 본문
               - **`thumbnailUrl`**: 썸네일 URL
@@ -72,10 +75,10 @@ public interface ContentControllerDocs {
           """
               ## 인증(JWT): **필요**
               
-              ## 요청 파라미터 (UpdateGenderRequest)
-              - **`memberId`**: 회원 ID (Path Variable)
+              ## 요청 파라미터
+              - JWT 인증만 필요, 별도 파라미터 없음
 
-              ## 반환값 (OnboardingResponse)
+              ## 반환값 (List<RecentContentResponse>)
               - **`contentId`**: 콘텐츠 UUID
               - **`platform`**: 콘텐츠 플랫폼 (INSTAGRAM, YOUTUBE, TIKTOK 등)
               - **`title`**: 콘텐츠 제목

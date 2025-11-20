@@ -14,7 +14,6 @@ import com.tripgether.sns.dto.RecentContentResponse;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.repository.ContentRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -124,7 +123,7 @@ public class ContentService {
 
     // 최근 10개의 SNS 콘텐츠 조회
     List<Content> contents =
-        contentRepository.findTop10ByMemberIdOrderByCreatedAtDesc(member.getId());
+        contentRepository.findTop10ByMember_IdOrderByCreatedAtDesc(member.getId());
 
     // 응답 DTO 변환
     return contents.stream()

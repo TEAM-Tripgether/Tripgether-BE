@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class RequestPlaceExtractionResponse {
 
   private UUID contentId;
-
+  private UUID memberId;
   private ContentStatus status;
 }

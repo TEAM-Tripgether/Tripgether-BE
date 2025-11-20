@@ -77,7 +77,6 @@ on:
    push:
      branches:
        - deploy  # 프로덕션 배포 (필수)
-       - main    # main 브랜치 배포 (필수)
        - test    # 테스트 환경 배포 (선택사항 - 작은 프로젝트는 생략 가능)
    workflow_dispatch:  # 수동 실행 허용
 

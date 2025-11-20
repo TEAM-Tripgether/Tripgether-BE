@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PlaceService {
+  int MAX_PHOTO_URLS_PER_PLACE = 10;
+
   private final PlaceRepository placeRepository;
   private final MemberRepository memberRepository;
 
@@ -33,11 +35,11 @@ public class PlaceService {
 
     log.info("[Place] 저장 장소 목록 조회 - memberId={}", member.getId());
 
-    List<Place> Places =
+    List<Place> places =
         placeRepository.findTop10ByMember_IdOrderByCreatedAtDesc(memberId);
 
     // Entity -> DTO 변환
-    return Places.stream()
+    return places.stream()
         .map(place -> PlaceResponse.builder()
             .placeId(place.getId())
             .name(place.getName())
@@ -45,7 +47,7 @@ public class PlaceService {
             .rating(place.getRating())
             .photoUrls(
                 place.getPhotoUrls() != null && place.getPhotoUrls().size() > 10
-                    ? place.getPhotoUrls().subList(0, 10)
+                    ? place.getPhotoUrls().subList(0, MAX_PHOTO_URLS_PER_PLACE)
                     : place.getPhotoUrls()
             )
             .description(place.getDescription())

@@ -40,6 +40,10 @@ public class ContentService {
    * @return 장소 추출 요청 결과
    */
   public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request, UUID memberId) {
+    // 회원 존재 여부 검증
+    Member member = memberRepository.findById(memberId)
+      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
     String snsUrl = request.getSnsUrl();
 
     // URL 길이 검증
@@ -53,11 +57,11 @@ public class ContentService {
           log.info("Content already exists and completed. Returning existing data: contentId={}", content.getId());
           return RequestPlaceExtractionResponse.builder()
               .contentId(content.getId())
-              .memberId(memberId)
+              .memberId(member.getId())
               .status(content.getStatus())
               .build();
         })
-        .orElseGet(() -> processNewOrPendingContent(snsUrl, memberId));  // 없으면 신규/재처리
+        .orElseGet(() -> processNewOrPendingContent(snsUrl, member));  // 없으면 신규/재처리
   }
 
   /**
@@ -70,7 +74,7 @@ public class ContentService {
    * @param snsUrl SNS URL
    * @return 장소 추출 요청 결과
    */
-  private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl, UUID memberId) {
+  private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl, Member member) {
     // Content 생성 또는 재사용
     Content content = contentRepository.findByOriginalUrl(snsUrl)
         .map(existingContent -> {
@@ -82,8 +86,7 @@ public class ContentService {
         .orElseGet(() -> {
           // 신규 Content 생성
           return Content.builder()
-              .member(memberRepository.findById(memberId)
-                  .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)))
+              .member(member)
               .originalUrl(snsUrl)
               .status(ContentStatus.PENDING)
               .build();
@@ -104,7 +107,7 @@ public class ContentService {
 
     return RequestPlaceExtractionResponse.builder()
         .contentId(contentId)
-        .memberId(memberId)
+        .memberId(member.getId())
         .status(savedContent.getStatus())
         .build();
   }
@@ -127,16 +130,7 @@ public class ContentService {
 
     // 응답 DTO 변환
     return contents.stream()
-        .map(content -> RecentContentResponse.builder()
-            .contentId(content.getId())
-            .platform(content.getPlatform())       // 예: YOUTUBE, INSTAGRAM
-            .title(content.getTitle())
-            .thumbnailUrl(content.getThumbnailUrl())
-            .originalUrl(content.getOriginalUrl())
-            .status(content.getStatus())           // PENDING / COMPLETED / FAILED 등
-            .createdAt(content.getCreatedAt())
-            .build()
-        )
+        .map(RecentContentResponse::fromEntity)
         .toList();
   }
 }

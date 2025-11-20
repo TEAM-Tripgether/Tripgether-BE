@@ -17,16 +17,23 @@ public interface PlaceControllerDocs {
       summary = "사용자 장소 조회",
       description =
           """
-              ## 인증(JWT): **불필요**
+              ## 인증(JWT): **필요**
               
               ## 요청 파라미터
-              - 없음
+              - JWT 인증만 필요, 별도 파라미터 없음
               
               ## 반환값 (List<>)
-              - **`id`**: 장소 ID
+              - **`placeId`**: 장소 ID
+              - **`name`**: 장소 이름
+              - **`address`**: 장소 주소
+              - **`rating`**: 장소 평점
+              - **`photoUrls`**: 장소 사진 URL 목록
+              - **`description`**: 장소 설명
               
               ## 특이사항
               - 최신순으로 장소를 조회합니다.
+              - 최대 10개의 장소를 반환합니다.
+              - 장소의 사진 URL은 최대 10개까지 반환합니다.
               
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.

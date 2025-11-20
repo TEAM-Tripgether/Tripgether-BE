@@ -16,6 +16,9 @@ public class SecurityUrl {
           "/api/auth/sign-in", // 소셜 로그인
           "/api/auth/reissue", // 토큰 재발급
 
+          // AI 서버
+          "/api/ai/callback", // AI 서버 Webhook Callback
+
           // Swagger
           "/docs/swagger-ui/**", // Swagger UI
           "/v3/api-docs/**", // Swagger API 문서

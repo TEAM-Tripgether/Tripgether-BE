@@ -1,6 +1,7 @@
 package com.tripgether.sns.repository;
 
 import com.tripgether.sns.entity.Content;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,7 @@ public interface ContentRepository extends JpaRepository<Content, UUID> {
 
   // SNS URL로 Content 조회
   Optional<Content> findByOriginalUrl(String originalUrl);
+
+  List<Content> findTop10ByMemberIdOrderByCreatedAtDesc(UUID id);
+
 }

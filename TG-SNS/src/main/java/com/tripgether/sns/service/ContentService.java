@@ -109,4 +109,35 @@ public class ContentService {
         .status(savedContent.getStatus())
         .build();
   }
+
+  /**
+   * 메인 화면 - 최근 SNS 콘텐츠 목록 조회
+   */
+  @Transactional(readOnly = true)
+  public List<RecentContentResponse> getRecentContents(UUID memberId) {
+
+    // 회원 존재 여부 확인
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    log.info("[Content] 최근 SNS 콘텐츠 조회 - memberId={}", memberId);
+
+    // 최근 10개의 SNS 콘텐츠 조회
+    List<Content> contents =
+        contentRepository.findTop10ByMemberIdOrderByCreatedAtDesc(member.getId());
+
+    // 응답 DTO 변환
+    return contents.stream()
+        .map(content -> RecentContentResponse.builder()
+            .contentId(content.getId())
+            .platform(content.getPlatform())       // 예: YOUTUBE, INSTAGRAM
+            .title(content.getTitle())
+            .thumbnailUrl(content.getThumbnailUrl())
+            .originalUrl(content.getOriginalUrl())
+            .status(content.getStatus())           // PENDING / COMPLETED / FAILED 등
+            .createdAt(content.getCreatedAt())
+            .build()
+        )
+        .toList();
+  }
 }

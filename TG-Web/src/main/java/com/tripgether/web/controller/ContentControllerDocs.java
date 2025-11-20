@@ -2,8 +2,11 @@ package com.tripgether.web.controller;
 
 import com.tripgether.ai.dto.PlaceExtractionRequest;
 import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
+import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
+import com.tripgether.sns.dto.RecentContentResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +57,39 @@ public interface ContentControllerDocs {
               - **`URL_TOO_LONG`**: URL이 허용된 최대 길이(2048자)를 초과했습니다.
               - **`AI_SERVER_ERROR`**: AI 서버 처리 중 오류가 발생했습니다.
               """)
-  ResponseEntity<RequestPlaceExtractionResponse> createContent(PlaceExtractionRequest request);
+  ResponseEntity<RequestPlaceExtractionResponse> createContentAndRequestPlaceExtraction(CustomUserDetails userDetails, PlaceExtractionRequest request);
+
+  @ApiChangeLogs(
+      @ApiChangeLog(
+          date = "2025.11.16",
+          author = Author.KANGJIYUN,
+          issueNumber = 78,
+          description = "최근 콘텐츠 조회 Docs 추가 및 리팩토링")
+  )
+  @Operation(
+      summary = "최근 SNS 콘텐츠 목록 조회",
+      description =
+          """
+              ## 인증(JWT): **필요**
+              
+              ## 요청 파라미터 (UpdateGenderRequest)
+              - **`memberId`**: 회원 ID (Path Variable)
+
+              ## 반환값 (OnboardingResponse)
+              - **`contentId`**: 콘텐츠 UUID
+              - **`platform`**: 콘텐츠 플랫폼 (INSTAGRAM, YOUTUBE, TIKTOK 등)
+              - **`title`**: 콘텐츠 제목
+              - **`thumbnailUrl`**: 썸네일 URL
+              - **`originalUrl`**: 원본 URL
+              - **`status`**: 콘텐츠 상태 (PENDING, COMPLETED, FAILED 등)
+              - **`createdAt`**: 생성일시
+
+              ## 특이사항
+              - 인증된 사용자의 최근 10개 SNS 콘텐츠 목록을 생성일시 내림차순으로 조회합니다.
+
+              ## 에러코드
+              - **`MEMBER_NOT_FOUND`**: 해당 회원을 찾을 수 없습니다.
+              """)
+  ResponseEntity<List<RecentContentResponse>> getRecentContents(CustomUserDetails userDetails);
 
 }

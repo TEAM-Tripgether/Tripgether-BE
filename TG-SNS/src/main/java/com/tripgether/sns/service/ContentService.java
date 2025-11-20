@@ -8,13 +8,18 @@ import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.util.CommonUtil;
+import com.tripgether.member.entity.Member;
+import com.tripgether.member.repository.MemberRepository;
+import com.tripgether.sns.dto.RecentContentResponse;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.repository.ContentRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class ContentService {
   private static final int MAX_URL_LENGTH = 2048;
 
   private final ContentRepository contentRepository;
+  private final MemberRepository memberRepository;
   private final AiServerService aiServerService;
   private final CommonUtil commonUtil;
 
@@ -34,7 +40,7 @@ public class ContentService {
    * @param request 장소 추출 요청
    * @return 장소 추출 요청 결과
    */
-  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request) {
+  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request, UUID memberId) {
     String snsUrl = request.getSnsUrl();
 
     // URL 길이 검증
@@ -48,10 +54,11 @@ public class ContentService {
           log.info("Content already exists and completed. Returning existing data: contentId={}", content.getId());
           return RequestPlaceExtractionResponse.builder()
               .contentId(content.getId())
+              .memberId(memberId)
               .status(content.getStatus())
               .build();
         })
-        .orElseGet(() -> processNewOrPendingContent(snsUrl));  // 없으면 신규/재처리
+        .orElseGet(() -> processNewOrPendingContent(snsUrl, memberId));  // 없으면 신규/재처리
   }
 
   /**
@@ -64,7 +71,7 @@ public class ContentService {
    * @param snsUrl SNS URL
    * @return 장소 추출 요청 결과
    */
-  private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl) {
+  private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl, UUID memberId) {
     // Content 생성 또는 재사용
     Content content = contentRepository.findByOriginalUrl(snsUrl)
         .map(existingContent -> {
@@ -76,6 +83,8 @@ public class ContentService {
         .orElseGet(() -> {
           // 신규 Content 생성
           return Content.builder()
+              .member(memberRepository.findById(memberId)
+                  .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)))
               .originalUrl(snsUrl)
               .status(ContentStatus.PENDING)
               .build();
@@ -96,6 +105,7 @@ public class ContentService {
 
     return RequestPlaceExtractionResponse.builder()
         .contentId(contentId)
+        .memberId(memberId)
         .status(savedContent.getStatus())
         .build();
   }

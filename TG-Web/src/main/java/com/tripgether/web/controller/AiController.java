@@ -32,7 +32,7 @@ public class AiController implements AiControllerDocs {
   @Override
   public ResponseEntity<AiCallbackResponse> handleCallback(
       @RequestHeader(value = "X-API-Key", required = true) String apiKey,
-      @Valid @RequestBody AiCallbackRequest request) {
+      @RequestBody AiCallbackRequest request) {
 
     // API Key 검증
     if (!aiServerProperties.getCallbackApiKey().equals(apiKey)) {

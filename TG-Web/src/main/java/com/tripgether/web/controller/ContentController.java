@@ -28,8 +28,7 @@ public class ContentController implements ContentControllerDocs {
   @PostMapping("/analyze")
   @Override
   public ResponseEntity<RequestPlaceExtractionResponse> createContent(
-      //@AuthenticationPrincipal CustomUserDetails userDetails, // JWT 인증
-      //내부에서 SecurityContextHolder.getContext().getAuthentication()로 꺼내 사용
+      @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody PlaceExtractionRequest request
   ) {
     RequestPlaceExtractionResponse response

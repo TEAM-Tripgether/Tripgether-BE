@@ -90,9 +90,15 @@ public class ContentService {
         = aiServerService.sendPlaceExtractionRequest(contentId, snsUrl);
 
     // AI 서버 응답 검증
-    if (placeExtractionResponse == null || !"ACCEPTED".equals(placeExtractionResponse.getStatus())) {
+    // AI 서버는 {"received": true, "contentId": "..."} 형식으로 응답
+    if (placeExtractionResponse == null || !Boolean.TRUE.equals(placeExtractionResponse.getReceived())) {
+      log.error("AI server did not accept the request: contentId={}, received={}, status={}",
+          contentId, placeExtractionResponse != null ? placeExtractionResponse.getReceived() : null,
+          placeExtractionResponse != null ? placeExtractionResponse.getStatus() : null);
       throw new CustomException(ErrorCode.AI_SERVER_ERROR);
     }
+
+    log.info("AI server successfully accepted place extraction request: contentId={}", contentId);
 
     return RequestPlaceExtractionResponse.builder()
         .contentId(contentId)

@@ -18,8 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PlaceExtractionRequest {
 
-  @Schema(description = "Content UUID", example = "550e8400-e29b-41d4-a716-446655440000")
-  @NotNull(message = "contentId는 필수입니다.")
+  @Schema(description = "Content UUID (내부적으로 생성되며, 프론트엔드에서는 전송하지 않음)", example = "550e8400-e29b-41d4-a716-446655440000")
   private UUID contentId;
 
   @Schema(description = "SNS URL", example = "https://www.instagram.com/p/ABC123/")

@@ -76,9 +76,13 @@ public class AiServerService {
         }
 
         String responseBody = httpResponse.body().string();
+        log.info("AI server raw response: contentId={}, httpStatus={}, responseBody={}",
+            contentId, httpResponse.code(), responseBody);
+
         PlaceExtractionResponse response = objectMapper.readValue(responseBody, PlaceExtractionResponse.class);
 
-        log.info("AI server accepted the request: contentId={}, status={}", contentId, response.getStatus());
+        log.info("AI server accepted the request: contentId={}, received={}, status={}",
+            contentId, response.getReceived(), response.getStatus());
 
         return response;
       }

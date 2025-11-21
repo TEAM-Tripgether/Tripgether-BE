@@ -12,16 +12,9 @@ import org.springframework.http.ResponseEntity;
 public interface AuthControllerDocs {
 
   @ApiChangeLogs({
-      @ApiChangeLog(
-          date = "2025.10.16",
-          author = Author.SUHSAECHAN,
-          issueNumber = 22,
-          description = "인증 모듈 추가 및 기본 OAuth 로그인 구현")
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "인증 모듈 추가 및 기본 OAuth 로그인 구현"),
   })
-  @Operation(
-      summary = "소셜 로그인",
-      description =
-          """
+  @Operation(summary = "소셜 로그인", description = """
               ## 인증(JWT): **불필요**
               
               ## 요청 파라미터 (AuthRequest)
@@ -47,13 +40,9 @@ public interface AuthControllerDocs {
   ResponseEntity<AuthResponse> signIn(AuthRequest request);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "토큰 재발급 기능"
-          + " 구현")
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "토큰 재발급 기능 구현"),
   })
-  @Operation(
-      summary = "토큰 재발급",
-      description =
-          """
+  @Operation(summary = "토큰 재발급", description = """
               ## 인증(JWT): **불필요**
               
               ## 요청 파라미터 (AuthRequest)
@@ -76,12 +65,9 @@ public interface AuthControllerDocs {
   ResponseEntity<AuthResponse> reissue(AuthRequest request);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "로그아웃 기능 구현")
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "로그아웃 기능 구현"),
   })
-  @Operation(
-      summary = "로그아웃",
-      description =
-          """
+  @Operation(summary = "로그아웃", description = """
               ## 인증(JWT): **필요**
               
               ## 요청 파라미터 (AuthRequest)

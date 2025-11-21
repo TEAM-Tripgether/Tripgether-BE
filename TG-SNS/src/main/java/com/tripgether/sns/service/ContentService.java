@@ -1,8 +1,8 @@
 package com.tripgether.sns.service;
 
-import com.tripgether.ai.dto.PlaceExtractionRequest;
 import com.tripgether.ai.dto.PlaceExtractionResponse;
-import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
+import com.tripgether.sns.dto.RequestPlaceExtractionRequest;
+import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
 import com.tripgether.ai.service.AiServerService;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class ContentService {
+
   private static final int MAX_URL_LENGTH = 2048;
 
   private final ContentRepository contentRepository;
@@ -34,75 +35,69 @@ public class ContentService {
    * @param request 장소 추출 요청
    * @return 장소 추출 요청 결과
    */
-  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request) {
+  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(RequestPlaceExtractionRequest request) {
     String snsUrl = request.getSnsUrl();
 
     // URL 길이 검증
     commonUtil.validateUrlLength(snsUrl, MAX_URL_LENGTH);
 
-    // 기존 COMPLETED Content 조회 - 있으면 즉시 반환 (AI 요청 스킵)
-    return contentRepository.findByOriginalUrl(snsUrl)
-        .filter(content -> content.getStatus() == ContentStatus.COMPLETED)
-        .map(content -> {
-          // 이미 처리 완료된 데이터 반환
-          log.info("Content already exists and completed. Returning existing data: contentId={}", content.getId());
-          return RequestPlaceExtractionResponse.builder()
-              .contentId(content.getId())
-              .status(content.getStatus())
-              .build();
-        })
-        .orElseGet(() -> processNewOrPendingContent(snsUrl));  // 없으면 신규/재처리
-  }
+    // 기존 Content 조회 (한 번만 수행)
+    Optional<Content> optionalContent = contentRepository.findByOriginalUrl(snsUrl);
 
-  /**
-   * 신규 또는 미완료 Content 처리 후 AI 서버 요청
-   *
-   * - 기존 Content 있으면 PENDING 상태로 변경 후 재사용
-   * - 없으면 신규 Content 생성
-   * - AI 서버로 장소 추출 요청 전송
-   *
-   * @param snsUrl SNS URL
-   * @return 장소 추출 요청 결과
-   */
-  private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl) {
-    // Content 생성 또는 재사용
-    Content content = contentRepository.findByOriginalUrl(snsUrl)
+    // 이미 COMPLETED면 즉시 반환
+    if (optionalContent.isPresent() && optionalContent.get().getStatus() == ContentStatus.COMPLETED) {
+      Content content = optionalContent.get();
+      log.info("Content already exists and completed. Returning existing data: contentId={}", content.getId());
+      return RequestPlaceExtractionResponse.builder()
+          .contentId(content.getId())
+          .status(content.getStatus())
+          .build();
+    }
+
+    // 기존이 있으면 PENDING으로 재사용, 없으면 신규 생성
+    Content content = optionalContent
         .map(existingContent -> {
-          // 기존 Content를 PENDING 상태로 변경하여 재사용
           existingContent.setStatus(ContentStatus.PENDING);
           log.info("Reusing existing Content: contentId={}", existingContent.getId());
           return existingContent;
         })
-        .orElseGet(() -> {
-          // 신규 Content 생성
-          return Content.builder()
-              .originalUrl(snsUrl)
-              .status(ContentStatus.PENDING)
-              .build();
-        });
+        .orElseGet(() -> Content.builder()
+            .originalUrl(snsUrl)
+            .status(ContentStatus.PENDING)
+            .build());
 
     // Content 저장
     Content savedContent = contentRepository.save(content);
-    UUID contentId = savedContent.getId();
+
+    // AI 요청
+    requestAIContentAnalyze(savedContent);
+
+    return RequestPlaceExtractionResponse.builder()
+        .contentId(savedContent.getId())
+        .status(content.getStatus())
+        .build();
+  }
+
+  /**
+   * ContentId와 함께 AI 서버 요청
+   */
+  private void requestAIContentAnalyze(Content content) {
+    UUID contentId = content.getId();
+    String snsUrl = content.getOriginalUrl();
 
     // AI 서버로 장소 추출 요청
-    PlaceExtractionResponse placeExtractionResponse
+    PlaceExtractionResponse response
         = aiServerService.sendPlaceExtractionRequest(contentId, snsUrl);
 
     // AI 서버 응답 검증
     // AI 서버는 {"received": true, "contentId": "..."} 형식으로 응답
-    if (placeExtractionResponse == null || !Boolean.TRUE.equals(placeExtractionResponse.getReceived())) {
+    if (response == null || !Boolean.TRUE.equals(response.getReceived())) {
       log.error("AI server did not accept the request: contentId={}, received={}, status={}",
-          contentId, placeExtractionResponse != null ? placeExtractionResponse.getReceived() : null,
-          placeExtractionResponse != null ? placeExtractionResponse.getStatus() : null);
+          contentId, response != null ? response.getReceived() : null,
+          response != null ? response.getStatus() : null);
       throw new CustomException(ErrorCode.AI_SERVER_ERROR);
     }
 
     log.info("AI server successfully accepted place extraction request: contentId={}", contentId);
-
-    return RequestPlaceExtractionResponse.builder()
-        .contentId(contentId)
-        .status(savedContent.getStatus())
-        .build();
   }
 }

@@ -2,7 +2,6 @@ package com.tripgether.ai.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripgether.ai.dto.PlaceExtractionRequest;
-import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.ai.dto.PlaceExtractionResponse;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;

@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Entity
@@ -78,6 +79,28 @@ public class Member extends SoftDeletableBaseEntity {
       if (memberRole == null) {
           memberRole = MemberRole.ROLE_USER;    //기본값
       }
+  }
+
+  /**
+   * 회원 탈퇴 처리 (소프트삭제)
+   * email, name에 타임스탬프를 추가하여 UNIQUE 제약조건 회피
+   *
+   * @param deletedBy 탈퇴 처리자 ID
+   * @return 탈퇴 시간 타임스탬프 문자열 (yyyy_MM_dd_HHmmss)
+   */
+  public String withdraw(String deletedBy) {
+    // 소프트삭제 처리
+    softDelete(deletedBy);
+
+    // 타임스탬프 생성 (yyyy_MM_dd_HHmmss)
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss");
+    String timestamp = this.getDeletedAt().format(formatter);
+
+    // email, name에 타임스탬프 추가 (UNIQUE 제약조건 회피)
+    this.email = this.email + "_" + timestamp;
+    this.name = this.name + "_" + timestamp;
+
+    return timestamp;
   }
 
 }

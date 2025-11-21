@@ -136,4 +136,24 @@ public class MemberController implements MemberControllerDocs {
     return ResponseEntity.ok(interestDtos);
   }
 
+  @DeleteMapping("/me")
+  @Override
+  public ResponseEntity<Void> withdrawMember(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestHeader(value = "Authorization", required = false) String authorization
+  ) {
+    UUID memberId = userDetails.getMemberId();
+
+    // AccessToken 추출
+    String accessToken = null;
+    if (authorization != null && authorization.startsWith("Bearer ")) {
+      accessToken = authorization.substring(7).trim();
+    }
+
+    memberService.withdrawMember(memberId, accessToken);
+
+    log.info("[Member] 회원 탈퇴 완료 - memberId={}", memberId);
+    return ResponseEntity.noContent().build();
+  }
+
 }

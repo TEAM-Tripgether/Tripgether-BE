@@ -58,7 +58,7 @@ public class AiCallbackRequest {
     private String platform;
 
     @Schema(description = "콘텐츠 제목", example = "일본 전국 라멘 투어 - 개당 1200원의 가성비 초밥")
-    @NotNull(message = "title은 필수입니다.")
+    // 필수 아님
     private String title;
 
     @Schema(description = "AI 콘텐츠 요약", example = "샷포로 3대 스시 맛집 '토리톤' 방문...")
@@ -84,23 +84,12 @@ public class AiCallbackRequest {
     private String address;
 
     @Schema(description = "국가 코드 (ISO 3166-1 alpha-2)", example = "KR")
-    @NotNull(message = "country는 필수입니다.")
     private String country;
 
-    @Schema(description = "위도", example = "37.563512")
-    @NotNull(message = "latitude는 필수입니다.")
-    private BigDecimal latitude;
-
-    @Schema(description = "경도", example = "126.985012")
-    @NotNull(message = "longitude는 필수입니다.")
-    private BigDecimal longitude;
-
     @Schema(description = "장소 설명", example = "칼국수와 만두로 유명한 맛집")
-    @NotNull(message = "description은 필수입니다.")
     private String description;
 
     @Schema(description = "AI 추출 원본 데이터", example = "명동 교자에서 칼국수 먹었어요 (caption, confidence: 0.95)")
-    @NotNull(message = "rawData는 필수입니다.")
     private String rawData;
 
     @Schema(description = "언어 코드 (ISO 639-1)", example = "ko", allowableValues = {"ko", "en", "ja", "zh"})

@@ -1,12 +1,14 @@
 package com.tripgether.web.controller;
 
-import com.tripgether.ai.dto.PlaceExtractionRequest;
-import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
+import com.tripgether.sns.dto.RequestPlaceExtractionRequest;
+import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
+import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.sns.service.ContentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +29,9 @@ public class ContentController implements ContentControllerDocs {
    */
   @PostMapping("/analyze")
   @Override
-  public ResponseEntity<RequestPlaceExtractionResponse> createContent(
-      //@AuthenticationPrincipal CustomUserDetails userDetails, // JWT 인증
-      //내부에서 SecurityContextHolder.getContext().getAuthentication()로 꺼내 사용
-      @Valid @RequestBody PlaceExtractionRequest request
+  public ResponseEntity<RequestPlaceExtractionResponse> requestPlaceExtraction(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody RequestPlaceExtractionRequest request
   ) {
     RequestPlaceExtractionResponse response
         = contentService.createContentAndRequestPlaceExtraction(request);

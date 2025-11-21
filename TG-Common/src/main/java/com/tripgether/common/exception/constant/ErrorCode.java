@@ -67,6 +67,8 @@ public enum ErrorCode {
 
   INTEREST_NOT_FOUND(HttpStatus.BAD_REQUEST, "유효하지 않은 관심사 ID가 포함되어 있습니다."),
 
+  INSUFFICIENT_INTEREST_SELECTION(HttpStatus.BAD_REQUEST, "관심사는 최소 3개 이상 선택해야 합니다."),
+
   // AI Server / Network
   EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "외부 API 호출 중 오류가 발생했습니다."),
 

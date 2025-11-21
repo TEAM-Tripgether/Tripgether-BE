@@ -8,13 +8,17 @@ import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.util.CommonUtil;
+import com.tripgether.member.entity.Member;
+import com.tripgether.member.repository.MemberRepository;
+import com.tripgether.sns.dto.RecentContentResponse;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.repository.ContentRepository;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ public class ContentService {
   private static final int MAX_URL_LENGTH = 2048;
 
   private final ContentRepository contentRepository;
+  private final MemberRepository memberRepository;
   private final AiServerService aiServerService;
   private final CommonUtil commonUtil;
 
@@ -34,7 +39,11 @@ public class ContentService {
    * @param request 장소 추출 요청
    * @return 장소 추출 요청 결과
    */
-  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request) {
+  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request, UUID memberId) {
+    // 회원 존재 여부 검증
+    Member member = memberRepository.findById(memberId)
+      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
     String snsUrl = request.getSnsUrl();
 
     // URL 길이 검증
@@ -48,10 +57,11 @@ public class ContentService {
           log.info("Content already exists and completed. Returning existing data: contentId={}", content.getId());
           return RequestPlaceExtractionResponse.builder()
               .contentId(content.getId())
+              .memberId(member.getId())
               .status(content.getStatus())
               .build();
         })
-        .orElseGet(() -> processNewOrPendingContent(snsUrl));  // 없으면 신규/재처리
+        .orElseGet(() -> processNewOrPendingContent(snsUrl, member));  // 없으면 신규/재처리
   }
 
   /**
@@ -64,7 +74,7 @@ public class ContentService {
    * @param snsUrl SNS URL
    * @return 장소 추출 요청 결과
    */
-  private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl) {
+  private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl, Member member) {
     // Content 생성 또는 재사용
     Content content = contentRepository.findByOriginalUrl(snsUrl)
         .map(existingContent -> {
@@ -76,6 +86,7 @@ public class ContentService {
         .orElseGet(() -> {
           // 신규 Content 생성
           return Content.builder()
+              .member(member)
               .originalUrl(snsUrl)
               .status(ContentStatus.PENDING)
               .build();
@@ -96,7 +107,30 @@ public class ContentService {
 
     return RequestPlaceExtractionResponse.builder()
         .contentId(contentId)
+        .memberId(member.getId())
         .status(savedContent.getStatus())
         .build();
+  }
+
+  /**
+   * 메인 화면 - 최근 SNS 콘텐츠 목록 조회
+   */
+  @Transactional(readOnly = true)
+  public List<RecentContentResponse> getRecentContents(UUID memberId) {
+
+    // 회원 존재 여부 확인
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    log.info("[Content] 최근 SNS 콘텐츠 조회 - memberId={}", memberId);
+
+    // 최근 10개의 SNS 콘텐츠 조회
+    List<Content> contents =
+        contentRepository.findTop10ByMember_IdOrderByCreatedAtDesc(member.getId());
+
+    // 응답 DTO 변환
+    return contents.stream()
+        .map(RecentContentResponse::fromEntity)
+        .toList();
   }
 }

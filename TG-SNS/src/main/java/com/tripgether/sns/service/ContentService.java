@@ -15,6 +15,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class ContentService {
    * @param request 장소 추출 요청
    * @return 장소 추출 요청 결과
    */
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(RequestPlaceExtractionRequest request) {
     String snsUrl = request.getSnsUrl();
 
@@ -70,11 +73,18 @@ public class ContentService {
     Content savedContent = contentRepository.save(content);
 
     // AI 요청
-    requestAIContentAnalyze(savedContent);
+    try {
+      requestAIContentAnalyze(savedContent);
+    } catch (CustomException e) {
+      // 요청 실패시 FAIL 처리
+      savedContent.setStatus(ContentStatus.FAILED);
+      contentRepository.save(savedContent);
+      throw e;
+    }
 
     return RequestPlaceExtractionResponse.builder()
         .contentId(savedContent.getId())
-        .status(content.getStatus())
+        .status(savedContent.getStatus())
         .build();
   }
 

@@ -11,31 +11,12 @@ import org.springframework.http.ResponseEntity;
 public interface AiControllerDocs {
 
   @ApiChangeLogs({
-      @ApiChangeLog(
-          date = "2025.11.18",
-          author = Author.SUHSAECHAN,
-          issueNumber = 83,
-          description = "AI 서버 Callback API ContentInfo 파라미터 추가 (summary 필드)"),
-      @ApiChangeLog(
-          date = "2025.11.12",
-          author = Author.SUHSAECHAN,
-          issueNumber = 70,
-          description = "명세 변경, 기존 전체정보 > 상호명으로만 받음"),
-      @ApiChangeLog(
-          date = "2025.11.02",
-          author = Author.KANGJIYUN,
-          issueNumber = 48,
-          description = "AI 서버 Webhook Callback 리팩터링"),
-      @ApiChangeLog(
-          date = "2025.10.31",
-          author = Author.SUHSAECHAN,
-          issueNumber = 48,
-          description = "AI 서버 Webhook Callback 처리 API 구현")
+      @ApiChangeLog(date = "2025.11.18", author = Author.SUHSAECHAN, issueNumber = 83, description = "AI 서버 Callback API ContentInfo 파라미터 추가 (summary 필드)"),
+      @ApiChangeLog(date = "2025.11.12", author = Author.SUHSAECHAN, issueNumber = 70, description = "명세 변경, 기존 전체정보 > 상호명으로만 받음"),
+      @ApiChangeLog(date = "2025.11.02", author = Author.KANGJIYUN, issueNumber = 48, description = "AI 서버 Webhook Callback 리팩터링"),
+      @ApiChangeLog(date = "2025.10.31", author = Author.SUHSAECHAN, issueNumber = 48, description = "AI 서버 Webhook Callback 처리 API 구현"),
   })
-  @Operation(
-      summary = "AI 서버 Webhook Callback",
-      description =
-          """
+  @Operation(summary = "AI 서버 Webhook Callback", description = """
               ## 인증(API Key): **필요** (Header: X-API-Key)
 
               ## 요청 파라미터 (AiCallbackRequest)

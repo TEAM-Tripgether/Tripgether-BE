@@ -2,11 +2,17 @@ package com.tripgether.web.controller;
 
 import com.tripgether.ai.dto.PlaceExtractionRequest;
 import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
+import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.sns.dto.RecentContentResponse;
 import com.tripgether.sns.service.ContentService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +33,25 @@ public class ContentController implements ContentControllerDocs {
    */
   @PostMapping("/analyze")
   @Override
-  public ResponseEntity<RequestPlaceExtractionResponse> createContent(
+  public ResponseEntity<RequestPlaceExtractionResponse> createContentAndRequestPlaceExtraction(
       //@AuthenticationPrincipal CustomUserDetails userDetails, // JWT 인증
       //내부에서 SecurityContextHolder.getContext().getAuthentication()로 꺼내 사용
+      @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody PlaceExtractionRequest request
   ) {
+    UUID memberId = userDetails.getMemberId();
+
     RequestPlaceExtractionResponse response
-        = contentService.createContentAndRequestPlaceExtraction(request);
+        = contentService.createContentAndRequestPlaceExtraction(request, memberId);
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/content/recent")
+  public ResponseEntity<List<RecentContentResponse>> getRecentContents(
+      @AuthenticationPrincipal CustomUserDetails userDetails
+  ) {
+    List<RecentContentResponse> contents =
+        contentService.getRecentContents(userDetails.getMemberId());
+    return ResponseEntity.ok(contents);
   }
 }

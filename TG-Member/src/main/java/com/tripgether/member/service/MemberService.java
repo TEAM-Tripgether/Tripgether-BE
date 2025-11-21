@@ -354,6 +354,13 @@ public class MemberService {
       throw new CustomException(ErrorCode.INTEREST_NOT_FOUND);
     }
 
+    // 관심사 최소 3개 이상 선택 검증
+    if (request.getInterestIds().size() < 3) {
+      log.warn("[Onboarding] 최소 3개 이상의 관심사 선택 필요 - memberId={}, selectedCount={}",
+          memberId, request.getInterestIds().size());
+      throw new CustomException(ErrorCode.INSUFFICIENT_INTEREST_SELECTION);
+    }
+
     // 기존 관심사 삭제
     memberInterestRepository.deleteByMemberId(memberId);
 

@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PlaceService {
-  int MAX_PHOTO_URLS_PER_PLACE = 10;
+  private static final int MAX_PHOTO_URLS_PER_PLACE = 10;
 
   private final PlaceRepository placeRepository;
   private final MemberRepository memberRepository;
@@ -46,9 +46,11 @@ public class PlaceService {
             .address(place.getAddress())
             .rating(place.getRating())
             .photoUrls(
-                place.getPhotoUrls() != null && place.getPhotoUrls().size() > 10
-                    ? place.getPhotoUrls().subList(0, MAX_PHOTO_URLS_PER_PLACE)
-                    : place.getPhotoUrls()
+                place.getPhotoUrls() == null
+                    ? java.util.Collections.emptyList()
+                    : place.getPhotoUrls().size() > MAX_PHOTO_URLS_PER_PLACE
+                        ? place.getPhotoUrls().subList(0, MAX_PHOTO_URLS_PER_PLACE)
+                        : place.getPhotoUrls()
             )
             .description(place.getDescription())
             .build()

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecentContentResponse {
+public class ContentDto {
   private UUID contentId;
   private ContentPlatform platform;      // 예: YOUTUBE, INSTAGRAM
   private String title;
@@ -23,8 +23,8 @@ public class RecentContentResponse {
   private ContentStatus status; // PENDING / COMPLETED / FAILED 등
   private LocalDateTime createdAt;
 
-  public static RecentContentResponse fromEntity(Content content) {
-    return RecentContentResponse.builder()
+  public static ContentDto fromEntity(Content content) {
+    return ContentDto.builder()
         .contentId(content.getId())
         .platform(content.getPlatform())
         .title(content.getTitle())

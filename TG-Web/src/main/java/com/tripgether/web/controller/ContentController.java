@@ -3,10 +3,11 @@ package com.tripgether.web.controller;
 import com.tripgether.ai.dto.PlaceExtractionRequest;
 import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
-import com.tripgether.place.dto.PlaceResponse;
-import com.tripgether.sns.dto.RecentContentResponse;
+import com.tripgether.place.dto.GetSavedPlacesResponse;
+import com.tripgether.place.dto.PlaceDto;
+import com.tripgether.sns.dto.ContentDto;
+import com.tripgether.sns.dto.GetRecentContentResponse;
 import com.tripgether.sns.service.ContentService;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/content")
 //@Tag()
 public class ContentController implements ContentControllerDocs {
+
   private final ContentService contentService;
 
   /**
@@ -49,25 +51,33 @@ public class ContentController implements ContentControllerDocs {
   }
 
   @GetMapping("/content/recent")
-  public ResponseEntity<List<RecentContentResponse>> getRecentContents(
+  public ResponseEntity<GetRecentContentResponse> getRecentContents(
       @AuthenticationPrincipal CustomUserDetails userDetails
   ) {
-    List<RecentContentResponse> contents =
-        contentService.getRecentContents(userDetails.getMemberId());
-    return ResponseEntity.ok(contents);
+    // 서비스에서 단건 DTO들의 리스트를 받음
+    List<ContentDto> contents = contentService.getRecentContents(userDetails.getMemberId());
+
+    // 래핑 DTO 조립
+    GetRecentContentResponse response = GetRecentContentResponse.builder()
+        .contents(contents)
+        .build();
+
+    return ResponseEntity.ok(response);
   }
 
   /**
    * 사용자가 저장한 장소 목록 조회 (최신순, 최대 10개)
    */
-  @GetMapping("/place/saved")
-  @Operation(summary = "저장한 장소 목록 조회",
-      description = "사용자가 저장한 장소 정보를 최신순으로 최대 10개까지 조회합니다.")
-  public ResponseEntity<List<PlaceResponse>> getSavedPlaces(
+  @GetMapping("/saved")
+  public ResponseEntity<GetSavedPlacesResponse> getSavedPlaces(
       @AuthenticationPrincipal CustomUserDetails userDetails
   ) {
-    List<PlaceResponse> responses =
-        contentService.getSavedPlaces(userDetails.getMemberId());
-    return ResponseEntity.ok(responses);
+    List<PlaceDto> places = contentService.getSavedPlaces(userDetails.getMemberId());
+
+    GetSavedPlacesResponse response = GetSavedPlacesResponse.builder()
+        .places(places)
+        .build();
+
+    return ResponseEntity.ok(response);
   }
 }

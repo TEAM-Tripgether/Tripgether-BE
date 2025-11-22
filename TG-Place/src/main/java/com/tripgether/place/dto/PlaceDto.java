@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "사용자 저장 장소 조회 응답 DTO")
-public class PlaceResponse {
+@Schema(description = "장소 DTO")
+public class PlaceDto {
   @Schema(description = "장소 ID", example = "550e8400-e29b-41d4-a716-446655440000")
   private UUID placeId;
 

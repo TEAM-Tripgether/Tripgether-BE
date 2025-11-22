@@ -10,9 +10,9 @@ import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.util.CommonUtil;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
-import com.tripgether.place.dto.PlaceResponse;
+import com.tripgether.place.dto.PlaceDto;
 import com.tripgether.place.entity.Place;
-import com.tripgether.sns.dto.RecentContentResponse;
+import com.tripgether.sns.dto.ContentDto;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.entity.ContentPlace;
 import com.tripgether.sns.repository.ContentPlaceRepository;
@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class ContentService {
+
   private static final int MAX_URL_LENGTH = 2048;
   private static final int MAX_PHOTO_URLS_PER_PLACE = 10;
 
@@ -46,10 +47,11 @@ public class ContentService {
    * @param request 장소 추출 요청
    * @return 장소 추출 요청 결과
    */
-  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request, UUID memberId) {
+  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(PlaceExtractionRequest request,
+      UUID memberId) {
     // 회원 존재 여부 검증
     Member member = memberRepository.findById(memberId)
-      .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     String snsUrl = request.getSnsUrl();
 
@@ -73,7 +75,7 @@ public class ContentService {
 
   /**
    * 신규 또는 미완료 Content 처리 후 AI 서버 요청
-   *
+   * <p>
    * - 기존 Content 있으면 PENDING 상태로 변경 후 재사용
    * - 없으면 신규 Content 생성
    * - AI 서버로 장소 추출 요청 전송
@@ -123,7 +125,7 @@ public class ContentService {
    * 메인 화면 - 최근 SNS 콘텐츠 목록 조회
    */
   @Transactional(readOnly = true)
-  public List<RecentContentResponse> getRecentContents(UUID memberId) {
+  public List<ContentDto> getRecentContents(UUID memberId) {
 
     // 회원 존재 여부 확인
     Member member = memberRepository.findById(memberId)
@@ -137,7 +139,7 @@ public class ContentService {
 
     // 응답 DTO 변환
     return contents.stream()
-        .map(RecentContentResponse::fromEntity)
+        .map(ContentDto::fromEntity)
         .toList();
   }
 
@@ -145,7 +147,7 @@ public class ContentService {
    * 사용자별 저장한 장소 목록 조회 (최신순 최대 10개)
    */
   @Transactional(readOnly = true)
-  public List<PlaceResponse> getSavedPlaces(UUID memberId) {
+  public List<PlaceDto> getSavedPlaces(UUID memberId) {
     // 회원 존재 여부 확인
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
@@ -161,9 +163,9 @@ public class ContentService {
         .map(ContentPlace::getPlace)
         .toList();
 
-    // Entity → DTO 변환 (기존 로직 재사용)
+    // Entity → DTO 변환
     return places.stream()
-        .map(place -> PlaceResponse.builder()
+        .map(place -> PlaceDto.builder()
             .placeId(place.getId())
             .name(place.getName())
             .address(place.getAddress())

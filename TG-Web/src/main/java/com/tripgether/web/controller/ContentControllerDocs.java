@@ -4,11 +4,11 @@ import com.tripgether.ai.dto.PlaceExtractionRequest;
 import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
-import com.tripgether.place.dto.PlaceResponse;
-import com.tripgether.sns.dto.RecentContentResponse;
+import com.tripgether.place.dto.GetSavedPlacesResponse;
+import com.tripgether.place.dto.PlaceDto;
+import com.tripgether.sns.dto.GetRecentContentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
-import java.util.UUID;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;
@@ -95,7 +95,7 @@ public interface ContentControllerDocs {
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 해당 회원을 찾을 수 없습니다.
               """)
-  ResponseEntity<List<RecentContentResponse>> getRecentContents(CustomUserDetails userDetails);
+  ResponseEntity<GetRecentContentResponse> getRecentContents(CustomUserDetails userDetails);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.11.20", author = Author.KANGJIYUN, issueNumber = 80, description = "최신순으로 장소 조회")
@@ -125,6 +125,6 @@ public interface ContentControllerDocs {
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               """)
-  ResponseEntity<List<PlaceResponse>> getSavedPlaces(CustomUserDetails userDetails);
+  ResponseEntity<GetSavedPlacesResponse> getSavedPlaces(CustomUserDetails userDetails);
 
 }

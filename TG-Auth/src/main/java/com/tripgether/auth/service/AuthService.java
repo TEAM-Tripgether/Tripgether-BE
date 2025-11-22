@@ -1,7 +1,12 @@
 package com.tripgether.auth.service;
 
-import com.tripgether.auth.dto.*;
+import com.tripgether.auth.dto.AuthRequest;
+import com.tripgether.auth.dto.AuthResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.auth.dto.ReissueRequest;
+import com.tripgether.auth.dto.ReissueResponse;
+import com.tripgether.auth.dto.SignInRequest;
+import com.tripgether.auth.dto.SignInResponse;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -9,17 +14,21 @@ import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.constant.OnboardingStep;
 import com.tripgether.member.entity.FcmToken;
 import com.tripgether.member.entity.Member;
+import com.tripgether.member.entity.MemberInterest;
 import com.tripgether.member.repository.FcmTokenRepository;
+import com.tripgether.member.repository.MemberInterestRepository;
 import com.tripgether.member.repository.MemberRepository;
 import com.tripgether.member.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +43,7 @@ public class AuthService {
   private final MemberService memberService;
   private final JwtUtil jwtUtil;
   private final RedisTemplate<String, Object> redisTemplate;
+  private final MemberInterestRepository memberInterestRepository;
   private final FcmTokenRepository fcmTokenRepository;
 
   /**
@@ -46,6 +56,7 @@ public class AuthService {
 
     // 요청 값으로부터 사용자 정보 획득
     String email = request.getEmail();
+    String name = request.getName();
 
     //회원 조회
     Member member = memberRepository.findByEmail(email)
@@ -160,9 +171,15 @@ public class AuthService {
 
     String newAccessToken = jwtUtil.createAccessToken(customUserDetails);
 
-    // 회원 존재 여부 검증
-    memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
+    // 회원 존재 여부 및 탈퇴 여부 검증
+    Member memberForValidation = memberRepository.findByEmail(jwtUtil.getUsername(newAccessToken))
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 탈퇴한 회원은 토큰 재발급 불가
+    if (memberForValidation.isDeleted()) {
+      log.error("탈퇴한 회원의 토큰 재발급 시도 - memberId={}", memberForValidation.getId());
+      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+    }
 
     return ReissueResponse.builder()
         .accessToken(newAccessToken)
@@ -190,6 +207,48 @@ public class AuthService {
 
     // 토큰 비활성화
     jwtUtil.deactivateToken(accessToken, key);
+  }
+
+  /**
+   * 회원 탈퇴
+   *
+   * @param memberId 탈퇴할 회원 ID
+   * @param accessToken 탈퇴 시 사용한 AccessToken (토큰 무효화용)
+   */
+  @Transactional
+  public void withdrawMember(UUID memberId, String accessToken) {
+    // 회원 조회
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 이미 탈퇴한 회원인지 확인
+    if (member.isDeleted()) {
+      log.warn("[Auth] 이미 탈퇴한 회원 - memberId={}", memberId);
+      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+    }
+
+    // 탈퇴 처리 (email, name에 타임스탬프 자동 추가)
+    String timestamp = member.withdraw(memberId.toString());
+
+    // 회원 관심사 소프트삭제
+    List<MemberInterest> memberInterests = memberInterestRepository.findByMemberId(memberId);
+    memberInterests.forEach(interest -> interest.softDelete(memberId.toString()));
+
+    memberRepository.save(member);
+
+    // 토큰 무효화 처리 (로그아웃과 동일한 보안 처리)
+    if (accessToken != null) {
+      try {
+        String refreshTokenKey = REFRESH_KEY_PREFIX + memberId;
+        jwtUtil.deactivateToken(accessToken, refreshTokenKey);
+        log.info("[Auth] 토큰 무효화 완료 - memberId={}", memberId);
+      } catch (Exception e) {
+        log.warn("[Auth] 토큰 무효화 중 오류 발생 (탈퇴는 정상 처리됨) - memberId={}, error={}", memberId, e.getMessage());
+        // 토큰 무효화 실패해도 탈퇴는 진행 (이미 만료된 토큰일 수 있음)
+      }
+    }
+
+    log.info("[Auth] 회원 탈퇴 완료 - memberId={}, timestamp={}", memberId, timestamp);
   }
 
   /**

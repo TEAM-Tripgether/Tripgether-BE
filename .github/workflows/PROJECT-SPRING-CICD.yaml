@@ -16,6 +16,7 @@ name: PROJECT-SPRING-CICD
 # │ Secret 이름                 │ 설명                               │
 # ├─────────────────────────────┼────────────────────────────────────┤
 # │ APPLICATION_PROD_YML        │ Spring Boot 운영 설정 파일 내용   │
+# │ FCM_JSON                    │ Firebase FCM 서비스 계정 JSON 파일 │
 # │ DOCKERHUB_USERNAME          │ DockerHub 사용자명                 │
 # │ DOCKERHUB_TOKEN             │ DockerHub 액세스 토큰              │
 # │ SERVER_HOST                 │ 배포 대상 서버 IP/도메인           │

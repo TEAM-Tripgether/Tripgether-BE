@@ -25,6 +25,8 @@ import com.tripgether.member.repository.InterestRepository;
 import com.tripgether.member.repository.MemberInterestRepository;
 import com.tripgether.member.repository.MemberRepository;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -359,6 +361,15 @@ public class MemberService {
       log.warn("[Onboarding] 최소 3개 이상의 관심사 선택 필요 - memberId={}, selectedCount={}",
           memberId, request.getInterestIds().size());
       throw new CustomException(ErrorCode.INSUFFICIENT_INTEREST_SELECTION);
+    }
+
+    List<UUID> interestIds = request.getInterestIds();
+    Set<UUID> uniqueInterestIds = new HashSet<>(interestIds);
+
+    if (uniqueInterestIds.size() != interestIds.size()) {
+      log.warn("[Onboarding] 중복된 관심사 ID 포함 - memberId={}, interestIds={}",
+          memberId, interestIds);
+      throw new CustomException(ErrorCode.DUPLICATE_INTEREST_IDS);
     }
 
     // 기존 관심사 삭제

@@ -326,6 +326,6 @@ jobs:
 #       - main    # test 브랜치 제거
 #   workflow_dispatch:
 #
-# 필요한 Secrets: APPLICATION_PROD_YML, DOCKERHUB_*, SERVER_*, PROJECT_MAIN_PORT
+# 필요한 Secrets: APPLICATION_PROD_YML, FCM_JSON, DOCKERHUB_*, SERVER_*, PROJECT_MAIN_PORT
 #
 # ===================================================================

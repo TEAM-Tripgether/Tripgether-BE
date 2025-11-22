@@ -34,7 +34,7 @@ public class ContentController implements ContentControllerDocs {
       @Valid @RequestBody RequestPlaceExtractionRequest request
   ) {
     RequestPlaceExtractionResponse response
-        = contentService.createContentAndRequestPlaceExtraction(request);
+        = contentService.createContentAndRequestPlaceExtraction(userDetails.getMemberId(), request);
     return ResponseEntity.ok(response);
   }
 }

@@ -13,7 +13,9 @@ import com.tripgether.place.repository.PlacePlatformReferenceRepository;
 import com.tripgether.place.repository.PlaceRepository;
 import com.tripgether.place.service.PlaceSearchService;
 import com.tripgether.sns.entity.Content;
+import com.tripgether.sns.entity.ContentMember;
 import com.tripgether.sns.entity.ContentPlace;
+import com.tripgether.sns.repository.ContentMemberRepository;
 import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import com.tripgether.member.service.FcmService;
 
 // AI 서버 Webhook Callback 처리
 @Service
@@ -32,10 +37,12 @@ import java.util.UUID;
 public class AiCallbackService {
 
   private final ContentRepository contentRepository;
+  private final ContentMemberRepository contentMemberRepository;
   private final PlaceRepository placeRepository;
   private final ContentPlaceRepository contentPlaceRepository;
   private final PlacePlatformReferenceRepository placePlatformReferenceRepository;
   private final PlaceSearchService placeSearchService;
+  private final FcmService fcmService;
 
   /**
    * AI 서버로부터 받은 Callback 처리
@@ -168,6 +175,9 @@ public class AiCallbackService {
       // Place 데이터가 없는 경우 경고 로그
       log.warn("No places found in callback for contentId={}", content.getId());
     }
+
+    // 콘텐츠 분석 완료 알림 전송
+    sendContentCompleteNotification(content, request);
   }
 
   /**
@@ -335,5 +345,86 @@ public class AiCallbackService {
     // ContentPlace 저장
     contentPlaceRepository.save(contentPlace);
     log.debug("Created ContentPlace: contentId={}, placeId={}, position={}", content.getId(), place.getId(), position);
+  }
+
+  /**
+   * 콘텐츠 분석 완료 알림 전송
+   * <p>
+   * Content가 COMPLETED 상태로 변경되면 해당 Content를 요청한 모든 회원에게 FCM 푸시 알림 전송
+   * 알림 전송 실패 시에도 Content 처리는 성공으로 간주 (try-catch로 격리)
+   *
+   * @param content 완료된 Content
+   * @param request AI Callback 요청
+   */
+  private void sendContentCompleteNotification(Content content, AiCallbackRequest request) {
+    try {
+      // 알림 미전송된 ContentMember 조회 (Member Fetch Join)
+      List<ContentMember> contentMembers =
+          contentMemberRepository.findUnnotifiedMembersWithMember(content.getId());
+
+      if (contentMembers.isEmpty()) {
+        log.info("알림 대상 ContentMember가 없습니다: contentId={}", content.getId());
+        return;
+      }
+
+      // 알림 제목 구성
+      String title = "콘텐츠 분석이 완료되었습니다";
+
+      // 알림 본문 구성 - 장소 개수 포함
+      int placeCount = request.getPlaces() != null ? request.getPlaces().size() : 0;
+      String body;
+      if (placeCount > 0) {
+        body = String.format("%d개의 여행지를 찾았어요! 지금 확인해보세요.", placeCount);
+      } else {
+        body = "콘텐츠 분석이 완료되었습니다.";
+      }
+
+      // 추가 데이터 구성 (앱에서 화면 이동용)
+      Map<String, String> data = new HashMap<>();
+      data.put("type", "CONTENT_COMPLETE");
+      data.put("contentId", content.getId().toString());
+      data.put("placeCount", String.valueOf(placeCount));
+
+      // 썸네일 URL (있는 경우)
+      String thumbnailUrl = content.getThumbnailUrl();
+
+      // 각 ContentMember의 회원에게 알림 전송
+      int successCount = 0;
+      for (ContentMember cm : contentMembers) {
+        try {
+          // FCM 알림 전송
+          fcmService.sendNotificationToMember(
+              cm.getMember().getId(),
+              title,
+              body,
+              data,
+              thumbnailUrl
+          );
+
+          // 알림 전송 성공 시 notified = true로 업데이트
+          cm.setNotified(true);
+          successCount++;
+
+          log.info("콘텐츠 분석 완료 알림 전송 성공: contentId={}, memberId={}, placeCount={}",
+              content.getId(), cm.getMember().getId(), placeCount);
+
+        } catch (Exception e) {
+          // 개별 회원 알림 실패는 로그만 남기고 계속 진행
+          log.error("개별 회원 알림 전송 실패: contentId={}, memberId={}",
+              content.getId(), cm.getMember().getId(), e);
+        }
+      }
+
+      // ContentMember 업데이트 저장 (notified 상태 반영)
+      contentMemberRepository.saveAll(contentMembers);
+
+      log.info("콘텐츠 분석 완료 알림 전송 완료: contentId={}, 전송성공={}/{}, placeCount={}",
+          content.getId(), successCount, contentMembers.size(), placeCount);
+
+    } catch (Exception e) {
+      // 전체 알림 전송 프로세스 실패해도 Content 처리는 성공으로 처리
+      log.error("콘텐츠 분석 완료 알림 전송 프로세스 실패: contentId={}",
+          content.getId(), e);
+    }
   }
 }

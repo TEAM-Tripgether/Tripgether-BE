@@ -3,6 +3,8 @@ package com.tripgether.web.controller;
 import com.tripgether.application.dto.TestRequest;
 import com.tripgether.application.dto.TestResponse;
 import com.tripgether.application.service.TestService;
+import com.tripgether.member.dto.FcmNotificationRequest;
+import com.tripgether.member.service.FcmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
   private final TestService testService;
+  private final FcmService fcmService;
 
   @PostMapping("/mock-content")
   @Operation(summary = "Mock Content 생성 및 반환")
@@ -33,6 +36,24 @@ public class TestController {
       @RequestBody TestRequest request
   ) {
     return ResponseEntity.ok(testService.createMockContent(request));
+  }
+
+  /**
+   * FCM 푸시 알림 전송 테스트
+   */
+  @PostMapping("/fcm/send")
+  @Operation(summary = "FCM 푸시 알림 전송 테스트", description = "단일 기기로 FCM 푸시 알림을 전송합니다. fcmToken 필드에 실제 FCM 토큰을 입력해야 합니다.")
+  public ResponseEntity<String> sendTestNotification(
+      @Valid @RequestBody FcmNotificationRequest request) {
+
+      fcmService.sendNotification(
+          request.getFcmToken(),
+          request.getTitle(),
+          request.getBody(),
+          request.getData(),
+          request.getImageUrl());
+
+      return ResponseEntity.accepted().build();
   }
 }
 

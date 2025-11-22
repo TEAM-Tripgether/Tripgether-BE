@@ -1,7 +1,6 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
-import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.ProfileUpdateRequest;
@@ -33,7 +32,6 @@ import java.util.List;
 public class MemberController implements MemberControllerDocs {
 
   private final MemberService memberService;
-  private final JwtUtil jwtUtil;
 
   @PostMapping
   public ResponseEntity<MemberDto> createMember(@Valid @RequestBody MemberDto memberDto) {

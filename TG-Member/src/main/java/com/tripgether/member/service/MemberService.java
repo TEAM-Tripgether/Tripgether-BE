@@ -27,14 +27,12 @@ import com.tripgether.member.repository.MemberRepository;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -46,11 +44,6 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final MemberInterestRepository memberInterestRepository;
   private final InterestRepository interestRepository;
-  private final RedisTemplate<String, Object> redisTemplate;
-
-  private static final String REFRESH_KEY_PREFIX = "RT:";
-  private static final String BLACKLIST_PREFIX = "BL:";
-  private static final String BLACKLIST_VALUE = "blacklisted";
 
   // 만 14세 이상만 가입 가능
   LocalDate today = LocalDate.now();
@@ -532,90 +525,5 @@ public class MemberService {
         .collect(Collectors.toList());
 
     return interests;
-  }
-
-  /**
-   * 회원 탈퇴
-   *
-   * @param memberId 탈퇴할 회원 ID
-   * @param accessToken 탈퇴 시 사용한 AccessToken (토큰 무효화용)
-   */
-  @Transactional
-  public void withdrawMember(UUID memberId, String accessToken) {
-    // 회원 조회
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-    // 이미 탈퇴한 회원인지 확인
-    if (member.isDeleted()) {
-      log.warn("[Member] 이미 탈퇴한 회원 - memberId={}", memberId);
-      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
-    }
-
-    // 탈퇴 처리 (email, name에 타임스탬프 자동 추가)
-    String timestamp = member.withdraw(memberId.toString());
-
-    // 회원 관심사 소프트삭제
-    List<MemberInterest> memberInterests = memberInterestRepository.findByMemberId(memberId);
-    memberInterests.forEach(interest -> interest.softDelete(memberId.toString()));
-
-    memberRepository.save(member);
-
-    // 토큰 무효화 처리 (로그아웃과 동일한 보안 처리)
-    if (accessToken != null) {
-      deactivateToken(accessToken, memberId);
-      log.info("[Member] 토큰 무효화 완료 - memberId={}", memberId);
-    }
-
-    log.info("[Member] 회원 탈퇴 완료 - memberId={}, timestamp={}", memberId, timestamp);
-  }
-
-  /**
-   * 토큰 무효화 (AccessToken 블랙리스트 등록, RefreshToken 삭제)
-   *
-   * @param accessToken AccessToken
-   * @param memberId 회원 ID
-   */
-  private void deactivateToken(String accessToken, UUID memberId) {
-    try {
-      // 1. AccessToken 블랙리스트 등록
-      blacklistAccessToken(accessToken);
-
-      // 2. RefreshToken Redis에서 삭제
-      String refreshTokenKey = REFRESH_KEY_PREFIX + memberId;
-      deleteRefreshToken(refreshTokenKey);
-
-      log.debug("[Member] 토큰 무효화 성공 - memberId={}", memberId);
-    } catch (Exception e) {
-      log.warn("[Member] 토큰 무효화 중 오류 발생 (탈퇴는 정상 처리됨) - memberId={}, error={}", memberId, e.getMessage());
-      // 토큰 무효화 실패해도 탈퇴는 진행 (이미 만료된 토큰일 수 있음)
-    }
-  }
-
-  /**
-   * AccessToken을 블랙리스트에 등록
-   */
-  private void blacklistAccessToken(String accessToken) {
-    String key = BLACKLIST_PREFIX + accessToken;
-    // AccessToken의 남은 유효기간 동안만 블랙리스트 유지 (자동 만료)
-    // 여기서는 안전하게 7일(604800000ms)로 설정 (일반적인 AccessToken 만료 시간보다 길게)
-    redisTemplate.opsForValue().set(
-        key,
-        BLACKLIST_VALUE,
-        604800000L, // 7일
-        TimeUnit.MILLISECONDS);
-    log.debug("[Member] AccessToken 블랙리스트 등록 완료");
-  }
-
-  /**
-   * Redis에 저장된 RefreshToken 삭제
-   */
-  private void deleteRefreshToken(String refreshTokenKey) {
-    Boolean isDeleted = redisTemplate.delete(refreshTokenKey);
-    if (Boolean.TRUE.equals(isDeleted)) {
-      log.debug("[Member] RefreshToken 삭제 완료");
-    } else {
-      log.debug("[Member] RefreshToken을 찾을 수 없음 (이미 만료되었거나 삭제됨)");
-    }
   }
 }

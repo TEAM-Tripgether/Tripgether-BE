@@ -17,7 +17,9 @@ import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.entity.ContentPlace;
 import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -171,16 +173,15 @@ public class ContentService {
             .address(place.getAddress())
             .rating(place.getRating())
             .photoUrls(
-                place.getPhotoUrls() == null
-                    ? java.util.Collections.emptyList()
-                    : place.getPhotoUrls().size() > MAX_PHOTO_URLS_PER_PLACE
-                        ? place.getPhotoUrls()
-                        .subList(0, MAX_PHOTO_URLS_PER_PLACE)
-                        : place.getPhotoUrls()
+                Optional.ofNullable(place.getPhotoUrls())
+                    .map(urls -> urls.size() > MAX_PHOTO_URLS_PER_PLACE
+                        ? urls.subList(0, MAX_PHOTO_URLS_PER_PLACE)
+                        : urls)
+                    .orElse(Collections.emptyList())
             )
             .description(place.getDescription())
             .build()
         )
-        .collect(Collectors.toList());
+        .toList();
   }
 }

@@ -1,7 +1,6 @@
 package com.tripgether.place.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
-import com.tripgether.member.entity.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

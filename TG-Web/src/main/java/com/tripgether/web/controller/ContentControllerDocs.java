@@ -32,7 +32,7 @@ public interface ContentControllerDocs {
               
               ## 반환값 (RequestPlaceExtractionResponse)
               - **`contentId`**: 콘텐츠 UUID
-              - **'memberId'**: 회원 UUID
+              - **`memberId`**: 회원 UUID
               - **`status`**: 장소 추출 요청 상태 (PENDING, ANALYZING, COMPLETED, FAILED, DELETED)
               
               ## 콘텐츠 필드

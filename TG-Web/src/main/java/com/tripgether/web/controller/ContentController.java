@@ -50,7 +50,7 @@ public class ContentController implements ContentControllerDocs {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/content/recent")
+  @GetMapping("/recent")
   public ResponseEntity<GetRecentContentResponse> getRecentContents(
       @AuthenticationPrincipal CustomUserDetails userDetails
   ) {

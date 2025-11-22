@@ -331,7 +331,7 @@ public interface MemberControllerDocs {
               - **`nickname`**: 확인할 닉네임 (Query Parameter, 필수, 2자 이상 50자 이하)
 
               ## 반환값 (CheckNicknameResponse)
-              - **`available`**: 사용 가능 여부 (true: 사용 가능, false: 이미 사용 중)
+              - **`isAvailable`**: 사용 가능 여부 (true: 사용 가능, false: 이미 사용 중)
               - **`nickname`**: 확인한 닉네임
 
               ## 특이사항

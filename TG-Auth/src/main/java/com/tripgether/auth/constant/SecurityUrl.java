@@ -19,6 +19,9 @@ public class SecurityUrl {
           // AI 서버
           "/api/ai/callback", // AI 서버 Webhook Callback
 
+          // Test APIs (개발/테스트 전용)
+          "/api/test/**", // 테스트 API
+
           // Swagger
           "/docs/swagger-ui/**", // Swagger UI
           "/v3/api-docs/**", // Swagger API 문서

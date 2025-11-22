@@ -1,6 +1,7 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.member.dto.CheckNicknameResponse;
 import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.ProfileUpdateRequest;
@@ -132,6 +133,14 @@ public class MemberController implements MemberControllerDocs {
   public ResponseEntity<List<InterestDto>> getInterestsByMemberId(@PathVariable UUID memberId) {
     List<InterestDto> interestDtos = memberService.getInterestsByMemberId(memberId);
     return ResponseEntity.ok(interestDtos);
+  }
+
+  @GetMapping("/check-nickname")
+  @Override
+  public ResponseEntity<CheckNicknameResponse> checkNickname(
+      @RequestParam String nickname
+  ) {
+    return ResponseEntity.ok(memberService.checkNicknameAvailability(nickname));
   }
 
 }

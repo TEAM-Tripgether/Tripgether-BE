@@ -302,17 +302,17 @@ public interface MemberControllerDocs {
   @ApiChangeLogs({@ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API 문서화")})
   @Operation(summary = "회원 관심사 조회 (ID)", description = """
               ## 인증(JWT): **불필요**
-              
+
               ## 요청 파라미터
               - **`memberId`**: 회원 ID (Path Variable)
-              
+
               ## 반환값 (List<InterestDto>)
               - **`id`**: 관심사 ID
               - **`name`**: 관심사 이름
-              
+
               ## 특이사항
               - 회원 ID로 해당 회원의 관심사 목록을 조회합니다.
-              
+
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.

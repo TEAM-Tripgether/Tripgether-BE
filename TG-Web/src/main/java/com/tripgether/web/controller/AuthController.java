@@ -1,10 +1,10 @@
 package com.tripgether.web.controller;
 
-import com.tripgether.auth.dto.AuthRequest;
-import com.tripgether.auth.dto.AuthResponse;
+import com.tripgether.auth.dto.*;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +21,13 @@ public class AuthController implements AuthControllerDocs {
   private final AuthService authService;
 
   @PostMapping("/sign-in")
-  public ResponseEntity<AuthResponse> signIn(@RequestBody AuthRequest request) {
+  public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) {
     log.debug("소셜 로그인 요청: {}", request);
     return ResponseEntity.ok(authService.signIn(request));
   }
 
   @PostMapping("/reissue")
-  public ResponseEntity<AuthResponse> reissue(@RequestBody AuthRequest request) {
+  public ResponseEntity<ReissueResponse> reissue(@Valid @RequestBody ReissueRequest request) {
     log.debug("토큰 재발급 요청");
     return ResponseEntity.ok(authService.reissue(request));
   }

@@ -218,9 +218,9 @@ public class JwtUtil {
    */
   public Authentication getAuthentication(String token) {
     Claims claims = getClaims(token);
-    String username = claims.getSubject();
-    log.debug("JWT에서 인증정보 파싱: username={}", username);
-    CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+    String memberEmail = claims.getSubject();
+    log.debug("JWT에서 인증정보 파싱: memberEmail={}", memberEmail);
+    CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(memberEmail);
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
 

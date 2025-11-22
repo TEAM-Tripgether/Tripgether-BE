@@ -3,25 +3,33 @@ package com.tripgether.auth.service;
 import com.tripgether.auth.dto.AuthRequest;
 import com.tripgether.auth.dto.AuthResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.auth.dto.ReissueRequest;
+import com.tripgether.auth.dto.ReissueResponse;
+import com.tripgether.auth.dto.SignInRequest;
+import com.tripgether.auth.dto.SignInResponse;
 import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.constant.OnboardingStep;
+import com.tripgether.member.entity.FcmToken;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.entity.MemberInterest;
-import com.tripgether.member.repository.MemberRepository;
+import com.tripgether.member.repository.FcmTokenRepository;
 import com.tripgether.member.repository.MemberInterestRepository;
+import com.tripgether.member.repository.MemberRepository;
 import com.tripgether.member.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -36,12 +44,16 @@ public class AuthService {
   private final JwtUtil jwtUtil;
   private final RedisTemplate<String, Object> redisTemplate;
   private final MemberInterestRepository memberInterestRepository;
+  private final FcmTokenRepository fcmTokenRepository;
 
   /**
    * 로그인 로직 클라이언트로부터 플랫폼, 닉네임, 프로필url, 이메일을 입력받아 JWT를 발급합니다.
    */
   @Transactional
-  public AuthResponse signIn(AuthRequest request) {
+  public SignInResponse signIn(SignInRequest request) {
+    // FCM 토큰 입력값 검증
+    validateFcmTokenRequest(request);
+
     // 요청 값으로부터 사용자 정보 획득
     String email = request.getEmail();
     String name = request.getName();
@@ -69,6 +81,9 @@ public class AuthService {
     } else {
       log.debug("기존 회원 로그인: {}", email);
     }
+
+    // FCM 토큰 저장/업데이트
+    saveFcmToken(member, request);
 
     // JWT 토큰 생성
     CustomUserDetails customUserDetails = new CustomUserDetails(member);
@@ -102,7 +117,7 @@ public class AuthService {
     }
 
     //응답 생성
-    return AuthResponse.builder()
+    return SignInResponse.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .isFirstLogin(isFirstLogin)
@@ -115,7 +130,7 @@ public class AuthService {
    * refreshToken을 통해 accessToken을 재발급합니다
    */
   @Transactional
-  public AuthResponse reissue(AuthRequest request) {
+  public ReissueResponse reissue(ReissueRequest request) {
     log.debug("accessToken이 만료되어 토큰 재발급을 진행합니다.");
 
     String refreshToken = request.getRefreshToken();
@@ -166,7 +181,7 @@ public class AuthService {
       throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
     }
 
-    return AuthResponse.builder()
+    return ReissueResponse.builder()
         .accessToken(newAccessToken)
         .refreshToken(refreshToken)
         .isFirstLogin(false)
@@ -234,5 +249,72 @@ public class AuthService {
     }
 
     log.info("[Auth] 회원 탈퇴 완료 - memberId={}, timestamp={}", memberId, timestamp);
+  }
+
+  /**
+   * FCM 토큰 요청 검증
+   */
+  private void validateFcmTokenRequest(SignInRequest request) {
+    String fcmToken = request.getFcmToken();
+    String deviceId = request.getDeviceId();
+    var deviceType = request.getDeviceType();
+
+    // fcmToken이 있으면 deviceType과 deviceId도 필수
+    if (fcmToken != null && !fcmToken.isBlank()) {
+      if (deviceType == null) {
+        log.error("fcmToken이 제공되었으나 deviceType이 누락되었습니다.");
+        throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+      }
+      if (deviceId == null || deviceId.isBlank()) {
+        log.error("fcmToken이 제공되었으나 deviceId가 누락되었습니다.");
+        throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+      }
+    }
+
+    // deviceType이나 deviceId만 있고 fcmToken이 없는 경우
+    if ((deviceType != null || (deviceId != null && !deviceId.isBlank()))
+        && (fcmToken == null || fcmToken.isBlank())) {
+      log.error("deviceType 또는 deviceId가 제공되었으나 fcmToken이 누락되었습니다.");
+      throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+    }
+  }
+
+  /**
+   * FCM 토큰 저장 또는 업데이트
+   */
+  private void saveFcmToken(Member member, SignInRequest request) {
+    String fcmToken = request.getFcmToken();
+    String deviceId = request.getDeviceId();
+    var deviceType = request.getDeviceType();
+
+    // FCM 정보가 없으면 저장하지 않음
+    if (fcmToken == null || fcmToken.isBlank()) {
+      log.debug("FCM 토큰 정보가 없어 저장을 건너뜁니다.");
+      return;
+    }
+
+    // 기존 토큰 조회
+    Optional<FcmToken> existingToken = fcmTokenRepository.findByMemberAndDeviceId(member, deviceId);
+
+    if (existingToken.isPresent()) {
+      // 기존 토큰이 있으면 업데이트
+      FcmToken token = existingToken.get();
+      token.setFcmToken(fcmToken);
+      token.setDeviceType(deviceType);
+      token.setLastUsedAt(LocalDateTime.now());
+      fcmTokenRepository.save(token);
+      log.debug("FCM 토큰 업데이트: memberId={}, deviceId={}", member.getId(), deviceId);
+    } else {
+      // 새로운 토큰 생성
+      FcmToken newToken = FcmToken.builder()
+          .member(member)
+          .fcmToken(fcmToken)
+          .deviceType(deviceType)
+          .deviceId(deviceId)
+          .lastUsedAt(LocalDateTime.now())
+          .build();
+      fcmTokenRepository.save(newToken);
+      log.debug("FCM 토큰 신규 저장: memberId={}, deviceId={}", member.getId(), deviceId);
+    }
   }
 }

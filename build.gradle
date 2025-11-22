@@ -10,7 +10,7 @@ bootJar {
 
 allprojects {
 	group = 'com.tripgether'
-	version = '0.2.24'
+	version = '0.2.23'
 
 	repositories {
 		mavenCentral()

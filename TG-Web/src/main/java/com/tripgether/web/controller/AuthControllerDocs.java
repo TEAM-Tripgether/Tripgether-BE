@@ -1,7 +1,6 @@
 package com.tripgether.web.controller;
 
-import com.tripgether.auth.dto.AuthRequest;
-import com.tripgether.auth.dto.AuthResponse;
+import com.tripgether.auth.dto.*;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,57 +11,68 @@ import org.springframework.http.ResponseEntity;
 public interface AuthControllerDocs {
 
   @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.11.23", author = Author.SUHSAECHAN, issueNumber = 0, description = "FCM 토큰 멀티 디바이스 지원 추가"),
       @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "인증 모듈 추가 및 기본 OAuth 로그인 구현"),
   })
   @Operation(summary = "소셜 로그인", description = """
               ## 인증(JWT): **불필요**
-              
-              ## 요청 파라미터 (AuthRequest)
+
+              ## 요청 파라미터 (SignInRequest)
               - **`socialPlatform`**: 로그인 플랫폼 (KAKAO, GOOGLE)
-              - **`email`**: 사용자 이메일
-              - **`name`**: 사용자 닉네임
+              - **`email`**: 사용자 이메일 (필수)
+              - **`name`**: 사용자 닉네임 (필수)
               - **`profileUrl`**: 사용자 프로필 url (선택)
-              
-              ## 반환값 (AuthResponse)
+              - **`fcmToken`**: FCM 푸시 알림 토큰 (선택)
+              - **`deviceType`**: 디바이스 타입 - IOS, ANDROID (fcmToken 제공 시 필수)
+              - **`deviceId`**: 디바이스 고유 식별자 UUID (fcmToken 제공 시 필수)
+
+              ## 반환값 (SignInResponse)
               - **`accessToken`**: 발급된 AccessToken
               - **`refreshToken`**: 발급된 RefreshToken
               - **`isFirstLogin`**: 최초 로그인 여부
-              
+              - **`requiresOnboarding`**: 온보딩 필요 여부
+              - **`onboardingStep`**: 현재 온보딩 단계
+
               ## 특이사항
               - 클라이언트에서 Kakao/Google OAuth 처리 후 받은 사용자 정보로 서버에 JWT 토큰을 요청합니다.
               - 액세스 토큰은 1시간, 리프레시 토큰은 7일 유효합니다.
-              
+              - **FCM 토큰을 전송하면 푸시 알림을 받을 수 있습니다. (멀티 디바이스 지원)**
+              - fcmToken, deviceType, deviceId는 3개 모두 함께 전송하거나 모두 전송하지 않아야 합니다.
+              - **@Valid 검증이 적용됩니다**: email, name은 필수 필드입니다.
+
               ## 에러코드
               - **`INVALID_SOCIAL_TOKEN`**: 유효하지 않은 소셜 인증 토큰입니다.
               - **`SOCIAL_AUTH_FAILED`**: 소셜 로그인 인증에 실패하였습니다.
               - **`MEMBER_NOT_FOUND`**: 회원 정보를 찾을 수 없습니다.
+              - **`INVALID_INPUT_VALUE`**: FCM 토큰 관련 필드가 올바르지 않습니다.
               """)
-  ResponseEntity<AuthResponse> signIn(AuthRequest request);
+  ResponseEntity<SignInResponse> signIn(SignInRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "토큰 재발급 기능 구현"),
   })
   @Operation(summary = "토큰 재발급", description = """
               ## 인증(JWT): **불필요**
-              
-              ## 요청 파라미터 (AuthRequest)
-              - **`refreshToken`**: 리프레시 토큰
-              
-              ## 반환값 (AuthResponse)
+
+              ## 요청 파라미터 (ReissueRequest)
+              - **`refreshToken`**: 리프레시 토큰 (필수)
+
+              ## 반환값 (ReissueResponse)
               - **`accessToken`**: 재발급된 AccessToken
               - **`refreshToken`**: 리프레시 토큰 (변경되지 않음)
               - **`isFirstLogin`**: 최초 로그인 여부
-              
+
               ## 특이사항
               - 만료된 액세스 토큰을 리프레시 토큰으로 재발급합니다.
-              
+              - **@Valid 검증이 적용됩니다**: refreshToken은 필수 필드입니다.
+
               ## 에러코드
               - **`REFRESH_TOKEN_NOT_FOUND`**: 리프레시 토큰을 찾을 수 없습니다.
               - **`INVALID_REFRESH_TOKEN`**: 유효하지 않은 리프레시 토큰입니다.
               - **`EXPIRED_REFRESH_TOKEN`**: 만료된 리프레시 토큰입니다.
               - **`MEMBER_NOT_FOUND`**: 회원 정보를 찾을 수 없습니다.
               """)
-  ResponseEntity<AuthResponse> reissue(AuthRequest request);
+  ResponseEntity<ReissueResponse> reissue(ReissueRequest request);
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "로그아웃 기능 구현"),

@@ -68,7 +68,7 @@ public class ContentController implements ContentControllerDocs {
   /**
    * 사용자가 저장한 장소 목록 조회 (최신순, 최대 10개)
    */
-  @GetMapping("/saved")
+  @GetMapping("/place/saved")
   public ResponseEntity<GetSavedPlacesResponse> getSavedPlaces(
       @AuthenticationPrincipal CustomUserDetails userDetails
   ) {

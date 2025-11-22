@@ -1,7 +1,6 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
-import com.tripgether.auth.jwt.JwtUtil;
 import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.ProfileUpdateRequest;
@@ -33,7 +32,6 @@ import java.util.List;
 public class MemberController implements MemberControllerDocs {
 
   private final MemberService memberService;
-  private final JwtUtil jwtUtil;
 
   @PostMapping
   public ResponseEntity<MemberDto> createMember(@Valid @RequestBody MemberDto memberDto) {
@@ -134,26 +132,6 @@ public class MemberController implements MemberControllerDocs {
   public ResponseEntity<List<InterestDto>> getInterestsByMemberId(@PathVariable UUID memberId) {
     List<InterestDto> interestDtos = memberService.getInterestsByMemberId(memberId);
     return ResponseEntity.ok(interestDtos);
-  }
-
-  @DeleteMapping("/me")
-  @Override
-  public ResponseEntity<Void> withdrawMember(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestHeader(value = "Authorization", required = false) String authorization
-  ) {
-    UUID memberId = userDetails.getMemberId();
-
-    // AccessToken 추출
-    String accessToken = null;
-    if (authorization != null && authorization.startsWith("Bearer ")) {
-      accessToken = authorization.substring(7).trim();
-    }
-
-    memberService.withdrawMember(memberId, accessToken);
-
-    log.info("[Member] 회원 탈퇴 완료 - memberId={}", memberId);
-    return ResponseEntity.noContent().build();
   }
 
 }

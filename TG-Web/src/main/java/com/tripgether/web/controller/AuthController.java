@@ -47,4 +47,21 @@ public class AuthController implements AuthControllerDocs {
     authService.logout(request);
     return ResponseEntity.ok().build();
   }
+
+  @DeleteMapping("/withdraw")
+  @Override
+  public ResponseEntity<Void> withdrawMember(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestHeader(value = "Authorization", required = false) String authorization) {
+    var memberId = userDetails.getMemberId();
+    String accessToken = null;
+
+    if (authorization != null && authorization.startsWith("Bearer ")) {
+      accessToken = authorization.substring(7).trim();
+    }
+
+    authService.withdrawMember(memberId, accessToken);
+    log.info("[Auth] 회원 탈퇴 완료 - memberId={}", memberId);
+    return ResponseEntity.noContent().build();
+  }
 }

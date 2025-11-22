@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorResponse {
 
+  private String errorCode; // 에러 코드 (예: MEMBER_ALREADY_WITHDRAWN)
   private String message; // 에러 메시지
 
   /**
@@ -26,6 +27,7 @@ public class ErrorResponse {
    */
   public static ErrorResponse getResponse(ErrorCode errorCode) {
     return ErrorResponse.builder()
+        .errorCode(errorCode.name())
         .message(errorCode.getMessage())
         .build();
   }
@@ -39,6 +41,7 @@ public class ErrorResponse {
    */
   public static ErrorResponse getResponse(ErrorCode errorCode, String additionalMessage) {
     return ErrorResponse.builder()
+        .errorCode(errorCode.name())
         .message(errorCode.getMessage() + " - " + additionalMessage)
         .build();
   }
@@ -48,6 +51,7 @@ public class ErrorResponse {
    */
   public static ErrorResponse getResponse(ErrorCodeBuilder errorCodeBuilder) {
     return ErrorResponse.builder()
+        .errorCode(null) // ErrorCodeBuilder는 동적 생성이므로 errorCode 없음
         .message(errorCodeBuilder.getMessage())
         .build();
   }

@@ -10,11 +10,16 @@ import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.util.CommonUtil;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
+import com.tripgether.place.dto.PlaceResponse;
+import com.tripgether.place.entity.Place;
 import com.tripgether.sns.dto.RecentContentResponse;
 import com.tripgether.sns.entity.Content;
+import com.tripgether.sns.entity.ContentPlace;
+import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ContentService {
   private static final int MAX_URL_LENGTH = 2048;
+  private static final int MAX_PHOTO_URLS_PER_PLACE = 10;
 
   private final ContentRepository contentRepository;
+  private final ContentPlaceRepository contentPlaceRepository;
   private final MemberRepository memberRepository;
   private final AiServerService aiServerService;
   private final CommonUtil commonUtil;
@@ -132,5 +139,46 @@ public class ContentService {
     return contents.stream()
         .map(RecentContentResponse::fromEntity)
         .toList();
+  }
+
+  /**
+   * 사용자별 저장한 장소 목록 조회 (최신순 최대 10개)
+   */
+  @Transactional(readOnly = true)
+  public List<PlaceResponse> getSavedPlaces(UUID memberId) {
+    // 회원 존재 여부 확인
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    log.info("[Place] 저장 장소 목록 조회 - memberId={}", member.getId());
+
+    // 이 회원이 가진 Content 들과 연결된 ContentPlace를 최신순 10개 조회
+    List<ContentPlace> contentPlaces =
+        contentPlaceRepository.findTop10ByContent_MemberOrderByCreatedAtDesc(member);
+
+    // ContentPlace → Place 추출
+    List<Place> places = contentPlaces.stream()
+        .map(ContentPlace::getPlace)
+        .toList();
+
+    // Entity → DTO 변환 (기존 로직 재사용)
+    return places.stream()
+        .map(place -> PlaceResponse.builder()
+            .placeId(place.getId())
+            .name(place.getName())
+            .address(place.getAddress())
+            .rating(place.getRating())
+            .photoUrls(
+                place.getPhotoUrls() == null
+                    ? java.util.Collections.emptyList()
+                    : place.getPhotoUrls().size() > MAX_PHOTO_URLS_PER_PLACE
+                        ? place.getPhotoUrls()
+                        .subList(0, MAX_PHOTO_URLS_PER_PLACE)
+                        : place.getPhotoUrls()
+            )
+            .description(place.getDescription())
+            .build()
+        )
+        .collect(Collectors.toList());
   }
 }

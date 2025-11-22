@@ -3,8 +3,10 @@ package com.tripgether.web.controller;
 import com.tripgether.ai.dto.PlaceExtractionRequest;
 import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
+import com.tripgether.place.dto.PlaceResponse;
 import com.tripgether.sns.dto.RecentContentResponse;
 import com.tripgether.sns.service.ContentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -53,5 +55,19 @@ public class ContentController implements ContentControllerDocs {
     List<RecentContentResponse> contents =
         contentService.getRecentContents(userDetails.getMemberId());
     return ResponseEntity.ok(contents);
+  }
+
+  /**
+   * 사용자가 저장한 장소 목록 조회 (최신순, 최대 10개)
+   */
+  @GetMapping("/place/saved")
+  @Operation(summary = "저장한 장소 목록 조회",
+      description = "사용자가 저장한 장소 정보를 최신순으로 최대 10개까지 조회합니다.")
+  public ResponseEntity<List<PlaceResponse>> getSavedPlaces(
+      @AuthenticationPrincipal CustomUserDetails userDetails
+  ) {
+    List<PlaceResponse> responses =
+        contentService.getSavedPlaces(userDetails.getMemberId());
+    return ResponseEntity.ok(responses);
   }
 }

@@ -34,9 +34,6 @@ public class Place extends SoftDeletableBaseEntity {
   @Column(updatable = false, nullable = false)
   private UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  private Member member;
-
   @Column(nullable = false, length = 255)
   private String name;
 

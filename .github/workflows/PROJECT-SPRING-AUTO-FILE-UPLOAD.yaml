@@ -142,6 +142,16 @@ jobs:
             ${{ secrets.APPLICATION_PROD_YML }}
             EOF
             echo "✅ application-prod.yml 업로드 완료"
+
+            # tripgether-fcm.json 파일 업로드 (최신 + 백업)
+            echo "📤 tripgether-fcm.json 파일 업로드 중..."
+            cat << 'EOF' | sudo tee /volume1/projects/${PROJECT_NAME}/github_secret/backend/tripgether-fcm.json > /dev/null
+            ${{ secrets.FCM_JSON }}
+            EOF
+            cat << 'EOF' | sudo tee /volume1/projects/${PROJECT_NAME}/github_secret/backend/$TIMESTAMP/tripgether-fcm.json > /dev/null
+            ${{ secrets.FCM_JSON }}
+            EOF
+            echo "✅ tripgether-fcm.json 업로드 완료"
             
             # 메타데이터 JSON 파일 생성 및 업로드
             echo "📝 메타데이터 JSON 파일 생성 중..."
@@ -174,6 +184,12 @@ jobs:
                   "file_path": "/",
                   "last_updated": "$BUILD_DATE",
                   "source_secret": "APPLICATION_PROD_YML"
+                },
+                {
+                  "file_name": "tripgether-fcm.json",
+                  "file_path": "/",
+                  "last_updated": "$BUILD_DATE",
+                  "source_secret": "FCM_JSON"
                 }
               ],
               "github_secrets_used": [
@@ -200,6 +216,12 @@ jobs:
                   "type": "credential",
                   "usage": "SSH 접속용",
                   "value": "${{ secrets.SERVER_USER }}"
+                },
+                {
+                  "name": "FCM_JSON",
+                  "type": "configuration",
+                  "usage": "Firebase FCM Service Account JSON",
+                  "value": "***"
                 }
               ]
             }
@@ -217,7 +239,7 @@ jobs:
             echo "  📁 저장 경로: /volume1/projects/${PROJECT_NAME}/github_secret/backend/"
             echo "  💾 백업 경로: /volume1/projects/${PROJECT_NAME}/github_secret/backend/$TIMESTAMP/"
             echo "  ⏰ 업로드 시간: $BUILD_DATE"
-            echo "  📊 사용된 Secrets: 6개 (Repository), 1개 (Organization)"
+            echo "  📊 사용된 Secrets: 7개 (Repository), 1개 (Organization)"
 
 # ===================================================================
 # 사용 예시

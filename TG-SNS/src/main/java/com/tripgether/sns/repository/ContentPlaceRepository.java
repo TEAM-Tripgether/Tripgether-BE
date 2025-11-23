@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -21,6 +22,10 @@ public interface ContentPlaceRepository extends JpaRepository<ContentPlace, UUID
   @Modifying(flushAutomatically = true, clearAutomatically = true)
   @Query("DELETE FROM ContentPlace cp WHERE cp.content.id = :contentId")
   void deleteByContentIdWithFlush(@Param("contentId") UUID contentId);
+
+  // Content ID로 ContentPlace 목록 조회 (Place를 Fetch Join하여 N+1 문제 해결, position 순서대로)
+  @Query("SELECT cp FROM ContentPlace cp JOIN FETCH cp.place WHERE cp.content.id = :contentId ORDER BY cp.position ASC")
+  List<ContentPlace> findByContentIdWithPlace(@Param("contentId") UUID contentId);
 
   // member가 소유한 content 들과 연결된 ContentPlace 중 최신순 10개
   List<ContentPlace> findTop10ByContent_MemberOrderByCreatedAtDesc(Member member);

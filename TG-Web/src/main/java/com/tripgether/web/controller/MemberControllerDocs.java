@@ -25,13 +25,9 @@ import java.util.UUID;
 public interface MemberControllerDocs {
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
-          + " 문서화")
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API 문서화"),
   })
-  @Operation(
-      summary = "회원 생성",
-      description =
-          """
+  @Operation(summary = "회원 생성", description = """
               ## 인증(JWT): **불필요**
               
               ## 요청 파라미터 (MemberDto)
@@ -64,12 +60,9 @@ public interface MemberControllerDocs {
   ResponseEntity<MemberDto> createMember(MemberDto memberDto);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 약관 동의 API 추가")
+      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 약관 동의 API 추가"),
   })
-  @Operation(
-      summary = "약관 동의",
-      description =
-          """
+  @Operation(summary = "약관 동의", description = """
               ## 인증(JWT): **필요**
               
               ## 요청 파라미터 (TermAgreementRequest)
@@ -80,12 +73,12 @@ public interface MemberControllerDocs {
               - **`currentStep`**: 현재 온보딩 단계 (TERMS, NAME, BIRTH_DATE, GENDER, INTERESTS, COMPLETED)
               - **`onboardingStatus`**: 온보딩 상태 (NOT_STARTED, IN_PROGRESS, COMPLETED)
               - **`member`**: 회원 정보 (디버깅용)
-
+              
               ## 특이사항
               - 서비스 이용약관 및 개인정보처리방침 동의는 필수입니다.
               - 마케팅 수신 동의는 선택 사항입니다.
               - 약관 동의 후 온보딩 상태가 IN_PROGRESS로 변경됩니다.
-
+              
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`MEMBER_TERMS_REQUIRED_NOT_AGREED`**: 필수 약관에 동의하지 않았습니다.
@@ -95,25 +88,22 @@ public interface MemberControllerDocs {
       @Valid UpdateServiceAgreementTermsRequest request);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 이름 설정 API 추가")
+      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 이름 설정 API 추가"),
   })
-  @Operation(
-      summary = "이름 설정",
-      description =
-          """
+  @Operation(summary = "이름 설정", description = """
               ## 인증(JWT): **필요**
               
               ## 요청 파라미터 (UpdateNameRequest)
               - **`name`**: 이름 (필수, 2자 이상 50자 이하)
-
+              
               ## 반환값 (OnboardingResponse)
               - **`currentStep`**: 현재 온보딩 단계
               - **`onboardingStatus`**: 온보딩 상태
               - **`member`**: 회원 정보 (디버깅용)
-
+              
               ## 특이사항
               - 온보딩 단계 중 이름 설정 단계를 완료합니다.
-
+              
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
@@ -122,26 +112,21 @@ public interface MemberControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid UpdateNameRequest request);
 
-  @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 생년월일 설정 API 추가")
-  })
-  @Operation(
-      summary = "생년월일 설정",
-      description =
-          """
+  @ApiChangeLogs({@ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 생년월일 설정 API 추가")})
+  @Operation(summary = "생년월일 설정", description = """
               ## 인증(JWT): **필요**
               
               ## 요청 파라미터 (UpdateBirthDateRequest)
               - **`birthDate`**: 생년월일 (필수, LocalDate 형식)
-
+              
               ## 반환값 (OnboardingResponse)
               - **`currentStep`**: 현재 온보딩 단계
               - **`onboardingStatus`**: 온보딩 상태
               - **`member`**: 회원 정보 (디버깅용)
-
+              
               ## 특이사항
               - 온보딩 단계 중 생년월일 설정 단계를 완료합니다.
-
+              
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
@@ -151,25 +136,22 @@ public interface MemberControllerDocs {
       @Valid UpdateBirthDateRequest request);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 성별 설정 API 추가")
+      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 성별 설정 API 추가"),
   })
-  @Operation(
-      summary = "성별 설정",
-      description =
-          """
+  @Operation(summary = "성별 설정", description = """
               ## 인증(JWT): **필요**
               
               ## 요청 파라미터 (UpdateGenderRequest)
               - **`gender`**: 성별 (필수, MALE 또는 FEMALE)
-
+              
               ## 반환값 (OnboardingResponse)
               - **`currentStep`**: 현재 온보딩 단계
               - **`onboardingStatus`**: 온보딩 상태
               - **`member`**: 회원 정보 (디버깅용)
-
+              
               ## 특이사항
               - 온보딩 단계 중 성별 설정 단계를 완료합니다.
-
+              
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
@@ -179,26 +161,23 @@ public interface MemberControllerDocs {
       @Valid UpdateGenderRequest request);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 관심사 설정 API 추가")
+      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 관심사 설정 API 추가"),
   })
-  @Operation(
-      summary = "관심사 설정",
-      description =
-          """
+  @Operation(summary = "관심사 설정", description = """
               ## 인증(JWT): **필요**
               
               ## 요청 파라미터 (UpdateInterestsRequest)
               - **`interestIds`**: 관심사 ID 목록 (필수, 최소 1개 이상)
-
+              
               ## 반환값 (OnboardingResponse)
               - **`currentStep`**: 현재 온보딩 단계
               - **`onboardingStatus`**: 온보딩 상태
               - **`member`**: 회원 정보 (디버깅용)
-
+              
               ## 특이사항
               - 온보딩 단계 중 관심사 설정 단계를 완료합니다.
               - 기존 관심사는 전체 삭제 후 새로 추가됩니다 (전체 교체).
-
+              
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
@@ -208,14 +187,8 @@ public interface MemberControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid UpdateInterestsRequest request);
 
-  @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
-          + " 문서화")
-  })
-  @Operation(
-      summary = "전체 회원 목록 조회",
-      description =
-          """
+  @ApiChangeLogs({@ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API 문서화")})
+  @Operation(summary = "전체 회원 목록 조회", description = """
               ## 인증(JWT): **불필요**
               
               ## 요청 파라미터
@@ -235,13 +208,9 @@ public interface MemberControllerDocs {
   ResponseEntity<List<MemberDto>> getAllMembers();
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
-          + " 문서화")
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API 문서화"),
   })
-  @Operation(
-      summary = "회원 단건 조회 (ID)",
-      description =
-          """
+  @Operation(summary = "회원 단건 조회 (ID)", description = """
               ## 인증(JWT): **불필요**
               
               ## 요청 파라미터
@@ -268,14 +237,8 @@ public interface MemberControllerDocs {
               """)
   ResponseEntity<MemberDto> getMemberById(UUID memberId);
 
-  @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
-          + " 문서화")
-  })
-  @Operation(
-      summary = "회원 단건 조회 (Email)",
-      description =
-          """
+  @ApiChangeLogs({@ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API 문서화")})
+  @Operation(summary = "회원 단건 조회 (Email)", description = """
               ## 인증(JWT): **불필요**
               
               ## 요청 파라미터
@@ -303,13 +266,9 @@ public interface MemberControllerDocs {
   ResponseEntity<MemberDto> getMemberByEmail(String email);
 
   @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
-          + " 문서화")
+      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API 문서화"),
   })
-  @Operation(
-      summary = "회원 프로필 설정(수정)",
-      description =
-          """
+  @Operation(summary = "회원 프로필 설정(수정)", description = """
               ## 인증(JWT): **필요**
               
               ## 요청 파라미터 (ProfileUpdateRequest)
@@ -340,26 +299,20 @@ public interface MemberControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid ProfileUpdateRequest request);
 
-  @ApiChangeLogs({
-      @ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API"
-          + " 문서화")
-  })
-  @Operation(
-      summary = "회원 관심사 조회 (ID)",
-      description =
-          """
+  @ApiChangeLogs({@ApiChangeLog(date = "2025.10.16", author = Author.SUHSAECHAN, issueNumber = 22, description = "회원 관리 API 문서화")})
+  @Operation(summary = "회원 관심사 조회 (ID)", description = """
               ## 인증(JWT): **불필요**
-              
+
               ## 요청 파라미터
               - **`memberId`**: 회원 ID (Path Variable)
-              
+
               ## 반환값 (List<InterestDto>)
               - **`id`**: 관심사 ID
               - **`name`**: 관심사 이름
-              
+
               ## 특이사항
               - 회원 ID로 해당 회원의 관심사 목록을 조회합니다.
-              
+
               ## 에러코드
               - **`MEMBER_NOT_FOUND`**: 회원을 찾을 수 없습니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.

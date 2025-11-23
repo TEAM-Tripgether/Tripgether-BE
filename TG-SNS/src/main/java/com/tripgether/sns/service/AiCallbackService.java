@@ -1,7 +1,7 @@
 package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.AiCallbackRequest;
-import com.tripgether.ai.dto.PlaceInfo;
+import com.tripgether.ai.dto.AiCallbackResponse;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 // AI 서버 Webhook Callback 처리
 @Service
@@ -43,14 +44,25 @@ public class AiCallbackService {
    * - FAILED면 상태만 변경
    *
    * @param request AI Callback 요청
+   * @return AI Callback 응답
    */
   @Transactional
-  public void processAiServerCallback(AiCallbackRequest request) {
+  public AiCallbackResponse processAiServerCallback(AiCallbackRequest request) {
+    // ContentInfo에서 contentId 추출
+    UUID contentId = request.getContentInfo() != null && request.getContentInfo().getContentId() != null
+        ? request.getContentInfo().getContentId()
+        : null;
+
+    if (contentId == null) {
+      log.error("ContentInfo or contentId is null in callback request");
+      throw new CustomException(ErrorCode.INVALID_REQUEST);
+    }
+
     log.info("Processing AI callback: contentId={}, resultStatus={}",
-        request.getContentId(), request.getResultStatus());
+        contentId, request.getResultStatus());
 
     // Content 조회 - 없으면 예외 발생
-    Content content = contentRepository.findById(request.getContentId())
+    Content content = contentRepository.findById(contentId)
         .orElseThrow(() -> new CustomException(ErrorCode.CONTENT_NOT_FOUND));
 
     // 결과 상태에 따라 분기 처리
@@ -66,7 +78,12 @@ public class AiCallbackService {
       throw new CustomException(ErrorCode.INVALID_REQUEST);
     }
 
-    log.info("AI callback processed successfully: contentId={}", request.getContentId());
+    log.info("AI callback processed successfully: contentId={}", contentId);
+
+    return AiCallbackResponse.builder()
+        .received(true)
+        .contentId(contentId)
+        .build();
   }
 
   /**
@@ -94,29 +111,36 @@ public class AiCallbackService {
 
     // Content 상태를 COMPLETED로 변경 (신규 또는 재처리 모두)
     content.setStatus(ContentStatus.COMPLETED);
+
+    // ContentInfo로 Content 메타데이터 업데이트
+    updateContentWithContentInfo(content, request);
+
     contentRepository.save(content);
 
     // AI 서버에서 받은 Place 정보로 ContentPlace 생성
     if (request.getPlaces() != null && !request.getPlaces().isEmpty()) {
-      List<PlaceInfo> places = request.getPlaces();
+      List<AiCallbackRequest.PlaceInfo> places = request.getPlaces();
       log.info("Processing {} places for contentId={} (update mode: {})",
           places.size(), content.getId(), isContentAlreadyCompleted);
 
       // 각 Place 정보를 순회하며 저장
       for (int i = 0; i < places.size(); i++) {
-        PlaceInfo placeInfo = places.get(i);
+        AiCallbackRequest.PlaceInfo placeInfo = places.get(i);
 
         log.info("Processing place {}/{}", i + 1, places.size());
         log.info("Place Name: {}", placeInfo.getName());
         log.info("Address: {}", placeInfo.getAddress());
-        log.info("Language: {}", placeInfo.getLanguage());
+        
+        // language 필드가 null이면 기본값 "ko" 사용
+        String language = placeInfo.getLanguage() != null ? placeInfo.getLanguage() : "ko";
+        log.info("Language: {}", language);
 
         try {
           // 1. Google Places API 호출 (실패 시 CustomException 발생)
           GooglePlaceSearchDto.PlaceDetail googlePlace = placeSearchService.searchGooglePlace(
               placeInfo.getName(),
               placeInfo.getAddress(),
-              placeInfo.getLanguage()
+              language
           );
 
           // 2. Google 응답으로 Place 생성/업데이트
@@ -144,6 +168,53 @@ public class AiCallbackService {
       // Place 데이터가 없는 경우 경고 로그
       log.warn("No places found in callback for contentId={}", content.getId());
     }
+  }
+
+  /**
+   * ContentInfo로 Content 메타데이터 업데이트
+   *
+   * null이 아닌 필드만 업데이트하여 기존 데이터 보존
+   *
+   * @param content 대상 Content
+   * @param request AI Callback 요청
+   */
+  private void updateContentWithContentInfo(Content content, AiCallbackRequest request) {
+    AiCallbackRequest.ContentInfo contentInfo = request.getContentInfo();
+
+    if (contentInfo == null) {
+      log.warn("ContentInfo is null for contentId={}. Skipping metadata update.", content.getId());
+      return;
+    }
+
+    // title 업데이트 (null이 아닐 때만)
+    if (contentInfo.getTitle() != null) {
+      content.setTitle(contentInfo.getTitle());
+    }
+
+    // thumbnailUrl 업데이트 (null이 아닐 때만)
+    if (contentInfo.getThumbnailUrl() != null) {
+      content.setThumbnailUrl(contentInfo.getThumbnailUrl());
+    }
+
+    // summary 업데이트 (null이 아닐 때만)
+    if (contentInfo.getSummary() != null) {
+      content.setSummary(contentInfo.getSummary());
+    }
+
+    // platform 업데이트 (null이 아닐 때만)
+    if (contentInfo.getPlatform() != null) {
+      try {
+        content.setPlatform(com.tripgether.sns.constant.ContentPlatform.valueOf(contentInfo.getPlatform()));
+      } catch (IllegalArgumentException e) {
+        log.error("Invalid platform value: {}. Keeping existing platform for contentId={}",
+            contentInfo.getPlatform(), content.getId());
+      }
+    }
+
+    log.debug("Updated Content with ContentInfo: contentId={}, title={}, summary={}",
+        content.getId(),
+        contentInfo.getTitle() != null ? contentInfo.getTitle() : "(unchanged)",
+        contentInfo.getSummary() != null ? contentInfo.getSummary().substring(0, Math.min(30, contentInfo.getSummary().length())) + "..." : "(unchanged)");
   }
 
   /**

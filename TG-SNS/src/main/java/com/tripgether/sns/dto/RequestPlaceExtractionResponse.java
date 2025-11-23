@@ -1,4 +1,4 @@
-package com.tripgether.ai.dto;
+package com.tripgether.sns.dto;
 
 import com.tripgether.common.constant.ContentStatus;
 import java.util.UUID;

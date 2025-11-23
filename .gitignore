@@ -37,6 +37,7 @@ build/
 # Application configuration (contains credentials)
 TG-Web/src/main/resources/application-dev.yml
 TG-Web/src/main/resources/application-prod.yml
+TG-Web/src/main/resources/tripgether-fcm.json
 
 ### GitHub Issues ###
 github-issues/

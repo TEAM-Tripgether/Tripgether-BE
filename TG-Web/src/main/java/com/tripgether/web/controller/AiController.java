@@ -32,10 +32,7 @@ public class AiController implements AiControllerDocs {
   @Override
   public ResponseEntity<AiCallbackResponse> handleCallback(
       @RequestHeader(value = "X-API-Key", required = true) String apiKey,
-      @Valid @RequestBody AiCallbackRequest request) {
-
-    log.debug("AI callback received: contentId={}, resultStatus={}",
-        request.getContentId(), request.getResultStatus());
+      @RequestBody AiCallbackRequest request) {
 
     // API Key 검증
     if (!aiServerProperties.getCallbackApiKey().equals(apiKey)) {
@@ -45,17 +42,6 @@ public class AiController implements AiControllerDocs {
       throw new CustomException(ErrorCode.INVALID_API_KEY);
     }
 
-    // Callback 처리
-    aiCallbackService.processAiServerCallback(request);
-
-    // 응답 생성
-    AiCallbackResponse response = AiCallbackResponse.builder()
-        .received(true)
-        .contentId(request.getContentId())
-        .build();
-
-    log.info("AI callback processed successfully: contentId={}", request.getContentId());
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(aiCallbackService.processAiServerCallback(request));
   }
 }

@@ -67,6 +67,8 @@ public enum ErrorCode {
 
   INTEREST_NOT_FOUND(HttpStatus.BAD_REQUEST, "유효하지 않은 관심사 ID가 포함되어 있습니다."),
 
+  MEMBER_ALREADY_WITHDRAWN(HttpStatus.BAD_REQUEST, "이미 탈퇴한 회원입니다."),
+
   INSUFFICIENT_INTEREST_SELECTION(HttpStatus.BAD_REQUEST, "관심사는 최소 3개 이상 선택해야 합니다."),
 
   DUPLICATE_INTEREST_IDS(HttpStatus.BAD_REQUEST, "중복된 관심사 ID가 포함되어 있습니다."),
@@ -92,6 +94,8 @@ public enum ErrorCode {
   MEMBER_TERMS_REQUIRED_NOT_AGREED(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다."),
 
   // Place
+  PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "장소를 찾을 수 없습니다."),
+
   GOOGLE_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "Google Places API에서 장소를 찾을 수 없습니다."),
 
   GOOGLE_PLACE_API_ERROR(HttpStatus.BAD_GATEWAY, "Google Places API 호출 중 오류가 발생했습니다.");

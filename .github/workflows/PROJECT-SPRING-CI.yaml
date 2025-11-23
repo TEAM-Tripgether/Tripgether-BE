@@ -16,6 +16,7 @@ name: PROJECT-SPRING-CI
 # │ Secret 이름                 │ 설명                               │
 # ├─────────────────────────────┼────────────────────────────────────┤
 # │ APPLICATION_PROD_YML        │ Spring Boot 운영 설정 파일 내용   │
+# │ FCM_JSON                    │ Firebase FCM 서비스 계정 JSON 파일 │
 # └─────────────────────────────┴────────────────────────────────────┘
 #
 # 🚀 워크플로우 기능:
@@ -94,6 +95,16 @@ jobs:
           EOF
 
           echo "✅ application-prod.yml 파일 생성 완료 (TG-Web/src/main/resources/)"
+
+      # 4-1. Firebase FCM Service Account JSON 생성
+      - name: tripgether-fcm.json 생성
+        run: |
+          # GitHub Secrets의 FCM_JSON 내용을 파일로 저장
+          cat << 'EOF' > ./TG-Web/src/main/resources/tripgether-fcm.json
+          ${{ secrets.FCM_JSON }}
+          EOF
+
+          echo "✅ tripgether-fcm.json 파일 생성 완료 (TG-Web/src/main/resources/)"
 
       # 5. Gradle 빌드 실행
       # 테스트는 제외하고 운영 프로파일로 빌드

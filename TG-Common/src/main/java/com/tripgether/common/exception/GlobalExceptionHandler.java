@@ -34,10 +34,13 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(CustomException.class)
   public ResponseEntity<ErrorResponse> handleCustomException(CustomException e, HttpServletRequest request) {
 
-    log.error("[예외 처리] CustomException 발생: message={}, path={}, method={}",
-        e.getMessage(), request.getRequestURI(), request.getMethod());
+    String errorCode = e.getErrorCode() != null ? e.getErrorCode().name() : null;
+
+    log.error("[예외 처리] CustomException 발생: errorCode={}, message={}, path={}, method={}",
+        errorCode, e.getMessage(), request.getRequestURI(), request.getMethod());
 
     ErrorResponse errorResponse = ErrorResponse.builder()
+        .errorCode(errorCode)
         .message(e.getMessage())
         .build();
 
@@ -58,6 +61,7 @@ public class GlobalExceptionHandler {
 
     ErrorResponse errorResponse =
         ErrorResponse.builder()
+            .errorCode("ILLEGAL_ARGUMENT")
             .message(e.getMessage())
             .build();
 
@@ -85,6 +89,7 @@ public class GlobalExceptionHandler {
         errorMessage, request.getRequestURI(), request.getMethod());
 
     ErrorResponse errorResponse = ErrorResponse.builder()
+        .errorCode("VALIDATION_ERROR")
         .message(errorMessage)
         .build();
 
@@ -104,6 +109,7 @@ public class GlobalExceptionHandler {
     log.error("HttpMessageNotReadableException 발생: {}", e.getMessage());
 
     ErrorResponse errorResponse = ErrorResponse.builder()
+        .errorCode("MESSAGE_NOT_READABLE")
         .message("요청 본문을 읽을 수 없습니다: " + e.getMessage())
         .build();
 
@@ -125,6 +131,7 @@ public class GlobalExceptionHandler {
 
     ErrorResponse errorResponse =
         ErrorResponse.builder()
+            .errorCode("MISSING_PARAMETER")
             .message("필수 파라미터가 누락되었습니다: " + e.getParameterName())
             .build();
 
@@ -144,6 +151,7 @@ public class GlobalExceptionHandler {
     log.error("MethodArgumentTypeMismatchException 발생: {}", e.getMessage());
 
     ErrorResponse errorResponse = ErrorResponse.builder()
+        .errorCode("TYPE_MISMATCH")
         .message(String.format("파라미터 '%s'의 값 '%s'가 올바른 형식이 아닙니다", e.getName(), e.getValue()))
         .build();
 
@@ -164,6 +172,7 @@ public class GlobalExceptionHandler {
     log.error("NoHandlerFoundException 발생: {}", e.getMessage());
 
     ErrorResponse errorResponse = ErrorResponse.builder()
+        .errorCode("NOT_FOUND")
         .message(String.format("요청하신 리소스를 찾을 수 없습니다: %s %s", e.getHttpMethod(), e.getRequestURL()))
         .build();
 
@@ -183,6 +192,7 @@ public class GlobalExceptionHandler {
     log.error("처리되지 않은 예외 발생: {}", e.getMessage(), e);
 
     ErrorResponse errorResponse = ErrorResponse.builder()
+        .errorCode("INTERNAL_SERVER_ERROR")
         .message("서버 내부 오류가 발생했습니다")
         .build();
 

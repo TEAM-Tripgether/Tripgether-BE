@@ -499,6 +499,12 @@ public class MemberService {
     Member entity = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCodeBuilder.businessStatus(Subject.MEMBER, BusinessStatus.NOT_FOUND, HttpStatus.NOT_FOUND)));
 
+    // 탈퇴한 회원인지 확인
+    if (entity.isDeleted()) {
+      log.warn("[Member] 탈퇴한 회원 조회 시도 - memberId={}", memberId);
+      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+    }
+
     return MemberDto.entityToDto(entity);
   }
 
@@ -511,6 +517,12 @@ public class MemberService {
   public MemberDto getMemberByEmail(String email) {
     Member entity = memberRepository.findByEmail(email)
         .orElseThrow(() -> new CustomException(ErrorCodeBuilder.businessStatus(Subject.MEMBER, BusinessStatus.NOT_FOUND, HttpStatus.NOT_FOUND)));
+
+    // 탈퇴한 회원인지 확인
+    if (entity.isDeleted()) {
+      log.warn("[Member] 탈퇴한 회원 조회 시도 - email={}", email);
+      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+    }
 
     return MemberDto.entityToDto(entity);
   }
@@ -525,6 +537,12 @@ public class MemberService {
     // 멤버가 존재하는지 확인
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 탈퇴한 회원인지 확인
+    if (member.isDeleted()) {
+      log.warn("[Member] 탈퇴한 회원의 관심사 조회 시도 - memberId={}", memberId);
+      throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+    }
 
     if(member.getOnboardingStep() != OnboardingStep.COMPLETED) {
       log.warn("[Onboarding] 현재 온보딩 단계가 완료되지 않았음 - memberId={}, currentStep={}",

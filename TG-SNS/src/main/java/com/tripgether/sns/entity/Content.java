@@ -62,4 +62,7 @@ public class Content extends SoftDeletableBaseEntity {
   @Column
   private LocalDateTime lastCheckedAt;
 
+  @Column(name = "member_id")
+  private UUID memberId;
+
 }

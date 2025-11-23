@@ -1,23 +1,28 @@
 package com.tripgether.web.controller;
 
+import com.tripgether.sns.dto.GetContentInfoResponse;
+import com.tripgether.sns.dto.GetMemberContentPageResponse;
 import com.tripgether.sns.dto.RequestPlaceExtractionRequest;
 import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface ContentControllerDocs {
 
   @ApiChangeLogs({
       @ApiChangeLog(date = "2025.11.21", author = Author.SUHSAECHAN, issueNumber = 88, description = "ContentController 리팩토링에 따른 DOCS 간소화"),
       @ApiChangeLog(date = "2025.11.02", author = Author.KANGJIYUN, issueNumber = 54, description = "콘텐츠 Docs 추가 및 리팩토링"),
-      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 성별 설정 API 추가")
+      @ApiChangeLog(date = "2025.10.15", author = Author.SUHSAECHAN, issueNumber = 22, description = "온보딩 성별 설정 API 추가")
   })
   @Operation(summary = "SNS URL로 콘텐츠 생성 및 장소 추출 요청", description = """
               ## 인증(JWT): **필요**
@@ -36,5 +41,78 @@ public interface ContentControllerDocs {
   ResponseEntity<RequestPlaceExtractionResponse> requestPlaceExtraction(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody RequestPlaceExtractionRequest request);
+
+  @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.11.23", author = Author.SUHSAECHAN, issueNumber = 111, description = "단일 SNS 컨텐츠 조회 API 추가")
+  })
+  @Operation(summary = "단일 SNS 컨텐츠 정보 조회", description = """
+              ## 인증(JWT): **필요**
+
+              ## 요청 파라미터
+              - **`contentId`**: 조회할 Content UUID (Path Variable)
+
+              ## 반환값
+              - **`content`**: Content 상세 정보 (ContentDto)
+                - `id`: 콘텐츠 ID
+                - `platform`: 플랫폼 유형 (INSTAGRAM, YOUTUBE 등)
+                - `status`: 처리 상태 (PENDING, COMPLETED, FAILED 등)
+                - `platformUploader`: 업로더 이름
+                - `caption`: 캡션
+                - `thumbnailUrl`: 썸네일 URL
+                - `originalUrl`: 원본 SNS URL
+                - `title`: 제목
+                - `summary`: 요약 설명
+                - `lastCheckedAt`: 마지막 확인 시각
+              - **`places`**: 연관된 Place 목록 (List<PlaceDto>, position 순서)
+                - 각 Place 정보: `id`, `name`, `address`, `latitude`, `longitude`, `rating` 등
+
+              ## 동작 방식
+              - Content ID로 콘텐츠 정보와 연관된 장소 목록을 조회합니다.
+              - Place 목록은 position 순서대로 정렬되어 반환됩니다.
+              - Content가 존재하지 않으면 404 에러를 반환합니다.
+              - 연관된 Place가 없는 경우 빈 배열을 반환합니다.
+              """)
+  ResponseEntity<GetContentInfoResponse> getContentInfo(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @PathVariable UUID contentId);
+
+  @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.11.23", author = Author.SUHSAECHAN, issueNumber = 112, description = "Member가 소유한 Content 목록 조회 API 추가")
+  })
+  @Operation(summary = "회원 콘텐츠 목록 조회", description = """
+              ## 인증(JWT): **필요**
+
+              ## 요청 파라미터
+              - **`pageSize`**: 페이지 크기 (Query Parameter, 선택, 기본값 10)
+
+              ## 반환값
+              - **`contentPage`**: Page<ContentDto>
+                - `content`: 콘텐츠 목록 (ContentDto 배열)
+                  - `id`: 콘텐츠 ID
+                  - `platform`: 플랫폼 유형 (INSTAGRAM, YOUTUBE 등)
+                  - `status`: 처리 상태 (PENDING, COMPLETED, FAILED 등)
+                  - `platformUploader`: 업로더 이름
+                  - `caption`: 캡션
+                  - `thumbnailUrl`: 썸네일 URL
+                  - `originalUrl`: 원본 SNS URL
+                  - `title`: 제목
+                  - `summary`: 요약 설명
+                  - `lastCheckedAt`: 마지막 확인 시각
+                - `totalElements`: 전체 콘텐츠 개수
+                - `totalPages`: 전체 페이지 수
+                - `number`: 현재 페이지 번호 (0부터 시작)
+                - `size`: 페이지 크기
+                - `first`: 첫 페이지 여부
+                - `last`: 마지막 페이지 여부
+
+              ## 동작 방식
+              - 인증된 회원이 소유한 Content 목록을 최신순(createdAt DESC)으로 조회합니다.
+              - Place 정보는 제외하고 Content 정보만 반환합니다.
+              - 페이지 크기를 지정하지 않으면 기본 10개가 조회됩니다.
+              - 첫 페이지(0번 페이지)만 조회됩니다.
+              """)
+  ResponseEntity<GetMemberContentPageResponse> getMemberContentPage(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestParam(required = false, defaultValue = "10") Integer pageSize);
 
 }

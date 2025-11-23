@@ -90,6 +90,8 @@ public enum ErrorCode {
   MEMBER_TERMS_REQUIRED_NOT_AGREED(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다."),
 
   // Place
+  PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "장소를 찾을 수 없습니다."),
+
   GOOGLE_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "Google Places API에서 장소를 찾을 수 없습니다."),
 
   GOOGLE_PLACE_API_ERROR(HttpStatus.BAD_GATEWAY, "Google Places API 호출 중 오류가 발생했습니다.");

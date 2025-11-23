@@ -1,6 +1,9 @@
 package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.PlaceExtractionResponse;
+import com.tripgether.place.entity.Place;
+import com.tripgether.sns.dto.ContentDto;
+import com.tripgether.sns.dto.GetContentInfoResponse;
 import com.tripgether.sns.dto.RequestPlaceExtractionRequest;
 import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
 import com.tripgether.ai.service.AiServerService;
@@ -9,11 +12,19 @@ import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.util.CommonUtil;
 import com.tripgether.sns.entity.Content;
+import com.tripgether.sns.entity.ContentPlace;
+import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +37,7 @@ public class ContentService {
   private static final int MAX_URL_LENGTH = 2048;
 
   private final ContentRepository contentRepository;
+  private final ContentPlaceRepository contentPlaceRepository;
   private final AiServerService aiServerService;
   private final CommonUtil commonUtil;
 
@@ -35,10 +47,13 @@ public class ContentService {
    * - 없거나 PENDING/FAILED 상태면 AI 서버로 요청
    *
    * @param request 장소 추출 요청
+   * @param memberId 회원 ID
    * @return 장소 추출 요청 결과
    */
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(RequestPlaceExtractionRequest request) {
+  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(
+      RequestPlaceExtractionRequest request,
+      UUID memberId) {
     String snsUrl = request.getSnsUrl();
 
     // URL 길이 검증
@@ -61,12 +76,14 @@ public class ContentService {
     Content content = optionalContent
         .map(existingContent -> {
           existingContent.setStatus(ContentStatus.PENDING);
+          existingContent.setMemberId(memberId);
           log.info("Reusing existing Content: contentId={}", existingContent.getId());
           return existingContent;
         })
         .orElseGet(() -> Content.builder()
             .originalUrl(snsUrl)
             .status(ContentStatus.PENDING)
+            .memberId(memberId)
             .build());
 
     // Content 저장
@@ -109,5 +126,63 @@ public class ContentService {
     }
 
     log.info("AI server successfully accepted place extraction request: contentId={}", contentId);
+  }
+
+  /**
+   * Content 정보 및 연관된 Place 목록 조회
+   * - Content가 존재하지 않으면 예외 발생
+   * - ContentPlace를 통해 연관된 Place 목록을 position 순서대로 조회
+   *
+   * @param contentId 조회할 Content ID
+   * @return Content 정보 및 연관된 Place 목록
+   */
+  @Transactional(readOnly = true)
+  public GetContentInfoResponse getContentInfo(UUID contentId) {
+    // Content 조회
+    Content content = contentRepository.findById(contentId)
+        .orElseThrow(() -> {
+          log.error("Content not found: contentId={}", contentId);
+          return new CustomException(ErrorCode.CONTENT_NOT_FOUND);
+        });
+
+    log.info("Content found: contentId={}, status={}", contentId, content.getStatus());
+
+    // ContentPlace 목록 조회 (Fetch Join으로 Place도 함께 조회, N+1 문제 해결)
+    List<ContentPlace> contentPlaces = contentPlaceRepository.findByContentIdWithPlace(contentId);
+
+    // Place 목록 추출
+    List<Place> places = contentPlaces.stream()
+        .map(ContentPlace::getPlace)
+        .collect(Collectors.toList());
+
+    log.info("Found {} places for contentId={}", places.size(), contentId);
+
+    // DTO 변환 후 반환
+    return GetContentInfoResponse.from(content, places);
+  }
+
+  /**
+   * Member가 소유한 Content 목록 조회 (최신순)
+   * - Member ID로 Content 페이지를 조회합니다.
+   * - createdAt 기준 내림차순 정렬 (최신순)
+   * - Place 정보는 제외하고 Content 정보만 반환
+   *
+   * @param memberId 회원 ID
+   * @param pageSize 페이지 크기
+   * @return Content 페이지 (ContentDto)
+   */
+  @Transactional(readOnly = true)
+  public Page<ContentDto> getMemberContentPage(UUID memberId, int pageSize) {
+    // Pageable 생성 (0번 페이지, createdAt 내림차순)
+    Pageable pageable = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // Member ID로 Content 페이지 조회
+    Page<Content> contentPage = contentRepository.findByMemberId(memberId, pageable);
+
+    log.info("Found {} contents for memberId={}, pageSize={}",
+        contentPage.getTotalElements(), memberId, pageSize);
+
+    // Entity -> DTO 변환
+    return contentPage.map(ContentDto::from);
   }
 }

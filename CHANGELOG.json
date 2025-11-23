@@ -1,11 +1,67 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-19T06:07:43Z",
-    "currentVersion": "0.2.15",
+    "lastUpdated": "2025-11-22T19:40:42Z",
+    "currentVersion": "0.2.25",
     "projectType": "spring",
-    "totalReleases": 19
+    "totalReleases": 21
   },
   "releases": [
+    {
+      "version": "0.2.25",
+      "project_type": "spring",
+      "date": "2025-11-22",
+      "pr_number": 108,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\n새로운 기능\n\n오류 응답에 명시적인 오류 코드 포함 (API 클라이언트가 더 나은 오류 처리 가능)\n\n\n\n버그 수정\n\n탈퇴한 회원에 대한 작업이 적절한 오류를 반환하도록 개선\n\n\n\n기타\n\n프로젝트 버전을 v0.2.25로 업데이트\n\n\n\n✏️ Tip: You can customize this high-level summary in your review settings.",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "오류 응답에 명시적인 오류 코드 포함 (API 클라이언트가 더 나은 오류 처리 가능)"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "탈퇴한 회원에 대한 작업이 적절한 오류를 반환하도록 개선"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "프로젝트 버전을 v0.2.25로 업데이트"
+          ]
+        }
+      }
+    },
+    {
+      "version": "0.2.21",
+      "project_type": "spring",
+      "date": "2025-11-21",
+      "pr_number": 102,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트 (v0.2.21)\n\n\n새로운 기능\n\nSNS URL을 기반으로 콘텐츠 및 장소 정보를 자동으로 추출하는 기능 추가\n콘텐츠 생성 시 사용자 인증 필수화\n\n\n\n개선사항\n\nAI 서버 응답 처리 및 오류 처리 강화\n필수 필드 유효성 검사 규칙 최적화\n\n\n\n업데이트\n\n프로젝트 버전 v0.2.21로 업데이트\n\n\n\n✏️ Tip: You can customize this high-level summary in your review settings.",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "SNS URL을 기반으로 콘텐츠 및 장소 정보를 자동으로 추출하는 기능 추가",
+            "콘텐츠 생성 시 사용자 인증 필수화"
+          ]
+        },
+        "개선사항": {
+          "title": "개선사항",
+          "items": [
+            "AI 서버 응답 처리 및 오류 처리 강화",
+            "필수 필드 유효성 검사 규칙 최적화"
+          ]
+        },
+        "업데이트": {
+          "title": "업데이트",
+          "items": [
+            "프로젝트 버전 v0.2.21로 업데이트"
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.15",
       "project_type": "spring",

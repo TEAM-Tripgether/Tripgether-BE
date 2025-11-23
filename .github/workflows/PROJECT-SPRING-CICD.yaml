@@ -16,6 +16,7 @@ name: PROJECT-SPRING-CICD
 # │ Secret 이름                 │ 설명                               │
 # ├─────────────────────────────┼────────────────────────────────────┤
 # │ APPLICATION_PROD_YML        │ Spring Boot 운영 설정 파일 내용   │
+# │ FCM_JSON                    │ Firebase FCM 서비스 계정 JSON 파일 │
 # │ DOCKERHUB_USERNAME          │ DockerHub 사용자명                 │
 # │ DOCKERHUB_TOKEN             │ DockerHub 액세스 토큰              │
 # │ SERVER_HOST                 │ 배포 대상 서버 IP/도메인           │
@@ -77,7 +78,6 @@ on:
    push:
      branches:
        - deploy  # 프로덕션 배포 (필수)
-       - main    # main 브랜치 배포 (필수)
        - test    # 테스트 환경 배포 (선택사항 - 작은 프로젝트는 생략 가능)
    workflow_dispatch:  # 수동 실행 허용
 
@@ -135,6 +135,16 @@ jobs:
           EOF
 
           echo "✅ application-prod.yml 파일 생성 완료 (TG-Web/src/main/resources/)"
+
+      # 4-1. Firebase FCM Service Account JSON 생성
+      - name: tripgether-fcm.json 생성
+        run: |
+          # GitHub Secrets의 FCM_JSON 내용을 파일로 저장
+          cat << 'EOF' > ./TG-Web/src/main/resources/tripgether-fcm.json
+          ${{ secrets.FCM_JSON }}
+          EOF
+
+          echo "✅ tripgether-fcm.json 파일 생성 완료 (TG-Web/src/main/resources/)"
 
       # 5. Gradle 빌드 실행
       # 테스트는 제외하고 운영 프로파일로 빌드
@@ -316,6 +326,6 @@ jobs:
 #       - main    # test 브랜치 제거
 #   workflow_dispatch:
 #
-# 필요한 Secrets: APPLICATION_PROD_YML, DOCKERHUB_*, SERVER_*, PROJECT_MAIN_PORT
+# 필요한 Secrets: APPLICATION_PROD_YML, FCM_JSON, DOCKERHUB_*, SERVER_*, PROJECT_MAIN_PORT
 #
 # ===================================================================

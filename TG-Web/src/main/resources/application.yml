@@ -56,3 +56,6 @@ suhapilog:
     github:
         base-url: https://github.com/TEAM-Tripgether/Tripgether-BE/issues/
 
+firebase:
+    credentials:
+        path: tripgether-fcm.json

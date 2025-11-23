@@ -1,10 +1,10 @@
 package com.tripgether.auth.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tripgether.common.constant.DeviceType;
 import com.tripgether.common.constant.SocialPlatform;
-import com.tripgether.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @ToString
@@ -13,18 +13,17 @@ import lombok.*;
 @Setter
 @Builder
 @NoArgsConstructor
-public class AuthRequest {
-
-  @Schema(hidden = true, description = "회원")
-  @JsonIgnore
-  private Member member;
+public class SignInRequest {
 
   @Schema(description = "로그인 플랫폼 (KAKAO, GOOGLE 등)", example = "KAKAO")
   private SocialPlatform socialPlatform;
 
+  @NotBlank(message = "이메일은 필수입니다.")
+  @Email(message = "올바른 이메일 형식이 아닙니다.")
   @Schema(description = "소셜 로그인 후 반환된 이메일", example = "user@example.com")
   private String email;
 
+  @NotBlank(message = "이름은 필수입니다.")
   @Schema(description = "소셜 로그인 후 반환된 닉네임", example = "홍길동")
   private String name;
 
@@ -39,10 +38,4 @@ public class AuthRequest {
 
   @Schema(description = "디바이스 고유 식별자 (UUID)", example = "550e8400-e29b-41d4-a716-446655440000")
   private String deviceId;
-
-  @Schema(hidden = true)
-  private String accessToken;
-
-  @Schema(hidden = true)
-  private String refreshToken;
 }

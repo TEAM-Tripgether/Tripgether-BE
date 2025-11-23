@@ -65,10 +65,5 @@ public class Content extends SoftDeletableBaseEntity {
   @Column(columnDefinition = "TEXT")
   private String summary;
 
-  @Column
   private LocalDateTime lastCheckedAt;
-
-  @Column(name = "member_id")
-  private UUID memberId;
-
 }

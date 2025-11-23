@@ -1,22 +1,16 @@
 package com.tripgether.web.controller;
 
-import com.tripgether.ai.dto.PlaceExtractionRequest;
-import com.tripgether.ai.dto.RequestPlaceExtractionResponse;
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.sns.dto.GetContentInfoResponse;
 import com.tripgether.sns.dto.GetMemberContentPageResponse;
 import com.tripgether.sns.dto.RequestPlaceExtractionRequest;
-import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
-import com.tripgether.auth.dto.CustomUserDetails;
-import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
 import com.tripgether.place.dto.GetSavedPlacesResponse;
-import com.tripgether.place.dto.PlaceDto;
 import com.tripgether.sns.dto.GetRecentContentResponse;
+import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.UUID;
-import java.util.List;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;

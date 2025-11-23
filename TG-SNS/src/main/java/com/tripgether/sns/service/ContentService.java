@@ -2,10 +2,7 @@ package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.PlaceExtractionResponse;
 import com.tripgether.place.entity.Place;
-import com.tripgether.sns.dto.ContentDto;
-import com.tripgether.sns.dto.GetContentInfoResponse;
-import com.tripgether.sns.dto.RequestPlaceExtractionRequest;
-import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
+import com.tripgether.sns.dto.*;
 import com.tripgether.ai.service.AiServerService;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
@@ -14,13 +11,11 @@ import com.tripgether.common.util.CommonUtil;
 import com.tripgether.member.entity.Member;
 import com.tripgether.member.repository.MemberRepository;
 import com.tripgether.place.dto.PlaceDto;
-import com.tripgether.place.entity.Place;
 import com.tripgether.sns.dto.ContentDto;
 import com.tripgether.sns.entity.Content;
 import com.tripgether.sns.entity.ContentPlace;
 import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
-import java.util.List;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +30,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +41,6 @@ public class ContentService {
 
   private final ContentRepository contentRepository;
   private final ContentPlaceRepository contentPlaceRepository;
-  private final ContentPlaceRepository contentPlaceRepository;
   private final MemberRepository memberRepository;
   private final AiServerService aiServerService;
   private final CommonUtil commonUtil;
@@ -57,7 +50,7 @@ public class ContentService {
    * - 같은 URL로 COMPLETED된 Content 있으면 즉시 반환 (AI 비용 절감)
    * - 없거나 PENDING/FAILED 상태면 AI 서버로 요청
    *
-   * @param request 장소 추출 요청
+   * @param request  장소 추출 요청
    * @param memberId 회원 ID
    * @return 장소 추출 요청 결과
    */
@@ -83,18 +76,22 @@ public class ContentService {
           .build();
     }
 
+    // Member 조회 (한 번만 수행)
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
     // 기존이 있으면 PENDING으로 재사용, 없으면 신규 생성
     Content content = optionalContent
         .map(existingContent -> {
           existingContent.setStatus(ContentStatus.PENDING);
-          existingContent.setMemberId(memberId);
+          existingContent.setMember(member);
           log.info("Reusing existing Content: contentId={}", existingContent.getId());
           return existingContent;
         })
         .orElseGet(() -> Content.builder()
             .originalUrl(snsUrl)
             .status(ContentStatus.PENDING)
-            .memberId(memberId)
+            .member(member)
             .build());
 
     // Content 저장
@@ -201,7 +198,7 @@ public class ContentService {
    * 메인 화면 - 최근 SNS 콘텐츠 목록 조회
    */
   @Transactional(readOnly = true)
-  public List<ContentDto> getRecentContents(UUID memberId) {
+  public GetRecentContentResponse getRecentContents(UUID memberId) {
 
     // 회원 존재 여부 확인
     Member member = memberRepository.findById(memberId)
@@ -213,10 +210,11 @@ public class ContentService {
     List<Content> contents =
         contentRepository.findTop10ByMember_IdOrderByCreatedAtDesc(member.getId());
 
-    // 응답 DTO 변환
-    return contents.stream()
-        .map(ContentDto::fromEntity)
-        .toList();
+    return GetRecentContentResponse.builder()
+        .contents(contents.stream()
+            .map(ContentDto::from)
+            .toList())
+        .build();
   }
 
   /**

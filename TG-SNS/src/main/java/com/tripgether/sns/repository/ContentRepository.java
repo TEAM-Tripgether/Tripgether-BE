@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface ContentRepository extends JpaRepository<Content, UUID> {
 
   // SNS URL로 Content 조회
-  Optional<Content> findByOriginalUrl(String originalUrl);
+  Optional<Content> findByOriginalUrlAndMember_Id(String originalUrl, UUID memberId);
 
   List<Content> findTop10ByMember_IdOrderByCreatedAtDesc(UUID memberId);
 

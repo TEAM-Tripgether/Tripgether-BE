@@ -61,7 +61,7 @@ public class ContentService {
     commonUtil.validateUrlLength(snsUrl, MAX_URL_LENGTH);
 
     // 기존 COMPLETED Content 조회 - 있으면 즉시 반환 (AI 요청 스킵)
-    return contentRepository.findByOriginalUrl(snsUrl)
+    return contentRepository.findByOriginalUrlAndMember_Id(snsUrl, member.getId())
         .filter(content -> content.getStatus() == ContentStatus.COMPLETED)
         .map(content -> {
           // 이미 처리 완료된 데이터 반환
@@ -87,7 +87,7 @@ public class ContentService {
    */
   private RequestPlaceExtractionResponse processNewOrPendingContent(String snsUrl, Member member) {
     // Content 생성 또는 재사용
-    Content content = contentRepository.findByOriginalUrl(snsUrl)
+    Content content = contentRepository.findByOriginalUrlAndMember_Id(snsUrl, member.getId())
         .map(existingContent -> {
           // 기존 Content를 PENDING 상태로 변경하여 재사용
           existingContent.setStatus(ContentStatus.PENDING);

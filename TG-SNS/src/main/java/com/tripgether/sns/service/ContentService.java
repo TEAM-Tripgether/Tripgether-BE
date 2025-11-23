@@ -1,19 +1,32 @@
 package com.tripgether.sns.service;
 
 import com.tripgether.ai.dto.PlaceExtractionResponse;
-import com.tripgether.sns.dto.RequestPlaceExtractionRequest;
-import com.tripgether.sns.dto.RequestPlaceExtractionResponse;
+import com.tripgether.place.entity.Place;
+import com.tripgether.sns.dto.*;
 import com.tripgether.ai.service.AiServerService;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.util.CommonUtil;
+import com.tripgether.member.entity.Member;
+import com.tripgether.member.repository.MemberRepository;
+import com.tripgether.place.dto.PlaceDto;
+import com.tripgether.sns.dto.ContentDto;
 import com.tripgether.sns.entity.Content;
+import com.tripgether.sns.entity.ContentPlace;
+import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ContentService {
 
   private static final int MAX_URL_LENGTH = 2048;
+  private static final int MAX_PHOTO_URLS_PER_PLACE = 10;
 
   private final ContentRepository contentRepository;
+  private final ContentPlaceRepository contentPlaceRepository;
+  private final MemberRepository memberRepository;
   private final AiServerService aiServerService;
   private final CommonUtil commonUtil;
 
@@ -34,11 +50,14 @@ public class ContentService {
    * - 같은 URL로 COMPLETED된 Content 있으면 즉시 반환 (AI 비용 절감)
    * - 없거나 PENDING/FAILED 상태면 AI 서버로 요청
    *
-   * @param request 장소 추출 요청
+   * @param request  장소 추출 요청
+   * @param memberId 회원 ID
    * @return 장소 추출 요청 결과
    */
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(RequestPlaceExtractionRequest request) {
+  public RequestPlaceExtractionResponse createContentAndRequestPlaceExtraction(
+      RequestPlaceExtractionRequest request,
+      UUID memberId) {
     String snsUrl = request.getSnsUrl();
 
     // URL 길이 검증
@@ -57,16 +76,22 @@ public class ContentService {
           .build();
     }
 
+    // Member 조회 (한 번만 수행)
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
     // 기존이 있으면 PENDING으로 재사용, 없으면 신규 생성
     Content content = optionalContent
         .map(existingContent -> {
           existingContent.setStatus(ContentStatus.PENDING);
+          existingContent.setMember(member);
           log.info("Reusing existing Content: contentId={}", existingContent.getId());
           return existingContent;
         })
         .orElseGet(() -> Content.builder()
             .originalUrl(snsUrl)
             .status(ContentStatus.PENDING)
+            .member(member)
             .build());
 
     // Content 저장
@@ -109,5 +134,126 @@ public class ContentService {
     }
 
     log.info("AI server successfully accepted place extraction request: contentId={}", contentId);
+  }
+
+  /**
+   * Content 정보 및 연관된 Place 목록 조회
+   * - Content가 존재하지 않으면 예외 발생
+   * - ContentPlace를 통해 연관된 Place 목록을 position 순서대로 조회
+   *
+   * @param contentId 조회할 Content ID
+   * @return Content 정보 및 연관된 Place 목록
+   */
+  @Transactional(readOnly = true)
+  public GetContentInfoResponse getContentInfo(UUID contentId) {
+    // Content 조회
+    Content content = contentRepository.findById(contentId)
+        .orElseThrow(() -> {
+          log.error("Content not found: contentId={}", contentId);
+          return new CustomException(ErrorCode.CONTENT_NOT_FOUND);
+        });
+
+    log.info("Content found: contentId={}, status={}", contentId, content.getStatus());
+
+    // ContentPlace 목록 조회 (Fetch Join으로 Place도 함께 조회, N+1 문제 해결)
+    List<ContentPlace> contentPlaces = contentPlaceRepository.findByContentIdWithPlace(contentId);
+
+    // Place 목록 추출
+    List<Place> places = contentPlaces.stream()
+        .map(ContentPlace::getPlace)
+        .collect(Collectors.toList());
+
+    log.info("Found {} places for contentId={}", places.size(), contentId);
+
+    // DTO 변환 후 반환
+    return GetContentInfoResponse.from(content, places);
+  }
+
+  /**
+   * Member가 소유한 Content 목록 조회 (최신순)
+   * - Member ID로 Content 페이지를 조회합니다.
+   * - createdAt 기준 내림차순 정렬 (최신순)
+   * - Place 정보는 제외하고 Content 정보만 반환
+   *
+   * @param memberId 회원 ID
+   * @param pageSize 페이지 크기
+   * @return Content 페이지 (ContentDto)
+   */
+  @Transactional(readOnly = true)
+  public Page<ContentDto> getMemberContentPage(UUID memberId, int pageSize) {
+    // Pageable 생성 (0번 페이지, createdAt 내림차순)
+    Pageable pageable = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // Member ID로 Content 페이지 조회
+    Page<Content> contentPage = contentRepository.findByMemberId(memberId, pageable);
+
+    log.info("Found {} contents for memberId={}, pageSize={}",
+        contentPage.getTotalElements(), memberId, pageSize);
+
+    // Entity -> DTO 변환
+    return contentPage.map(ContentDto::from);
+  }
+
+  /**
+   * 메인 화면 - 최근 SNS 콘텐츠 목록 조회
+   */
+  @Transactional(readOnly = true)
+  public GetRecentContentResponse getRecentContents(UUID memberId) {
+
+    // 회원 존재 여부 확인
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    log.info("[Content] 최근 SNS 콘텐츠 조회 - memberId={}", memberId);
+
+    // 최근 10개의 SNS 콘텐츠 조회
+    List<Content> contents =
+        contentRepository.findTop10ByMember_IdOrderByCreatedAtDesc(member.getId());
+
+    return GetRecentContentResponse.builder()
+        .contents(contents.stream()
+            .map(ContentDto::from)
+            .toList())
+        .build();
+  }
+
+  /**
+   * 사용자별 저장한 장소 목록 조회 (최신순 최대 10개)
+   */
+  @Transactional(readOnly = true)
+  public List<PlaceDto> getSavedPlaces(UUID memberId) {
+    // 회원 존재 여부 확인
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    log.info("[Place] 저장 장소 목록 조회 - memberId={}", member.getId());
+
+    // 이 회원이 가진 Content 들과 연결된 ContentPlace를 최신순 10개 조회
+    List<ContentPlace> contentPlaces =
+        contentPlaceRepository.findTop10ByContent_MemberOrderByCreatedAtDesc(member);
+
+    // ContentPlace → Place 추출
+    List<Place> places = contentPlaces.stream()
+        .map(ContentPlace::getPlace)
+        .toList();
+
+    // Entity → DTO 변환
+    return places.stream()
+        .map(place -> PlaceDto.builder()
+            .placeId(place.getId())
+            .name(place.getName())
+            .address(place.getAddress())
+            .rating(place.getRating())
+            .photoUrls(
+                Optional.ofNullable(place.getPhotoUrls())
+                    .map(urls -> urls.size() > MAX_PHOTO_URLS_PER_PLACE
+                        ? urls.subList(0, MAX_PHOTO_URLS_PER_PLACE)
+                        : urls)
+                    .orElse(Collections.emptyList())
+            )
+            .description(place.getDescription())
+            .build()
+        )
+        .toList();
   }
 }

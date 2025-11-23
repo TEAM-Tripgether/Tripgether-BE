@@ -349,6 +349,14 @@ public class MemberService {
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
     }
 
+    List<UUID> interestIds = request.getInterestIds();
+    Set<UUID> uniqueInterestIds = new HashSet<>(interestIds);
+    if (uniqueInterestIds.size() != interestIds.size()) {
+      log.warn("[Onboarding] 중복된 관심사 ID 포함 - memberId={}, interestIds={}",
+          memberId, interestIds);
+      throw new CustomException(ErrorCode.DUPLICATE_INTEREST_IDS);
+    }
+
     // 관심사 ID 유효성 검증
     List<Interest> interests = interestRepository.findAllById(request.getInterestIds());
     if (interests.size() != request.getInterestIds().size()) {
@@ -361,15 +369,6 @@ public class MemberService {
       log.warn("[Onboarding] 최소 3개 이상의 관심사 선택 필요 - memberId={}, selectedCount={}",
           memberId, request.getInterestIds().size());
       throw new CustomException(ErrorCode.INSUFFICIENT_INTEREST_SELECTION);
-    }
-
-    List<UUID> interestIds = request.getInterestIds();
-    Set<UUID> uniqueInterestIds = new HashSet<>(interestIds);
-
-    if (uniqueInterestIds.size() != interestIds.size()) {
-      log.warn("[Onboarding] 중복된 관심사 ID 포함 - memberId={}, interestIds={}",
-          memberId, interestIds);
-      throw new CustomException(ErrorCode.DUPLICATE_INTEREST_IDS);
     }
 
     // 기존 관심사 삭제

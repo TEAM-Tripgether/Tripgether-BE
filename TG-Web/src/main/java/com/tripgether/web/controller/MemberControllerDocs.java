@@ -2,7 +2,7 @@ package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
-import com.tripgether.member.dto.CheckNicknameResponse;
+import com.tripgether.member.dto.CheckNameResponse;
 import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.ProfileUpdateRequest;
@@ -328,11 +328,11 @@ public interface MemberControllerDocs {
               ## 인증(JWT): **불필요**
 
               ## 요청 파라미터
-              - **`nickname`**: 확인할 닉네임 (Query Parameter, 필수, 2자 이상 50자 이하)
+              - **`name`**: 확인할 닉네임 (Query Parameter, 필수, 2자 이상 50자 이하)
 
               ## 반환값 (CheckNicknameResponse)
               - **`isAvailable`**: 사용 가능 여부 (true: 사용 가능, false: 이미 사용 중)
-              - **`nickname`**: 확인한 닉네임
+              - **`name`**: 확인한 닉네임
 
               ## 특이사항
               - 회원가입 전에도 사용 가능한 API입니다.
@@ -343,5 +343,5 @@ public interface MemberControllerDocs {
               - **`INVALID_NAME_LENGTH`**: 닉네임은 2자 이상 50자 이하여야 합니다.
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
-  ResponseEntity<CheckNicknameResponse> checkNickname(@RequestParam String nickname);
+  ResponseEntity<CheckNameResponse> checkName(@RequestParam String name);
 }

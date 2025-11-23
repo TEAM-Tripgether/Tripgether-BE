@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "닉네임 중복 확인 응답")
-public class CheckNicknameResponse {
+public class CheckNameResponse {
 
   @Schema(description = "사용 가능 여부 (true: 사용 가능, false: 중복)", example = "true")
   private Boolean isAvailable;
 
   @Schema(description = "닉네임", example = "트립게더")
-  private String nickname;
+  private String name;
 }

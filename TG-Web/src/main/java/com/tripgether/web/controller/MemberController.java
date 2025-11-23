@@ -1,7 +1,7 @@
 package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
-import com.tripgether.member.dto.CheckNicknameResponse;
+import com.tripgether.member.dto.CheckNameResponse;
 import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.ProfileUpdateRequest;
@@ -135,12 +135,12 @@ public class MemberController implements MemberControllerDocs {
     return ResponseEntity.ok(interestDtos);
   }
 
-  @GetMapping("/check-nickname")
+  @GetMapping("/check-name")
   @Override
-  public ResponseEntity<CheckNicknameResponse> checkNickname(
-      @RequestParam String nickname
+  public ResponseEntity<CheckNameResponse> checkName(
+      @RequestParam String name
   ) {
-    return ResponseEntity.ok(memberService.checkNicknameAvailability(nickname));
+    return ResponseEntity.ok(memberService.checkNameAvailability(name));
   }
 
 }

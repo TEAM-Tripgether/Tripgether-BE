@@ -17,7 +17,7 @@ public class SecurityUrl {
           "/api/auth/reissue", // 토큰 재발급
 
           // Member
-          "/api/members/check-nickname", // 닉네임 중복 확인
+          "/api/members/check-name", // 닉네임 중복 확인
 
           // AI 서버
           "/api/ai/callback", // AI 서버 Webhook Callback

@@ -119,11 +119,7 @@ public interface ContentControllerDocs {
 
 
     @ApiChangeLogs(
-            @ApiChangeLog(
-                    date = "2025.11.16",
-                    author = Author.KANGJIYUN,
-                    issueNumber = 78,
-                    description = "최근 콘텐츠 조회 Docs 추가 및 리팩토링")
+            @ApiChangeLog(date = "2025.11.16", author = Author.KANGJIYUN, issueNumber = 78, description = "최근 콘텐츠 조회 Docs 추가 및 리팩토링")
     )
     @Operation(
             summary = "최근 SNS 콘텐츠 목록 조회",
@@ -155,7 +151,7 @@ public interface ContentControllerDocs {
             @ApiChangeLog(date = "2025.11.20", author = Author.KANGJIYUN, issueNumber = 80, description = "최신순으로 장소 조회")
     })
     @Operation(
-            summary = "사용자 장소 조회",
+            summary = "최근 장소 목록 조회",
             description =
                     """
                         ## 인증(JWT): **필요**

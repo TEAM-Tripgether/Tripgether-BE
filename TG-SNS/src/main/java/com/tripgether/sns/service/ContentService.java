@@ -77,7 +77,6 @@ public class ContentService {
 
   /**
    * 신규 또는 미완료 Content 처리 후 AI 서버 요청
-   * <p>
    * - 기존 Content 있으면 PENDING 상태로 변경 후 재사용
    * - 없으면 신규 Content 생성
    * - AI 서버로 장소 추출 요청 전송

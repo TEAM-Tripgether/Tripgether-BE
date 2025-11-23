@@ -1,11 +1,38 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-23T10:53:32Z",
-    "currentVersion": "0.2.27",
+    "lastUpdated": "2025-11-23T12:59:04Z",
+    "currentVersion": "0.2.29",
     "projectType": "spring",
-    "totalReleases": 22
+    "totalReleases": 23
   },
   "releases": [
+    {
+      "version": "0.2.29",
+      "project_type": "spring",
+      "date": "2025-11-23",
+      "pr_number": 117,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nBug Fixes\n\n장소 정보 데이터 타입을 수정했습니다.\n\n\n\nDocumentation\n\n최근 장소 목록 조회 API 설명을 개선했습니다.\n\n\n\nChores\n\n버전을 v0.2.29로 업데이트했습니다.\n\n\n\n✏️ Tip: You can customize this high-level summary in your review settings.",
+      "parsed_changes": {
+        "bug_fixes": {
+          "title": "Bug Fixes",
+          "items": [
+            "장소 정보 데이터 타입을 수정했습니다."
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "최근 장소 목록 조회 API 설명을 개선했습니다."
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전을 v0.2.29로 업데이트했습니다."
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.27",
       "project_type": "spring",

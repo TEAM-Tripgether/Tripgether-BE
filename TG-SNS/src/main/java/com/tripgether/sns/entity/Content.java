@@ -1,15 +1,18 @@
 package com.tripgether.sns.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
+import com.tripgether.member.entity.Member;
 import com.tripgether.sns.constant.ContentPlatform;
 import com.tripgether.common.constant.ContentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -31,6 +34,9 @@ public class Content extends SoftDeletableBaseEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(updatable = false, nullable = false)
   private UUID id;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private Member member;
 
   @Enumerated(EnumType.STRING)
   @Column
@@ -59,7 +65,5 @@ public class Content extends SoftDeletableBaseEntity {
   @Column(columnDefinition = "TEXT")
   private String summary;
 
-  @Column
   private LocalDateTime lastCheckedAt;
-
 }

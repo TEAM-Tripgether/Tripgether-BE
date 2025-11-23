@@ -25,6 +25,8 @@ import com.tripgether.member.repository.InterestRepository;
 import com.tripgether.member.repository.MemberInterestRepository;
 import com.tripgether.member.repository.MemberRepository;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -347,11 +349,26 @@ public class MemberService {
       throw new CustomException(ErrorCode.INVALID_ONBOARDING_STEP);
     }
 
+    List<UUID> interestIds = request.getInterestIds();
+    Set<UUID> uniqueInterestIds = new HashSet<>(interestIds);
+    if (uniqueInterestIds.size() != interestIds.size()) {
+      log.warn("[Onboarding] 중복된 관심사 ID 포함 - memberId={}, interestIds={}",
+          memberId, interestIds);
+      throw new CustomException(ErrorCode.DUPLICATE_INTEREST_IDS);
+    }
+
     // 관심사 ID 유효성 검증
     List<Interest> interests = interestRepository.findAllById(request.getInterestIds());
     if (interests.size() != request.getInterestIds().size()) {
       log.warn("[Onboarding] 유효하지 않은 관심사 ID 포함 - memberId={}", memberId);
       throw new CustomException(ErrorCode.INTEREST_NOT_FOUND);
+    }
+
+    // 관심사 최소 3개 이상 선택 검증
+    if (request.getInterestIds().size() < 3) {
+      log.warn("[Onboarding] 최소 3개 이상의 관심사 선택 필요 - memberId={}, selectedCount={}",
+          memberId, request.getInterestIds().size());
+      throw new CustomException(ErrorCode.INSUFFICIENT_INTEREST_SELECTION);
     }
 
     // 기존 관심사 삭제

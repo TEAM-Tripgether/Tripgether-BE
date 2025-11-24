@@ -1,0 +1,90 @@
+package com.tripgether.place.entity;
+
+import com.tripgether.common.entity.SoftDeletableBaseEntity;
+import com.tripgether.member.entity.Member;
+import com.tripgether.place.constant.PlaceSavedStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/**
+ * MemberPlace 엔티티
+ * - Member와 Place 간의 M:N 관계를 표현하는 중간 테이블
+ * - 각 회원별로 장소의 저장 상태(TEMPORARY/SAVED)를 관리
+ * - AI 분석으로 추출된 장소는 TEMPORARY로 시작하여 사용자가 저장하면 SAVED로 변경
+ */
+@Entity
+@Table(
+    name = "member_place",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_member_place",
+            columnNames = {"member_id", "place_id"}
+        )
+    }
+)
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class MemberPlace extends SoftDeletableBaseEntity {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id", nullable = false)
+  private Member member;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "place_id", nullable = false)
+  private Place place;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "saved_status", nullable = false, length = 20)
+  @Builder.Default
+  private PlaceSavedStatus savedStatus = PlaceSavedStatus.TEMPORARY;
+
+  /**
+   * 이 MemberPlace를 생성한 원본 Content의 ID
+   * - Content 엔티티를 직접 참조하지 않음 (순환 의존성 방지)
+   * - TG-Place 모듈이 TG-SNS 모듈을 import하지 않도록 UUID로 관리
+   */
+  @Column(name = "source_content_id")
+  private UUID sourceContentId;
+
+  /**
+   * 사용자가 장소를 저장한 시간
+   * - TEMPORARY -> SAVED 상태 변경 시 기록됨
+   */
+  @Column(name = "saved_at")
+  private LocalDateTime savedAt;
+
+  /**
+   * 임시 저장 상태에서 저장 상태로 변경
+   * - savedStatus: TEMPORARY -> SAVED
+   * - savedAt: 현재 시간 기록
+   */
+  public void markAsSaved() {
+    this.savedStatus = PlaceSavedStatus.SAVED;
+    this.savedAt = LocalDateTime.now();
+  }
+}

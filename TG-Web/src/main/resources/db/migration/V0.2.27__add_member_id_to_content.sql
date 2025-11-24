@@ -9,39 +9,50 @@ DO
 $$
     BEGIN
         -------------------------------------------------------------------
-        -- 1. member_id 컬럼이 없으면 추가
+        -- 0. content 테이블 존재 확인
         -------------------------------------------------------------------
-        IF NOT EXISTS (SELECT 1
-                       FROM information_schema.columns
-                       WHERE table_schema = 'public'
-                         AND table_name = 'content'
-                         AND column_name = 'member_id') THEN
-
-            ALTER TABLE public.content
-                ADD COLUMN member_id UUID;
-
-            RAISE NOTICE 'Added column: member_id to content table';
-
+        IF EXISTS (SELECT 1
+                   FROM information_schema.tables
+                   WHERE table_schema = 'public'
+                     AND table_name = 'content') THEN
             -----------------------------------------------------------------
-            -- 2. 외래 키 제약 조건 추가
+            -- 1. member_id 컬럼이 없으면 추가
             -----------------------------------------------------------------
-            ALTER TABLE public.content
-                ADD CONSTRAINT fk_content_member FOREIGN KEY (member_id)
-                    REFERENCES public.member (id) ON DELETE SET NULL;
+            IF NOT EXISTS (SELECT 1
+                           FROM information_schema.columns
+                           WHERE table_schema = 'public'
+                             AND table_name = 'content'
+                             AND column_name = 'member_id') THEN
 
-            RAISE NOTICE 'Created foreign key constraint: fk_content_member';
+                ALTER TABLE public.content
+                    ADD COLUMN member_id UUID;
 
-            -----------------------------------------------------------------
-            -- 3. 인덱스 생성 (조회 성능 최적화)
-            -----------------------------------------------------------------
-            CREATE INDEX idx_content_member_id ON public.content (member_id);
-            CREATE INDEX idx_content_created_at ON public.content (created_at);
-            CREATE INDEX idx_content_member_created ON public.content (member_id, created_at DESC);
+                RAISE NOTICE 'Added column: member_id to content table';
 
-            RAISE NOTICE 'Created indexes: idx_content_member_id, idx_content_created_at, idx_content_member_created';
+                -------------------------------------------------------------
+                -- 2. 외래 키 제약 조건 추가
+                -------------------------------------------------------------
+                ALTER TABLE public.content
+                    ADD CONSTRAINT fk_content_member FOREIGN KEY (member_id)
+                        REFERENCES public.member (id) ON DELETE SET NULL;
+
+                RAISE NOTICE 'Created foreign key constraint: fk_content_member';
+
+                -------------------------------------------------------------
+                -- 3. 인덱스 생성 (조회 성능 최적화)
+                -------------------------------------------------------------
+                CREATE INDEX idx_content_member_id ON public.content (member_id);
+                CREATE INDEX idx_content_created_at ON public.content (created_at);
+                CREATE INDEX idx_content_member_created ON public.content (member_id, created_at DESC);
+
+                RAISE NOTICE 'Created indexes: idx_content_member_id, idx_content_created_at, idx_content_member_created';
+
+            ELSE
+                RAISE NOTICE 'Column "member_id" already exists in "public.content". Skipping migration.';
+            END IF;
 
         ELSE
-            RAISE NOTICE 'Column "member_id" already exists in "public.content". Skipping migration.';
+            RAISE NOTICE 'Table "public.content" does not exist. Skipping migration. JPA will create the table automatically.';
         END IF;
 
     END

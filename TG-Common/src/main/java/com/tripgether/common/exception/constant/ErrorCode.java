@@ -98,7 +98,12 @@ public enum ErrorCode {
 
   GOOGLE_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "Google Places API에서 장소를 찾을 수 없습니다."),
 
-  GOOGLE_PLACE_API_ERROR(HttpStatus.BAD_GATEWAY, "Google Places API 호출 중 오류가 발생했습니다.");
+  GOOGLE_PLACE_API_ERROR(HttpStatus.BAD_GATEWAY, "Google Places API 호출 중 오류가 발생했습니다."),
+
+  // MemberPlace
+  MEMBER_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "회원의 장소 정보를 찾을 수 없습니다."),
+
+  CANNOT_DELETE_SAVED_PLACE(HttpStatus.BAD_REQUEST, "임시 저장된 장소만 삭제할 수 있습니다.");
 
   private final HttpStatus status;
   private final String message;

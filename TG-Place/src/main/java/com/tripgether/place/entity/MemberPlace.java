@@ -53,15 +53,12 @@ public class MemberPlace extends SoftDeletableBaseEntity {
   private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "place_id", nullable = false)
   private Place place;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "saved_status", nullable = false, length = 20)
   @Builder.Default
   private PlaceSavedStatus savedStatus = PlaceSavedStatus.TEMPORARY;
 
@@ -70,14 +67,12 @@ public class MemberPlace extends SoftDeletableBaseEntity {
    * - Content 엔티티를 직접 참조하지 않음 (순환 의존성 방지)
    * - TG-Place 모듈이 TG-SNS 모듈을 import하지 않도록 UUID로 관리
    */
-  @Column(name = "source_content_id")
   private UUID sourceContentId;
 
   /**
    * 사용자가 장소를 저장한 시간
    * - TEMPORARY -> SAVED 상태 변경 시 기록됨
    */
-  @Column(name = "saved_at")
   private LocalDateTime savedAt;
 
   /**

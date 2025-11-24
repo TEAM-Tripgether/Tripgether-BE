@@ -8,6 +8,7 @@ import com.tripgether.common.exception.constant.ErrorMessageTemplate.BusinessSta
 import com.tripgether.member.constant.MemberGender;
 import com.tripgether.member.constant.MemberOnboardingStatus;
 import com.tripgether.member.constant.OnboardingStep;
+import com.tripgether.member.dto.CheckNameResponse;
 import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.ProfileUpdateRequest;
@@ -560,5 +561,34 @@ public class MemberService {
         .collect(Collectors.toList());
 
     return interests;
+  }
+
+  /**
+   * 닉네임 사용 가능 여부 확인
+   *
+   * @param name 확인할 닉네임
+   * @return 사용 가능 여부 (true: 사용 가능, false: 중복)
+   */
+  public CheckNameResponse checkNameAvailability(String name) {
+    // 닉네임 길이 검증 (2자 이상 50자 이하)
+    if (name == null || name.trim().isEmpty()) {
+      log.warn("[Member] 닉네임이 비어있음");
+      throw new CustomException(ErrorCode.INVALID_NAME_LENGTH);
+    }
+
+    if (name.length() < 2 || name.length() > 50) {
+      log.warn("[Member] 닉네임 길이 제한 위반 - name={}", name);
+      throw new CustomException(ErrorCode.INVALID_NAME_LENGTH);
+    }
+
+    // 중복 체크 (모든 회원 대상)
+    boolean isDuplicate = memberRepository.existsByName(name);
+
+    log.info("[Member] 닉네임 중복 확인 - name={}, available={}", name, !isDuplicate);
+
+    return CheckNameResponse.builder()
+        .isAvailable(!isDuplicate)
+        .name(name)
+        .build();
   }
 }

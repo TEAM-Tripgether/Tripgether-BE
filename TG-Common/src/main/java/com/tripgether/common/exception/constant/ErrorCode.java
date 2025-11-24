@@ -103,6 +103,8 @@ public enum ErrorCode {
   // MemberPlace
   MEMBER_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "회원의 장소 정보를 찾을 수 없습니다."),
 
+  PLACE_ALREADY_SAVED(HttpStatus.BAD_REQUEST, "이미 저장된 장소입니다."),
+
   CANNOT_DELETE_SAVED_PLACE(HttpStatus.BAD_REQUEST, "임시 저장된 장소만 삭제할 수 있습니다.");
 
   private final HttpStatus status;

@@ -1,6 +1,8 @@
 package com.tripgether.place.entity;
 
 import com.tripgether.common.entity.SoftDeletableBaseEntity;
+import com.tripgether.common.exception.CustomException;
+import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.member.entity.Member;
 import com.tripgether.place.constant.PlaceSavedStatus;
 import jakarta.persistence.Column;
@@ -82,8 +84,15 @@ public class MemberPlace extends SoftDeletableBaseEntity {
    * 임시 저장 상태에서 저장 상태로 변경
    * - savedStatus: TEMPORARY -> SAVED
    * - savedAt: 현재 시간 기록
+   *
+   * @throws CustomException 이미 SAVED 상태인 경우
    */
   public void markAsSaved() {
+    // 이미 저장된 장소인지 검증
+    if (this.savedStatus == PlaceSavedStatus.SAVED) {
+      throw new CustomException(ErrorCode.PLACE_ALREADY_SAVED);
+    }
+
     this.savedStatus = PlaceSavedStatus.SAVED;
     this.savedAt = LocalDateTime.now();
   }

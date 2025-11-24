@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -383,6 +384,7 @@ public class AiCallbackService {
 
     // 각 회원에게 알림 전송
     int successCount = 0;
+    List<ContentMember> succeededMembers = new ArrayList<>();
     for (ContentMember contentMember : unnotifiedMembers) {
       try {
         // FCM 알림 전송
@@ -396,6 +398,7 @@ public class AiCallbackService {
 
         // 알림 전송 완료 표시
         contentMember.setNotified(true);
+        succeededMembers.add(contentMember);
         successCount++;
 
         log.info("Notification sent successfully to memberId={} for contentId={}",
@@ -407,8 +410,10 @@ public class AiCallbackService {
       }
     }
 
-    // 알림 전송 완료된 ContentMember 업데이트
-    contentMemberRepository.saveAll(unnotifiedMembers);
+    // 알림 전송 완료된 ContentMember만 업데이트
+    if (!succeededMembers.isEmpty()) {
+      contentMemberRepository.saveAll(succeededMembers);
+    }
 
     log.info("Content complete notifications sent: {}/{} succeeded for contentId={}",
         successCount, unnotifiedMembers.size(), content.getId());

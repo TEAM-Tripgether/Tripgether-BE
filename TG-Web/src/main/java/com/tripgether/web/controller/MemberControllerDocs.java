@@ -2,6 +2,7 @@ package com.tripgether.web.controller;
 
 import com.tripgether.auth.dto.CustomUserDetails;
 import com.tripgether.common.constant.Author;
+import com.tripgether.member.dto.CheckNameResponse;
 import com.tripgether.member.dto.InterestDto;
 import com.tripgether.member.dto.MemberDto;
 import com.tripgether.member.dto.ProfileUpdateRequest;
@@ -18,6 +19,7 @@ import me.suhsaechan.suhapilog.annotation.ApiChangeLog;
 import me.suhsaechan.suhapilog.annotation.ApiChangeLogs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
@@ -318,4 +320,28 @@ public interface MemberControllerDocs {
               - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
               """)
   ResponseEntity<List<InterestDto>> getInterestsByMemberId(UUID memberId);
+
+  @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.11.23", author = Author.SUHSAECHAN, issueNumber = 106, description = "닉네임 중복 확인 API 추가"),
+  })
+  @Operation(summary = "닉네임 중복 확인", description = """
+              ## 인증(JWT): **불필요**
+
+              ## 요청 파라미터
+              - **`name`**: 확인할 닉네임 (Query Parameter, 필수, 2자 이상 50자 이하)
+
+              ## 반환값 (CheckNicknameResponse)
+              - **`isAvailable`**: 사용 가능 여부 (true: 사용 가능, false: 이미 사용 중)
+              - **`name`**: 확인한 닉네임
+
+              ## 특이사항
+              - 회원가입 전에도 사용 가능한 API입니다.
+              - 닉네임 길이는 2자 이상 50자 이하여야 합니다.
+              - 탈퇴한 회원의 닉네임은 타임스탬프가 추가되어 중복 체크에서 제외됩니다.
+
+              ## 에러코드
+              - **`INVALID_NAME_LENGTH`**: 닉네임은 2자 이상 50자 이하여야 합니다.
+              - **`INVALID_INPUT_VALUE`**: 유효하지 않은 입력값입니다.
+              """)
+  ResponseEntity<CheckNameResponse> checkName(@RequestParam String name);
 }

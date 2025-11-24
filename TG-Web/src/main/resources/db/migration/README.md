@@ -128,6 +128,7 @@ $$;
 - [ ] 파일명이 `V{version}__{description}.sql` 형식을 따르는가?
 - [ ] 테이블 작업 전에 테이블 존재 여부를 확인하는가?
 - [ ] 컬럼 작업 전에 컬럼 존재 여부를 확인하는가?
+- [ ] **Foreign Key 제약조건이 있는 경우, 부모 테이블 존재 여부를 반드시 확인하는가?**
 - [ ] 중복 실행을 방지하는 로직이 있는가?
 - [ ] 테이블이 없을 때 `RAISE NOTICE`로 안전하게 종료하는가?
 
@@ -146,6 +147,56 @@ IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'member') 
     ALTER TABLE public.member ADD COLUMN new_field VARCHAR(100);
 END IF;
 ```
+
+### ⚠️ **Foreign Key 제약조건 작성 시 필수 확인사항**
+
+**중요**: Foreign Key를 참조하는 부모 테이블이 존재하는지 반드시 확인해야 합니다!
+
+❌ **잘못된 예**: 부모 테이블(member) 존재 확인 없이 FK 생성
+```sql
+CREATE TABLE public.fcm_token (
+    id UUID NOT NULL,
+    member_id UUID NOT NULL,
+    CONSTRAINT fk_fcm_token_member FOREIGN KEY (member_id)
+        REFERENCES public.member (id) ON DELETE CASCADE
+);
+-- member 테이블이 없으면 에러 발생!
+```
+
+✅ **올바른 예**: 부모 테이블 존재 확인 후 FK 생성
+```sql
+DO $$
+BEGIN
+    -- 1. 부모 테이블(member) 존재 확인
+    IF EXISTS (SELECT 1 FROM information_schema.tables
+               WHERE table_schema = 'public' AND table_name = 'member') THEN
+
+        -- 2. 자식 테이블(fcm_token) 존재 확인
+        IF NOT EXISTS (SELECT 1 FROM information_schema.tables
+                       WHERE table_schema = 'public' AND table_name = 'fcm_token') THEN
+
+            -- 3. 테이블 생성 (FK 포함)
+            CREATE TABLE public.fcm_token (
+                id UUID NOT NULL,
+                member_id UUID NOT NULL,
+                CONSTRAINT pk_fcm_token PRIMARY KEY (id),
+                CONSTRAINT fk_fcm_token_member FOREIGN KEY (member_id)
+                    REFERENCES public.member (id) ON DELETE CASCADE
+            );
+            RAISE NOTICE 'Created fcm_token table with FK to member';
+        ELSE
+            RAISE NOTICE 'fcm_token table already exists';
+        END IF;
+    ELSE
+        RAISE NOTICE 'parent table "member" does not exist. Skipping fcm_token creation. JPA will create both tables.';
+    END IF;
+END $$;
+```
+
+**핵심 원칙**:
+1. **부모 테이블 먼저 확인**: FK로 참조되는 테이블이 존재하는지 확인
+2. **자식 테이블 확인**: 생성할 테이블이 이미 있는지 확인
+3. **안전한 종료**: 부모 테이블이 없으면 아무 작업도 하지 않고 JPA에게 맡김
 
 **JPA DDL과의 관계:**
 - **Flyway 마이그레이션**: 기존 데이터베이스 스키마 변경 작업

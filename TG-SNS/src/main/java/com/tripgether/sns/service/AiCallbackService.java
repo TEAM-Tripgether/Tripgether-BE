@@ -6,9 +6,12 @@ import com.tripgether.common.constant.ContentStatus;
 import com.tripgether.common.exception.CustomException;
 import com.tripgether.common.exception.constant.ErrorCode;
 import com.tripgether.place.constant.PlacePlatform;
+import com.tripgether.place.constant.PlaceSavedStatus;
 import com.tripgether.place.dto.GooglePlaceSearchDto;
+import com.tripgether.place.entity.MemberPlace;
 import com.tripgether.place.entity.Place;
 import com.tripgether.place.entity.PlacePlatformReference;
+import com.tripgether.place.repository.MemberPlaceRepository;
 import com.tripgether.place.repository.PlacePlatformReferenceRepository;
 import com.tripgether.place.repository.PlaceRepository;
 import com.tripgether.place.service.PlaceSearchService;
@@ -42,6 +45,7 @@ public class AiCallbackService {
   private final PlaceRepository placeRepository;
   private final ContentPlaceRepository contentPlaceRepository;
   private final PlacePlatformReferenceRepository placePlatformReferenceRepository;
+  private final MemberPlaceRepository memberPlaceRepository;
   private final PlaceSearchService placeSearchService;
   private final FcmService fcmService;
 
@@ -160,7 +164,11 @@ public class AiCallbackService {
           // 4. Content와 Place 연결 생성 (position 포함)
           createContentPlace(content, place, i);
 
+          // 5. 해당 Content를 요청한 모든 회원에게 MemberPlace 생성
+          createMemberPlaces(content, place);
+
           log.info("Place processed successfully: DB ID={}", place.getId());
+
 
         } catch (CustomException e) {
           log.error("Failed to process place {}/{}", i + 1, places.size());
@@ -417,5 +425,63 @@ public class AiCallbackService {
 
     log.info("Content complete notifications sent: {}/{} succeeded for contentId={}",
         successCount, unnotifiedMembers.size(), content.getId());
+  }
+
+  /**
+   * Content를 요청한 모든 회원에게 MemberPlace 생성
+   * - TEMPORARY 상태로 초기화
+   * - sourceContentId로 Content 추적
+   * - 중복 생성 방지 (이미 존재하면 스킵)
+   *
+   * @param content 원본 Content
+   * @param place   생성된 Place
+   */
+  private void createMemberPlaces(Content content, Place place) {
+    // 1. Content를 요청한 모든 회원 조회 (Member Fetch Join으로 N+1 방지)
+    List<ContentMember> contentMembers = contentMemberRepository.findAllByContentWithMember(content);
+
+    log.info("Creating MemberPlace for {} members (contentId={}, placeId={})",
+        contentMembers.size(), content.getId(), place.getId());
+
+    // 2. 각 회원에 대해 MemberPlace 생성
+    int createdCount = 0;
+    int skippedCount = 0;
+
+    for (ContentMember contentMember : contentMembers) {
+      try {
+        // 3. 이미 존재하는지 확인 (중복 방지)
+        Optional<MemberPlace> existing = memberPlaceRepository
+            .findByMemberAndPlaceAndDeletedAtIsNull(contentMember.getMember(), place);
+
+        if (existing.isPresent()) {
+          log.debug("MemberPlace already exists: memberId={}, placeId={}",
+              contentMember.getMember().getId(), place.getId());
+          skippedCount++;
+          continue;
+        }
+
+        // 4. MemberPlace 생성 및 저장
+        MemberPlace memberPlace = MemberPlace.builder()
+            .member(contentMember.getMember())
+            .place(place)
+            .savedStatus(PlaceSavedStatus.TEMPORARY)
+            .sourceContentId(content.getId())
+            .build();
+
+        memberPlaceRepository.save(memberPlace);
+        createdCount++;
+
+        log.debug("MemberPlace created: id={}, memberId={}, placeId={}, status=TEMPORARY",
+            memberPlace.getId(), contentMember.getMember().getId(), place.getId());
+
+      } catch (Exception e) {
+        log.error("Failed to create MemberPlace for memberId={}, placeId={}: {}",
+            contentMember.getMember().getId(), place.getId(), e.getMessage());
+        // 실패해도 계속 진행 (다른 회원들의 MemberPlace는 생성)
+      }
+    }
+
+    log.info("MemberPlace creation completed: {} created, {} skipped (contentId={}, placeId={})",
+        createdCount, skippedCount, content.getId(), place.getId());
   }
 }

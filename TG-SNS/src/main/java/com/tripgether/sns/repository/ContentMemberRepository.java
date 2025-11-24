@@ -40,4 +40,13 @@ public interface ContentMemberRepository extends JpaRepository<ContentMember, UU
    */
   List<ContentMember> findByMemberId(UUID memberId);
 
+  /**
+   * Content로 모든 ContentMember 조회 (Member Fetch Join으로 N+1 방지)
+   * - MemberPlace 생성 시 사용
+   */
+  @Query("SELECT cm FROM ContentMember cm " +
+      "JOIN FETCH cm.member " +
+      "WHERE cm.content = :content")
+  List<ContentMember> findAllByContentWithMember(@Param("content") Content content);
+
 }

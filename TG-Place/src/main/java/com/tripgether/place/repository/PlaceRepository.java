@@ -37,13 +37,13 @@ public interface PlaceRepository extends JpaRepository<Place, UUID> {
    * @return Optional<Place> (가장 최근 생성된 장소)
    */
   @Query("""
-      SELECT p FROM Place p
-      WHERE LOWER(TRIM(p.name)) = LOWER(TRIM(:name))
-      AND (:address IS NULL OR LOWER(TRIM(p.address)) LIKE LOWER(TRIM(CONCAT('%', :address, '%'))))
-      ORDER BY p.createdAt DESC
-      """)
+    SELECT p FROM Place p
+    WHERE LOWER(p.name) = LOWER(:name)
+    AND (:address IS NULL OR LOWER(p.address) LIKE LOWER(CONCAT('%', :address, '%')))
+    ORDER BY p.createdAt DESC
+    """)
   Optional<Place> findByNormalizedNameAndAddress(
-      @Param("name") String name,
-      @Param("address") String address
+          @Param("name") String name,
+          @Param("address") String address
   );
 }

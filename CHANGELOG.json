@@ -1,11 +1,27 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-23T12:59:04Z",
-    "currentVersion": "0.2.29",
+    "lastUpdated": "2025-11-24T00:45:36Z",
+    "currentVersion": "0.2.30",
     "projectType": "spring",
-    "totalReleases": 23
+    "totalReleases": 24
   },
   "releases": [
+    {
+      "version": "0.2.30",
+      "project_type": "spring",
+      "date": "2025-11-24",
+      "pr_number": 118,
+      "raw_summary": "Summary by CodeRabbit\nv0.2.30 릴리스 노트\n\nChores\n\n애플리케이션 버전을 0.2.30으로 업데이트\n빌드 버전 코드 및 메타데이터 정보 갱신\n\n\n\n\n참고: 이번 릴리스는 주로 내부 유지보수 및 버전 관리 업데이트를 포함합니다.\n✏️ Tip: You can customize this high-level summary in your review settings.",
+      "parsed_changes": {
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "애플리케이션 버전을 0.2.30으로 업데이트",
+            "빌드 버전 코드 및 메타데이터 정보 갱신"
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.29",
       "project_type": "spring",

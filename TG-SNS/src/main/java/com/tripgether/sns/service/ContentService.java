@@ -13,7 +13,9 @@ import com.tripgether.member.repository.MemberRepository;
 import com.tripgether.place.dto.PlaceDto;
 import com.tripgether.sns.dto.ContentDto;
 import com.tripgether.sns.entity.Content;
+import com.tripgether.sns.entity.ContentMember;
 import com.tripgether.sns.entity.ContentPlace;
+import com.tripgether.sns.repository.ContentMemberRepository;
 import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
 import java.util.Collections;
@@ -40,6 +42,7 @@ public class ContentService {
   private static final int MAX_PHOTO_URLS_PER_PLACE = 10;
 
   private final ContentRepository contentRepository;
+  private final ContentMemberRepository contentMemberRepository;
   private final ContentPlaceRepository contentPlaceRepository;
   private final MemberRepository memberRepository;
   private final AiServerService aiServerService;
@@ -47,8 +50,8 @@ public class ContentService {
 
   /**
    * 클라이언트로부터 장소 추출 요청 처리
-   * - 같은 URL로 COMPLETED된 Content 있으면 즉시 반환 (AI 비용 절감)
-   * - 없거나 PENDING/FAILED 상태면 AI 서버로 요청
+   * - 같은 URL로 COMPLETED된 Content 있으면 ContentMember 추가 후 즉시 반환 (AI 비용 절감)
+   * - 없거나 PENDING/FAILED 상태면 AI 서버로 요청하고 ContentMember 생성
    *
    * @param request  장소 추출 요청
    * @param memberId 회원 ID
@@ -63,39 +66,62 @@ public class ContentService {
     // URL 길이 검증
     commonUtil.validateUrlLength(snsUrl, MAX_URL_LENGTH);
 
+    // Member 조회
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
     // 기존 Content 조회 (한 번만 수행)
     Optional<Content> optionalContent = contentRepository.findByOriginalUrl(snsUrl);
 
-    // 이미 COMPLETED면 즉시 반환
+    // 이미 COMPLETED면 ContentMember 추가 후 즉시 반환
     if (optionalContent.isPresent() && optionalContent.get().getStatus() == ContentStatus.COMPLETED) {
       Content content = optionalContent.get();
-      log.info("Content already exists and completed. Returning existing data: contentId={}", content.getId());
+      log.info("Content already exists and completed. Adding ContentMember: contentId={}, memberId={}", content.getId(), memberId);
+
+      // ContentMember가 없으면 생성 (중복 방지)
+      if (!contentMemberRepository.existsByContentAndMember(content, member)) {
+        ContentMember contentMember = ContentMember.builder()
+            .content(content)
+            .member(member)
+            .notified(true)  // 이미 완료된 Content이므로 알림 불필요
+            .build();
+        contentMemberRepository.save(contentMember);
+        log.info("Created ContentMember for existing completed Content: contentId={}, memberId={}", content.getId(), memberId);
+      }
+
       return RequestPlaceExtractionResponse.builder()
           .contentId(content.getId())
           .status(content.getStatus())
           .build();
     }
 
-    // Member 조회 (한 번만 수행)
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
     // 기존이 있으면 PENDING으로 재사용, 없으면 신규 생성
     Content content = optionalContent
         .map(existingContent -> {
           existingContent.setStatus(ContentStatus.PENDING);
-          existingContent.setMember(member);
           log.info("Reusing existing Content: contentId={}", existingContent.getId());
           return existingContent;
         })
         .orElseGet(() -> Content.builder()
             .originalUrl(snsUrl)
             .status(ContentStatus.PENDING)
-            .member(member)
             .build());
 
     // Content 저장
     Content savedContent = contentRepository.save(content);
+
+    // ContentMember 생성 (중복 방지)
+    if (!contentMemberRepository.existsByContentAndMember(savedContent, member)) {
+      ContentMember contentMember = ContentMember.builder()
+          .content(savedContent)
+          .member(member)
+          .notified(false)  // 분석 완료시 알림 전송 필요
+          .build();
+      contentMemberRepository.save(contentMember);
+      log.info("Created ContentMember: contentId={}, memberId={}", savedContent.getId(), memberId);
+    } else {
+      log.info("ContentMember already exists: contentId={}, memberId={}", savedContent.getId(), memberId);
+    }
 
     // AI 요청
     try {
@@ -171,7 +197,7 @@ public class ContentService {
 
   /**
    * Member가 소유한 Content 목록 조회 (최신순)
-   * - Member ID로 Content 페이지를 조회합니다.
+   * - ContentMember를 통해 Member ID로 Content 페이지를 조회합니다.
    * - createdAt 기준 내림차순 정렬 (최신순)
    * - Place 정보는 제외하고 Content 정보만 반환
    *
@@ -184,31 +210,45 @@ public class ContentService {
     // Pageable 생성 (0번 페이지, createdAt 내림차순)
     Pageable pageable = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-    // Member ID로 Content 페이지 조회
-    Page<Content> contentPage = contentRepository.findByMemberId(memberId, pageable);
+    // ContentMember를 통해 Member ID로 Content 조회
+    List<ContentMember> contentMembers = contentMemberRepository.findByMemberId(memberId);
+
+    // ContentMember에서 Content 추출 및 DTO 변환
+    List<ContentDto> contentDtos = contentMembers.stream()
+        .map(ContentMember::getContent)
+        .sorted((c1, c2) -> c2.getCreatedAt().compareTo(c1.getCreatedAt()))  // 최신순 정렬
+        .limit(pageSize)
+        .map(ContentDto::from)
+        .collect(Collectors.toList());
 
     log.info("Found {} contents for memberId={}, pageSize={}",
-        contentPage.getTotalElements(), memberId, pageSize);
+        contentDtos.size(), memberId, pageSize);
 
-    // Entity -> DTO 변환
-    return contentPage.map(ContentDto::from);
+    // PageImpl로 변환하여 반환
+    return new org.springframework.data.domain.PageImpl<>(contentDtos, pageable, contentDtos.size());
   }
 
   /**
    * 메인 화면 - 최근 SNS 콘텐츠 목록 조회
+   * - ContentMember를 통해 회원이 요청한 Content 조회
    */
   @Transactional(readOnly = true)
   public GetRecentContentResponse getRecentContents(UUID memberId) {
 
     // 회원 존재 여부 확인
-    Member member = memberRepository.findById(memberId)
+    memberRepository.findById(memberId)
         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
     log.info("[Content] 최근 SNS 콘텐츠 조회 - memberId={}", memberId);
 
-    // 최근 10개의 SNS 콘텐츠 조회
-    List<Content> contents =
-        contentRepository.findTop10ByMember_IdOrderByCreatedAtDesc(member.getId());
+    // ContentMember를 통해 최근 10개의 SNS 콘텐츠 조회
+    List<ContentMember> contentMembers = contentMemberRepository.findByMemberId(memberId);
+
+    List<Content> contents = contentMembers.stream()
+        .map(ContentMember::getContent)
+        .sorted((c1, c2) -> c2.getCreatedAt().compareTo(c1.getCreatedAt()))
+        .limit(10)
+        .collect(Collectors.toList());
 
     return GetRecentContentResponse.builder()
         .contents(contents.stream()
@@ -219,6 +259,7 @@ public class ContentService {
 
   /**
    * 사용자별 저장한 장소 목록 조회 (최신순 최대 10개)
+   * - ContentMember를 통해 회원의 Content를 조회하고, 연관된 Place 반환
    */
   @Transactional(readOnly = true)
   public List<PlaceDto> getSavedPlaces(UUID memberId) {
@@ -228,9 +269,19 @@ public class ContentService {
 
     log.info("[Place] 저장 장소 목록 조회 - memberId={}", member.getId());
 
-    // 이 회원이 가진 Content 들과 연결된 ContentPlace를 최신순 10개 조회
-    List<ContentPlace> contentPlaces =
-        contentPlaceRepository.findTop10ByContent_MemberOrderByCreatedAtDesc(member);
+    // ContentMember를 통해 회원의 Content ID 목록 조회
+    List<ContentMember> contentMembers = contentMemberRepository.findByMemberId(memberId);
+
+    List<UUID> contentIds = contentMembers.stream()
+        .map(cm -> cm.getContent().getId())
+        .collect(Collectors.toList());
+
+    // Content ID 목록으로 ContentPlace 조회
+    List<ContentPlace> contentPlaces = contentIds.stream()
+        .flatMap(contentId -> contentPlaceRepository.findByContentIdWithPlace(contentId).stream())
+        .sorted((cp1, cp2) -> cp2.getCreatedAt().compareTo(cp1.getCreatedAt()))
+        .limit(10)
+        .collect(Collectors.toList());
 
     // ContentPlace → Place 추출
     List<Place> places = contentPlaces.stream()

@@ -13,7 +13,9 @@ import com.tripgether.place.repository.PlacePlatformReferenceRepository;
 import com.tripgether.place.repository.PlaceRepository;
 import com.tripgether.place.service.PlaceSearchService;
 import com.tripgether.sns.entity.Content;
+import com.tripgether.sns.entity.ContentMember;
 import com.tripgether.sns.entity.ContentPlace;
+import com.tripgether.sns.repository.ContentMemberRepository;
 import com.tripgether.sns.repository.ContentPlaceRepository;
 import com.tripgether.sns.repository.ContentRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import com.tripgether.member.service.FcmService;
 
 // AI 서버 Webhook Callback 처리
 @Service
@@ -32,10 +38,12 @@ import java.util.UUID;
 public class AiCallbackService {
 
   private final ContentRepository contentRepository;
+  private final ContentMemberRepository contentMemberRepository;
   private final PlaceRepository placeRepository;
   private final ContentPlaceRepository contentPlaceRepository;
   private final PlacePlatformReferenceRepository placePlatformReferenceRepository;
   private final PlaceSearchService placeSearchService;
+  private final FcmService fcmService;
 
   /**
    * AI 서버로부터 받은 Callback 처리
@@ -168,6 +176,9 @@ public class AiCallbackService {
       // Place 데이터가 없는 경우 경고 로그
       log.warn("No places found in callback for contentId={}", content.getId());
     }
+
+    // AI 분석 완료 후 모든 요청 회원에게 알림 전송
+    sendContentCompleteNotification(content, request);
   }
 
   /**
@@ -335,5 +346,76 @@ public class AiCallbackService {
     // ContentPlace 저장
     contentPlaceRepository.save(contentPlace);
     log.debug("Created ContentPlace: contentId={}, placeId={}, position={}", content.getId(), place.getId(), position);
+  }
+
+  /**
+   * Content 분석 완료 알림 전송
+   * <p>
+   * 해당 Content를 요청한 모든 회원에게 FCM 알림 전송
+   * notified=false인 ContentMember만 대상으로 함
+   *
+   * @param content 완료된 Content
+   * @param request AI Callback 요청
+   */
+  private void sendContentCompleteNotification(Content content, AiCallbackRequest request) {
+    log.info("Sending content complete notifications for contentId={}", content.getId());
+
+    // 알림 미전송된 ContentMember 조회 (Member Fetch Join으로 N+1 방지)
+    List<ContentMember> unnotifiedMembers = contentMemberRepository.findUnnotifiedMembersWithMember(content.getId());
+
+    if (unnotifiedMembers.isEmpty()) {
+      log.info("No unnotified members found for contentId={}", content.getId());
+      return;
+    }
+
+    log.info("Found {} unnotified members for contentId={}", unnotifiedMembers.size(), content.getId());
+
+    // 알림 데이터 구성
+    Map<String, String> notificationData = new HashMap<>();
+    notificationData.put("type", "CONTENT_COMPLETE");
+    notificationData.put("contentId", content.getId().toString());
+
+    if (content.getTitle() != null) {
+      notificationData.put("title", content.getTitle());
+    }
+    if (content.getThumbnailUrl() != null) {
+      notificationData.put("thumbnailUrl", content.getThumbnailUrl());
+    }
+
+    // 각 회원에게 알림 전송
+    int successCount = 0;
+    List<ContentMember> succeededMembers = new ArrayList<>();
+    for (ContentMember contentMember : unnotifiedMembers) {
+      try {
+        // FCM 알림 전송
+        fcmService.sendNotificationToMember(
+            contentMember.getMember().getId(),
+            "콘텐츠 분석 완료",
+            content.getTitle() != null ? content.getTitle() + " 분석이 완료되었습니다." : "콘텐츠 분석이 완료되었습니다.",
+            notificationData,
+            content.getThumbnailUrl()  // 썸네일 이미지 URL (null 가능)
+        );
+
+        // 알림 전송 완료 표시
+        contentMember.setNotified(true);
+        succeededMembers.add(contentMember);
+        successCount++;
+
+        log.info("Notification sent successfully to memberId={} for contentId={}",
+            contentMember.getMember().getId(), content.getId());
+      } catch (Exception e) {
+        log.error("Failed to send notification to memberId={} for contentId={}: {}",
+            contentMember.getMember().getId(), content.getId(), e.getMessage());
+        // 실패해도 계속 진행 (다른 회원들에게는 알림 전송)
+      }
+    }
+
+    // 알림 전송 완료된 ContentMember만 업데이트
+    if (!succeededMembers.isEmpty()) {
+      contentMemberRepository.saveAll(succeededMembers);
+    }
+
+    log.info("Content complete notifications sent: {}/{} succeeded for contentId={}",
+        successCount, unnotifiedMembers.size(), content.getId());
   }
 }

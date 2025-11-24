@@ -1,6 +1,7 @@
 package com.tripgether.place.dto;
 
 
+import com.tripgether.place.entity.Place;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,4 +35,18 @@ public class PlaceDto {
   @Schema(description = "장소 요약 설명", example = "서울역 인근, 공부하기 좋은 카페")
   private String description;
 
+  public static PlaceDto from(Place place) {
+    if (place == null) {
+      return null;
+    }
+
+    return PlaceDto.builder()
+        .placeId(place.getId())
+        .name(place.getName())
+        .address(place.getAddress())
+        .rating(place.getRating())
+        .photoUrls(place.getPhotoUrls())
+        .description(place.getDescription())
+        .build();
+  }
 }

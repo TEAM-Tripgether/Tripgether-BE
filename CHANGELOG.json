@@ -1,11 +1,39 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-25T06:26:28Z",
-    "currentVersion": "0.2.35",
+    "lastUpdated": "2025-11-25T06:42:05Z",
+    "currentVersion": "0.2.36",
     "projectType": "spring",
-    "totalReleases": 27
+    "totalReleases": 28
   },
   "releases": [
+    {
+      "version": "0.2.36",
+      "project_type": "spring",
+      "date": "2025-11-25",
+      "pr_number": 131,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\nNew Features\n\nAI 서버의 콘텐츠 정보 업데이트 시 콘텐츠 URL 및 업로더 정보 필드 추가\n저장된 장소 목록 조회 API 응답에 사용자 평가 수 필드 포함\n\n\n\nDocumentation\n\nAPI 문서 및 변경 로그 업데이트\n\n\n\nChores\n\n버전을 v0.2.36으로 업데이트\n\n\n\n✏️ Tip: You can customize this high-level summary in your review settings.",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "AI 서버의 콘텐츠 정보 업데이트 시 콘텐츠 URL 및 업로더 정보 필드 추가",
+            "저장된 장소 목록 조회 API 응답에 사용자 평가 수 필드 포함"
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "API 문서 및 변경 로그 업데이트"
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "버전을 v0.2.36으로 업데이트"
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.35",
       "project_type": "spring",

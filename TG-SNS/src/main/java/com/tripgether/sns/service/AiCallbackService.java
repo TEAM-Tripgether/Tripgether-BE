@@ -219,7 +219,19 @@ public class AiCallbackService {
 
     // contentUrl 업데이트 (null이 아닐 때만) - originalUrl에 매핑
     if (contentInfo.getContentUrl() != null) {
-      content.setOriginalUrl(contentInfo.getContentUrl());
+      String newUrl = contentInfo.getContentUrl();
+      // 현재 URL과 같으면 업데이트 스킵
+      if (!newUrl.equals(content.getOriginalUrl())) {
+        // 다른 Content에 이미 존재하는지 확인 (unique constraint 위반 방지)
+        Optional<Content> existingContent = contentRepository.findByOriginalUrl(newUrl);
+        if (existingContent.isPresent() && !existingContent.get().getId().equals(content.getId())) {
+          log.warn("Cannot update originalUrl: URL already exists in another Content. " +
+              "currentContentId={}, existingContentId={}, url={}",
+              content.getId(), existingContent.get().getId(), newUrl);
+        } else {
+          content.setOriginalUrl(newUrl);
+        }
+      }
     }
 
     // platformUploader 업데이트 (null이 아닐 때만)

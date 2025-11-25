@@ -83,6 +83,7 @@ public interface PlaceControllerDocs {
   );
 
   @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 129, description = "저장한 장소 목록 조회 API 응답에 userRatingsTotal 필드 추가"),
       @ApiChangeLog(date = "2025.11.24", author = Author.SUHSAECHAN, issueNumber = 103, description = "저장한 장소 목록 조회 API 추가"),
   })
   @Operation(summary = "저장한 장소 목록 조회", description = """
@@ -94,6 +95,7 @@ public interface PlaceControllerDocs {
                 - **`name`**: 장소명
                 - **`address`**: 주소
                 - **`rating`**: 별점 (0.0 ~ 5.0)
+                - **`userRatingsTotal`**: 리뷰 수
                 - **`photoUrls`**: 사진 URL 배열
                 - **`description`**: 장소 요약 설명
 

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 public interface AiControllerDocs {
 
   @ApiChangeLogs({
+      @ApiChangeLog(date = "2025.01.15", author = Author.SUHSAECHAN, issueNumber = 129, description = "AI 서버 Callback API ContentInfo 파라미터 추가 (contentUrl, platformUploader 필드)"),
       @ApiChangeLog(date = "2025.11.18", author = Author.SUHSAECHAN, issueNumber = 83, description = "AI 서버 Callback API ContentInfo 파라미터 추가 (summary 필드)"),
       @ApiChangeLog(date = "2025.11.12", author = Author.SUHSAECHAN, issueNumber = 70, description = "명세 변경, 기존 전체정보 > 상호명으로만 받음"),
       @ApiChangeLog(date = "2025.11.02", author = Author.KANGJIYUN, issueNumber = 48, description = "AI 서버 Webhook Callback 리팩터링"),
@@ -47,7 +48,7 @@ public interface AiControllerDocs {
               - API Key는 환경변수를 통해 설정되며, 반드시 일치해야 합니다.
               - Content 상태를 ANALYZING → COMPLETED/FAILED로 변경합니다.
               - SUCCESS인 경우:
-                - ContentInfo로 Content 메타데이터 업데이트 (title, thumbnailUrl, platformUploader, summary)
+                - ContentInfo로 Content 메타데이터 업데이트 (title, contentUrl, thumbnailUrl, platformUploader, summary)
                 - Place 생성 및 Content-Place 연결 수행
                 - snsPlatform 값으로 Content.platform 동기화
 

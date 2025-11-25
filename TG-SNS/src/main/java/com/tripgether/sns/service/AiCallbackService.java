@@ -60,13 +60,15 @@ public class AiCallbackService {
    */
   @Transactional
   public AiCallbackResponse processAiServerCallback(AiCallbackRequest request) {
-    // ContentInfo에서 contentId 추출
-    UUID contentId = request.getContentInfo() != null && request.getContentInfo().getContentId() != null
-        ? request.getContentInfo().getContentId()
-        : null;
+    // contentId 추출: 최상위 contentId 우선, 없으면 ContentInfo에서 추출
+    UUID contentId = request.getContentId() != null
+        ? request.getContentId()
+        : (request.getContentInfo() != null && request.getContentInfo().getContentId() != null
+            ? request.getContentInfo().getContentId()
+            : null);
 
     if (contentId == null) {
-      log.error("ContentInfo or contentId is null in callback request");
+      log.error("ContentInfo or contentId is null in callback request. resultStatus={}", request.getResultStatus());
       throw new CustomException(ErrorCode.INVALID_REQUEST);
     }
 

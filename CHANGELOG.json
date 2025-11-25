@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-25T10:51:38Z",
-    "currentVersion": "0.2.37",
+    "lastUpdated": "2025-11-25T11:32:03Z",
+    "currentVersion": "0.2.38",
     "projectType": "spring",
-    "totalReleases": 29
+    "totalReleases": 30
   },
   "releases": [
+    {
+      "version": "0.2.38",
+      "project_type": "spring",
+      "date": "2025-11-25",
+      "pr_number": 133,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트\n\n\n버그 수정\n\n콜백 요청 처리 시 콘텐츠 ID 인식 방식 개선 (최상위 레벨 ID 우선 확인 및 대체 방법 적용)\n오류 로깅 정보 강화로 문제 진단 효율성 향상\n\n\n\n버전 업데이트\n\nv0.2.38로 업그레이드\n\n\n\n✏️ Tip: You can customize this high-level summary in your review settings.",
+      "parsed_changes": {
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "콜백 요청 처리 시 콘텐츠 ID 인식 방식 개선 (최상위 레벨 ID 우선 확인 및 대체 방법 적용)",
+            "오류 로깅 정보 강화로 문제 진단 효율성 향상"
+          ]
+        },
+        "버전_업데이트": {
+          "title": "버전 업데이트",
+          "items": [
+            "v0.2.38로 업그레이드"
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.37",
       "project_type": "spring",

@@ -295,6 +295,7 @@ public class ContentService {
             .name(place.getName())
             .address(place.getAddress())
             .rating(place.getRating())
+            .userRatingsTotal(place.getUserRatingsTotal())
             .photoUrls(
                 Optional.ofNullable(place.getPhotoUrls())
                     .map(urls -> urls.size() > MAX_PHOTO_URLS_PER_PLACE

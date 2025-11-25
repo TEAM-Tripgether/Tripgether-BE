@@ -29,6 +29,9 @@ public class PlaceDto {
   @Schema(description = "별점 (0.0 ~ 5.0)", example = "4.5")
   private BigDecimal rating;
 
+  @Schema(description = "리뷰 수", example = "123")
+  private Integer userRatingsTotal;
+
   @Schema(description = "사진 URL 배열 (최대 10개)")
   private List<String> photoUrls;
 
@@ -45,6 +48,7 @@ public class PlaceDto {
         .name(place.getName())
         .address(place.getAddress())
         .rating(place.getRating())
+        .userRatingsTotal(place.getUserRatingsTotal())
         .photoUrls(place.getPhotoUrls())
         .description(place.getDescription())
         .build();

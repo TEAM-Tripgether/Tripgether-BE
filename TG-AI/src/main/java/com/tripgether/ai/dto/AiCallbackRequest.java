@@ -61,6 +61,12 @@ public class AiCallbackRequest {
     // 필수 아님
     private String title;
 
+    @Schema(description = "콘텐츠 URL", example = "https://www.youtube.com/watch?v=VIDEO_ID")
+    private String contentUrl;
+
+    @Schema(description = "업로더 아이디", example = "travel_lover_123")
+    private String platformUploader;
+
     @Schema(description = "AI 콘텐츠 요약", example = "샷포로 3대 스시 맛집 '토리톤' 방문...")
     private String summary;
   }

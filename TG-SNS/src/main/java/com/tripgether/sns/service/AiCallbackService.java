@@ -215,6 +215,16 @@ public class AiCallbackService {
       content.setThumbnailUrl(contentInfo.getThumbnailUrl());
     }
 
+    // contentUrl 업데이트 (null이 아닐 때만) - originalUrl에 매핑
+    if (contentInfo.getContentUrl() != null) {
+      content.setOriginalUrl(contentInfo.getContentUrl());
+    }
+
+    // platformUploader 업데이트 (null이 아닐 때만)
+    if (contentInfo.getPlatformUploader() != null) {
+      content.setPlatformUploader(contentInfo.getPlatformUploader());
+    }
+
     // summary 업데이트 (null이 아닐 때만)
     if (contentInfo.getSummary() != null) {
       content.setSummary(contentInfo.getSummary());
@@ -230,10 +240,11 @@ public class AiCallbackService {
       }
     }
 
-    log.debug("Updated Content with ContentInfo: contentId={}, title={}, summary={}",
+    log.debug("Updated Content with ContentInfo: contentId={}, title={}, summary={}, platformUploader={}",
         content.getId(),
         contentInfo.getTitle() != null ? contentInfo.getTitle() : "(unchanged)",
-        contentInfo.getSummary() != null ? contentInfo.getSummary().substring(0, Math.min(30, contentInfo.getSummary().length())) + "..." : "(unchanged)");
+        contentInfo.getSummary() != null ? contentInfo.getSummary().substring(0, Math.min(30, contentInfo.getSummary().length())) + "..." : "(unchanged)",
+        contentInfo.getPlatformUploader() != null ? contentInfo.getPlatformUploader() : "(unchanged)");
   }
 
   /**

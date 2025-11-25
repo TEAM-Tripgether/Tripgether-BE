@@ -1,11 +1,33 @@
 {
   "metadata": {
-    "lastUpdated": "2025-11-24T12:56:17Z",
-    "currentVersion": "0.2.33",
+    "lastUpdated": "2025-11-25T06:26:28Z",
+    "currentVersion": "0.2.35",
     "projectType": "spring",
-    "totalReleases": 26
+    "totalReleases": 27
   },
   "releases": [
+    {
+      "version": "0.2.35",
+      "project_type": "spring",
+      "date": "2025-11-25",
+      "pr_number": 130,
+      "raw_summary": "Summary by CodeRabbit\n릴리스 노트 v0.2.35\n\n\n새로운 기능\n\n장소 정보에 총 사용자 평점 수 표시 추가\n콘텐츠 메타데이터에 URL 및 업로더 정보 확장\n\n\n\n개선사항\n\n메타데이터 동기화 로직 최적화\n\n\n\n✏️ Tip: You can customize this high-level summary in your review settings.",
+      "parsed_changes": {
+        "새로운_기능": {
+          "title": "새로운 기능",
+          "items": [
+            "장소 정보에 총 사용자 평점 수 표시 추가",
+            "콘텐츠 메타데이터에 URL 및 업로더 정보 확장"
+          ]
+        },
+        "개선사항": {
+          "title": "개선사항",
+          "items": [
+            "메타데이터 동기화 로직 최적화"
+          ]
+        }
+      }
+    },
     {
       "version": "0.2.33",
       "project_type": "spring",

@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +25,9 @@ public class AiCallbackRequest {
   @Schema(description = "처리 결과 상태", example = "SUCCESS", allowableValues = {"SUCCESS", "FAILED"})
   @NotNull(message = "resultStatus는 필수입니다.")
   private String resultStatus;
+
+  @Schema(description = "Content UUID (FAILED 상태일 때 필수, SUCCESS일 때는 contentInfo.contentId 사용 가능)")
+  private UUID contentId;
 
   @Schema(description = "콘텐츠 정보")
   @Valid

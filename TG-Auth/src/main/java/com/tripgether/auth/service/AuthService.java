@@ -234,6 +234,10 @@ public class AuthService {
     List<MemberInterest> memberInterests = memberInterestRepository.findByMemberId(memberId);
     memberInterests.forEach(interest -> interest.softDelete(memberId.toString()));
 
+    // FCM 토큰 삭제 (하드삭제 - 소프트삭제 시 FK 제약조건 위반 방지)
+    fcmTokenRepository.deleteByMember(member);
+    log.info("[Auth] FCM 토큰 삭제 완료 - memberId={}", memberId);
+
     memberRepository.save(member);
 
     // 토큰 무효화 처리 (로그아웃과 동일한 보안 처리)
